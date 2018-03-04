@@ -1,0 +1,19 @@
+# dev tools
+.envrc
+.python-version
+
+# editors
+*~
+\#*\#
+
+# python
+__pycache__
+*pyc
+*pyo
+*egg-info
+
+# node / npm
+node_modules
+
+# general
+dist
