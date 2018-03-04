@@ -57,7 +57,7 @@ def join_waiting_room(message):
     if room_id not in waiting_rooms:
         new_waiting_room = models.WaitingRoom(
             room_id=room_id,
-            player_ids=[],
+            player_ids=[player_id],
             quorum=settings.QUORUM)
     else:
         old_waiting_room = waiting_rooms[room_id]
