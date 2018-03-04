@@ -20,10 +20,16 @@ const paths = {
 module.exports = {
   entry: paths.app,
   output: {
-    filename: '[name].bundle.js',
+    filename: 'twenty-questions/static/twentyquestions/waitingroom.bundle.js',
     path: paths.dist
   },
   devtool: 'inline-source-map',
+  devServer: {
+    index: 'waitingroom.html',
+    historyApiFallback: {
+      rewrites: [ { from: /./, to: '/' } ]
+    }
+  },
   module: {
     rules: [
       {
@@ -50,7 +56,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: paths.index
+      filename: 'waitingroom.html',
+      template: paths.index,
+      inject: false
     }),
     new ExtractTextPlugin('style.bundle.css')
   ]

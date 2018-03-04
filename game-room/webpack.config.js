@@ -20,10 +20,16 @@ const paths = {
 module.exports = {
   entry: paths.app,
   output: {
-    filename: '[name].bundle.js',
+    filename: 'twenty-questions/static/twentyquestions/gameroom.bundle.js',
     path: paths.dist
   },
   devtool: 'inline-source-map',
+  devServer: {
+    index: 'gameroom.html',
+    historyApiFallback: {
+      rewrites: [ { from: /./, to: '/' } ]
+    }
+  },
   module: {
     rules: [
       {
@@ -50,7 +56,9 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: paths.index
+      filename: 'gameroom.html',
+      template: paths.index,
+      inject: false
     }),
     new ExtractTextPlugin('style.bundle.css')
   ]

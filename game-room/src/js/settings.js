@@ -22,7 +22,7 @@ const serverSocket = {
 
 
 /** URL regex for extracting the room id and player id. */
-const gameRoomUrlRegex = /\/#\/game-room\/(.*)\/player\/(.*)/;
+const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/(.*)/;
 
 
 /** Settings to be exported. */

@@ -130,7 +130,7 @@ class Controller {
 
     console.log(`Entering game room ${roomId} as ${playerId}.`);
 
-    window.location.href = `/#/game-room/${roomId}/player/${playerId}`;
+    window.location.href = settings.makeGameRoomUrl(roomId, playerId);
   }
 }
 
