@@ -5,6 +5,7 @@ import logging
 import flask
 
 from crowdsense.home import home
+from crowdsense.twentyquestions import twentyquestions, socketio
 
 
 logger = logging.getLogger(__name__)
@@ -23,3 +24,9 @@ def index():
 
 app.register_blueprint(
     home, url_prefix='/home')
+app.register_blueprint(
+    twentyquestions, url_prefix='/twenty-questions')
+
+
+# set up the web socket
+socketio.init_app(app)
