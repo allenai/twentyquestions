@@ -5,9 +5,11 @@
  * The current environment.
  *
  * The current environment. This constant should be one of `'dev'` or
- * `'prod'`.
+ * `'prod'`. Dev settings imply that we're using separate servers for
+ * the frontend and the backend. `'prod'` implies that they're the same
+ * server.
  */
-const env = 'dev';
+const env = 'prod';
 
 
 /**
@@ -17,7 +19,8 @@ const env = 'dev';
  * about the current game state.
  */
 const serverSocket = {
-  dev: 'http://127.0.0.1:5000/game-room'
+  dev: 'http://127.0.0.1:5000/game-room',
+  prod: '/game-room'
 }[env];
 
 
