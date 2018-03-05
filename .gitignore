@@ -17,3 +17,9 @@ node_modules
 
 # general
 dist
+
+# frontend assets
+crowdsense/twentyquestions/static/twentyquestions/gameroom.bundle.js
+crowdsense/twentyquestions/static/twentyquestions/waitingroom.bundle.js
+crowdsense/twentyquestions/templates/twentyquestions/gameroom.html
+crowdsense/twentyquestions/templates/twentyquestions/waitingroom.html
