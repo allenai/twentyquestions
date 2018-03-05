@@ -1,0 +1,16 @@
+# blacklist everything so we can explicitly whitelist files
+**
+
+# whitelist root files
+!readme.md
+!requirements.txt
+!manage.py
+
+# whitelist the dockerfiles
+!dockerfiles
+
+# whitelist files in the crowdsense package
+!crowdsense
+
+# whitelist files in the scripts package
+!scripts

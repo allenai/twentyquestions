@@ -7,6 +7,8 @@ import os
 
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
+DOCKERFILE = os.path.join(REPO_DIR, 'Dockerfile')
+
 WAITING_ROOM_DIR = os.path.join(REPO_DIR, 'waiting-room')
 WAITING_ROOM_INDEX = os.path.join(
     WAITING_ROOM_DIR, 'dist/waitingroom.html')

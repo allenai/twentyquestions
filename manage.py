@@ -43,7 +43,8 @@ def manage(verbose, log_file):
 
 
 subcommands = [
-    scripts.build
+    scripts.build,
+    scripts.dockerize
 ]
 
 for subcommand in subcommands:
