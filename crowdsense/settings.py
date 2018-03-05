@@ -29,3 +29,16 @@ BACKEND_TEMPLATES_DIR = os.path.join(
 BACKEND_STATIC_DIR = os.path.join(
     REPO_DIR,
     'crowdsense/twentyquestions/static/twentyquestions')
+
+
+# the different environments for crowdsense
+ENVS = {
+    'local': 'local',
+    'dev': 'dev',
+    'prod': 'prod'
+}
+
+# docker images
+CONTAINER_REGISTRY = 'gcr.io'
+PROJECT_ID = 'ai2-alexandria'
+SERVER_IMAGE_NAME = 'crowdsense-server'

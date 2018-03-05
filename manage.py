@@ -45,7 +45,8 @@ def manage(verbose, log_file):
 subcommands = [
     scripts.build,
     scripts.dockerize,
-    scripts.serve
+    scripts.serve,
+    scripts.promote
 ]
 
 for subcommand in subcommands:

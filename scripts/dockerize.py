@@ -24,15 +24,19 @@ def dockerize():
     Create the docker image for running crowdsense. The created image
     will be tagged 'crowdsense'.
     """
+    local_env = settings.ENVS['local']
+
+    registry = settings.CONTAINER_REGISTRY
+    docker_repo = settings.PROJECT_ID
+    image_name = settings.SERVER_IMAGE_NAME
+
     # build the docker image
-    subprocess.run(
-        [
-            'docker',
-            'build',
-            '-t', 'crowdsense/server',
-            '-f', settings.DOCKERFILE,
-            '.'
-        ])
+    subprocess.run([
+        'docker', 'build',
+        '--tag', f'{registry}/{docker_repo}/{image_name}:{local_env}',
+        '--file', settings.DOCKERFILE,
+        '.'
+    ])
 
 
 if __name__ == '__main__':
