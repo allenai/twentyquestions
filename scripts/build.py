@@ -1,6 +1,6 @@
 """Build crowdsense.
 
-See ``build.py --help`` for more information.
+See ``python build.py --help`` for more information.
 """
 
 import logging

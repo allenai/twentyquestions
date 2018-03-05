@@ -1,4 +1,7 @@
-"""Create the docker image for running crowdsense."""
+"""Create the docker image for running crowdsense.
+
+See ``python dockerize.py --help`` for more information.
+"""
 
 import logging
 import subprocess

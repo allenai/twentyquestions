@@ -53,4 +53,3 @@ for subcommand in subcommands:
 
 if __name__ == '__main__':
     manage()
-        
