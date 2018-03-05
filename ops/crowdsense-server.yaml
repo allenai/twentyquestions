@@ -1,0 +1,27 @@
+# kubernetes deployment for the crowdsense application
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: crowdsense-server
+  labels:
+    app: crowdsense
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: crowdsense
+    spec:
+      containers:
+      - name: crowdsense-server
+        image: gcr.io/ai2-alexandria/crowdsense-server:dev
+        imagePullPolicy: Always
+        command:
+          - python
+        args:
+          - manage.py
+          - serve
+        ports:
+        - name: http-server
+          containerPort: 5000
