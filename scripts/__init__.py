@@ -2,3 +2,4 @@
 
 from scripts.build import build
 from scripts.dockerize import dockerize
+from scripts.serve import serve
