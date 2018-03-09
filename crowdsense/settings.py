@@ -42,3 +42,8 @@ ENVS = {
 CONTAINER_REGISTRY = 'gcr.io'
 PROJECT_ID = 'ai2-alexandria'
 SERVER_IMAGE_NAME = 'crowdsense-server'
+
+KUBERNETES_CONFIG = os.path.join(
+    REPO_DIR, 'ops/crowdsense.yaml')
+
+CERT_SECRET_NAME = 'crowdsense-cert'

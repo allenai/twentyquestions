@@ -46,7 +46,8 @@ subcommands = [
     scripts.build,
     scripts.dockerize,
     scripts.serve,
-    scripts.promote
+    scripts.promote,
+    scripts.deploy
 ]
 
 for subcommand in subcommands:
