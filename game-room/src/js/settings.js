@@ -27,7 +27,7 @@ const serverSocket = {
 
 
 /** URL regex for extracting the room id and player id. */
-const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/(.*)/;
+const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/([^?]*)/;
 
 
 /** MTurk results endpoint. */
