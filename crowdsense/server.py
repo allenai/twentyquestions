@@ -14,16 +14,10 @@ logger = logging.getLogger(__name__)
 app = flask.Flask(__name__)
 
 
-@app.route('/')
-def index():
-    """Redirect to home."""
-    return flask.redirect(flask.url_for('home.index'))
-
-
 # register blueprints
 
 app.register_blueprint(
-    home, url_prefix='/home')
+    home, url_prefix='/')
 app.register_blueprint(
     twentyquestions, url_prefix='/twenty-questions')
 
