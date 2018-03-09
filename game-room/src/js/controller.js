@@ -137,7 +137,8 @@ class Controller {
           playerId: this.playerId,
           chooseSubject: this.chooseSubject.bind(this),
           askQuestion: this.askQuestion.bind(this),
-          provideAnswer: this.provideAnswer.bind(this)
+          provideAnswer: this.provideAnswer.bind(this),
+          submitResults: this.submitResults.bind(this)
         },
         null
       ),
@@ -176,6 +177,25 @@ class Controller {
     this.game = this.game.provideAnswer(answererId, answerBool);
     this.renderView();
     this.setServerGameState();
+  }
+
+  /**
+   * Submit results to MTurk.
+   */
+  submitResults() {
+    // we want to create and post a form to MTurk.
+    const form = document.createElement('form');
+    form.setAttribute('method', 'post');
+    form.setAttribute('action', settings.turkResultsEndpoint);
+
+    const jsonField = document.createElement('input');
+    jsonField.setAttribute('type', 'hidden');
+    jsonField.setAttribute('name', 'gameJson');
+    jsonField.setAttribute('value', this.game.toJSON());
+
+    form.appendChild(jsonField);
+    document.body.appendChild(form);
+    form.submit();
   }
 }
 

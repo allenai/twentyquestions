@@ -4,12 +4,13 @@
 /**
  * The current environment.
  *
- * The current environment. This constant should be one of `'dev'` or
- * `'prod'`. Dev settings imply that we're using separate servers for
- * the frontend and the backend. `'prod'` implies that they're the same
- * server.
+ * The current environment. This constant should be one of `'local'`,
+ * `'dev'` or `'prod'`. local settings imply that we're using separate
+ * servers for the frontend and the backend. `'dev'` implies we want to
+ * test against the MTurk sandbox, and `'prod'` implies that we're
+ * running with live Turkers.
  */
-const env = 'prod';
+const env = 'dev';
 
 
 /**
@@ -19,7 +20,8 @@ const env = 'prod';
  * about the current game state.
  */
 const serverSocket = {
-  dev: 'http://127.0.0.1:5000/game-room',
+  local: 'http://127.0.0.1:5000/game-room',
+  dev: '/game-room',
   prod: '/game-room'
 }[env];
 
@@ -28,11 +30,20 @@ const serverSocket = {
 const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/(.*)/;
 
 
+/** MTurk results endpoint. */
+const turkResultsEndpoint = {
+  local: 'https://workersandbox.mturk.com/mturk/externalSubmit',
+  dev: 'https://workersandbox.mturk.com/mturk/externalSubmit',
+  prod: 'https://www.mturk.com/mturk/externalSubmit'
+}[env];
+
+
 /** Settings to be exported. */
 const settings = {
   env,
   serverSocket,
-  gameRoomUrlRegex
+  gameRoomUrlRegex,
+  turkResultsEndpoint
 };
 
 
