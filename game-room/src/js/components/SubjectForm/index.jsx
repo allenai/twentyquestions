@@ -1,6 +1,8 @@
 /** Components for setting the subject of the round */
 
 import React from 'react';
+import Button from 'material-ui/Button';
+import Grid from 'material-ui/Grid';
 import TextField from 'material-ui/TextField';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
@@ -41,20 +43,34 @@ class SubjectForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>
-        <Typography variant='subheading'>
-          Choose a Subject
-        </Typography>
-        <TextField
-          id='subject-input'
-          label='Subject'
-          placeholder='i.e., dog, chair, bowl'
-          value={this.state.value}
-          autoComplete='off'
-          onChange={this.handleChange.bind(this)}
-          margin='normal'
-          InputLabelProps={ {shrink: true} }
-          helperText='Choose an object for the round that the other players will know well.'
-          fullWidth/>
+        <Grid container>
+          <Grid item xs={12}>
+            <Typography variant='subheading'>
+              Choose a Subject
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id='subject-input'
+              label='Subject'
+              placeholder='i.e., dog, chair, bowl'
+              value={this.state.value}
+              autoComplete='off'
+              onChange={this.handleChange.bind(this)}
+              margin='normal'
+              InputLabelProps={ {shrink: true} }
+              helperText='Choose an object for the round that the other players will know well.'
+              fullWidth/>
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              type='submit'
+              variant='raised'
+              color='primary'>
+              Submit
+            </Button>
+          </Grid>
+        </Grid>
       </form>
     );
   }
