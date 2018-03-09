@@ -183,17 +183,35 @@ class Controller {
    * Submit results to MTurk.
    */
   submitResults() {
+    // extract the assignmentId and turkSubmitTo query string fields
+    // from the url
+    const queryParams = {};
+    const queryBits = window.location.href.split('?')[1].split('&');
+    for (let i = 0; i < queryBits.length; i++) {
+      const [key, val] = queryBits[i].split('=');
+      queryParams[key] = val;
+    }
+
     // we want to create and post a form to MTurk.
     const form = document.createElement('form');
     form.setAttribute('method', 'post');
-    form.setAttribute('action', settings.turkResultsEndpoint);
+    form.setAttribute(
+      'action',
+      settings.turkResultsEndpoint
+    );
 
     const jsonField = document.createElement('input');
     jsonField.setAttribute('type', 'hidden');
     jsonField.setAttribute('name', 'gameJson');
     jsonField.setAttribute('value', this.game.toJSON());
-
     form.appendChild(jsonField);
+
+    const assignmentIdField = document.createElement('input');
+    assignmentIdField.setAttribute('type', 'text');
+    assignmentIdField.setAttribute('name', 'assignmentId');
+    assignmentIdField.setAttribute('value', queryParams.assignmentId);
+    form.appendChild(assignmentIdField);
+
     document.body.appendChild(form);
     form.submit();
   }
