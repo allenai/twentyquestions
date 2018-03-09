@@ -59,9 +59,20 @@ def deploy(env, cert, key):
         f'--key={key}'
     ])
 
+    logger.info('Deleting any previous deploys.')
+    process = subprocess.run(
+        [
+            'kubectl', 'delete',
+            '-f', kubernetes_config
+        ],
+        stderr=subprocess.PIPE)
+    if not (process.returncode == 0
+            or b'Error from server (NotFound)' in process.stderr):
+        process.check_returncode()
+
     logger.info(f'Deploying to kubernetes.')
     subprocess.run([
-        'kubectl', 'apply',
+        'kubectl', 'create',
         '-f', kubernetes_config
     ])
 
