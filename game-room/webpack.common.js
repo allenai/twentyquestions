@@ -23,13 +23,6 @@ module.exports = {
     filename: 'twenty-questions/static/twentyquestions/gameroom.bundle.js',
     path: paths.dist
   },
-  devtool: 'inline-source-map',
-  devServer: {
-    index: 'gameroom.html',
-    historyApiFallback: {
-      rewrites: [ { from: /./, to: '/' } ]
-    }
-  },
   module: {
     rules: [
       {

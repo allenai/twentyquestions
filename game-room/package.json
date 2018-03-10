@@ -4,8 +4,8 @@
   "description": "A react app for playing 20 questions.",
   "main": "webpack.config.js",
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack-dev-server --open"
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack-dev-server --open --config webpack.dev.js"
   },
   "author": "Nicholas Lourie <nicholasl@allenai.org>",
   "license": "",
