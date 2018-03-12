@@ -5,12 +5,11 @@
  * The current environment.
  *
  * The current environment. This constant should be one of `'local'`,
- * `'dev'` or `'prod'`. local settings imply that we're using separate
- * servers for the frontend and the backend. `'dev'` implies we want to
- * test against the MTurk sandbox, and `'prod'` implies that we're
- * running with live Turkers.
+ * or `'live'`. local settings imply that we're using separate
+ * servers for the frontend and the backend. `'live'` implies that we're
+ * serving from the crowdsense site.
  */
-const env = 'dev';
+const env = 'live';
 
 
 /**
@@ -21,8 +20,7 @@ const env = 'dev';
  */
 const serverSocket = {
   local: 'http://127.0.0.1:5000/game-room',
-  dev: '/game-room',
-  prod: '/game-room'
+  live: '/game-room'
 }[env];
 
 
@@ -30,20 +28,11 @@ const serverSocket = {
 const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/([^?]*)/;
 
 
-/** MTurk results endpoint. */
-const turkResultsEndpoint = {
-  local: 'https://workersandbox.mturk.com/mturk/externalSubmit',
-  dev: 'https://workersandbox.mturk.com/mturk/externalSubmit',
-  prod: 'https://www.mturk.com/mturk/externalSubmit'
-}[env];
-
-
 /** Settings to be exported. */
 const settings = {
   env,
   serverSocket,
-  gameRoomUrlRegex,
-  turkResultsEndpoint
+  gameRoomUrlRegex
 };
 
 

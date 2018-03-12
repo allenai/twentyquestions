@@ -197,7 +197,7 @@ class Controller {
     form.setAttribute('method', 'post');
     form.setAttribute(
       'action',
-      settings.turkResultsEndpoint
+      `${decodeURIComponent(queryParams.turkSubmitTo)}/mturk/externalSubmit`
     );
 
     const jsonField = document.createElement('input');
