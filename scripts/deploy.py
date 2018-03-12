@@ -59,20 +59,17 @@ def deploy(env, cert, key):
         f'--key={key}'
     ])
 
-    logger.info('Deleting any previous deploys.')
-    process = subprocess.run(
-        [
-            'kubectl', 'delete',
-            '-f', kubernetes_config
-        ],
-        stderr=subprocess.PIPE)
-    if not (process.returncode == 0
-            or b'Error from server (NotFound)' in process.stderr):
-        process.check_returncode()
-
     logger.info(f'Deploying to kubernetes.')
+    # to guarantee that the pod pulls the new docker images, we first
+    # scale it down to zero then reapply the original settings to scale
+    # it back up.
     subprocess.run([
-        'kubectl', 'create',
+        'kubectl',
+        'scale', '--replicas=0',
+        '-f', kubernetes_config
+    ])
+    subprocess.run([
+        'kubectl', 'apply',
         '-f', kubernetes_config
     ])
 
