@@ -4,12 +4,12 @@
 /**
  * The current environment.
  *
- * The current environment. This constant should be one of `'dev'` or
- * `'prod'`. Dev settings imply that we're using separate servers for
- * the frontend and the backend. `'prod'` implies that they're the same
+ * The current environment. This constant should be one of `'local'` or
+ * `'live'`. Local settings imply that we're using separate servers for
+ * the frontend and the backend. `'live'` implies that they're the same
  * server.
  */
-const env = 'prod';
+const env = 'live';
 
 
 /**
@@ -19,8 +19,8 @@ const env = 'prod';
  * about the current game state.
  */
 const serverSocket = {
-  dev: 'http://127.0.0.1:5000/waiting-room',
-  prod: '/waiting-room'
+  local: 'http://127.0.0.1:5000/waiting-room',
+  live: '/waiting-room'
 }[env];
 
 
@@ -43,7 +43,6 @@ function makeGameRoomUrl(roomId, playerId) {
 
 /** Settings to be exported. */
 const settings = {
-  env,
   serverSocket,
   waitingRoomUrlRegex,
   makeGameRoomUrl

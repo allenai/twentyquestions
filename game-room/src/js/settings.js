@@ -30,7 +30,6 @@ const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/([^?]*)/;
 
 /** Settings to be exported. */
 const settings = {
-  env,
   serverSocket,
   gameRoomUrlRegex
 };
