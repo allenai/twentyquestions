@@ -51,13 +51,27 @@ class Controller {
   initializeWaitingRoom() {
     // set the room id and the player id from the URL query params
     const queryParams = {};
-    const queryBits = window.location.href.split('?')[1].split('&');
+    const [_, queryString] = window.location.href.split('?');
+    if (queryString == undefined) {
+      throw new Error('No query string found.');
+    }
+    const queryBits = queryString.split('&');
     for (let i = 0; i < queryBits.length; i++) {
       const [key, val] = queryBits[i].split('=');
       queryParams[key] = val;
     }
+    if (queryParams.hitId == undefined) {
+      throw new Error('No HIT ID found.');
+    }
+    if (queryParams.assignmentId == undefined) {
+      throw new Error('No Assignment ID found.');
+    }
     this.roomId = queryParams.hitId;
-    this.playerId = queryParams.assignmentId;
+    // if the turkers view it in preview mode, then the assignment id is
+    // marked as unavailable in which case we'll store it as `null`.
+    this.playerId = queryParams.assignmentId != 'ASSIGNMENT_ID_NOT_AVAILABLE' ?
+      queryParams.assignmentId
+      : null;
 
     // open up the socket
     this._socket = io.connect(settings.serverSocket);

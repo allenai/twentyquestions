@@ -28,9 +28,8 @@ socketio = flask_socketio.SocketIO()
 waiting_rooms = {}
 
 
-@twentyquestions.route(
-    '/waiting-room/<string:room_id>/player/<string:player_id>')
-def waiting_room(room_id, player_id):
+@twentyquestions.route('/waiting-room')
+def waiting_room():
     """A room to wait for a quorum of players.
 
     This page allows Turkers to wait for a quorum of players to enter
@@ -55,19 +54,20 @@ def join_waiting_room(message):
     player_id = message['playerId']
 
     if room_id not in waiting_rooms:
+        player_ids = [player_id] if player_id is not None else []
         new_waiting_room = models.WaitingRoom(
             room_id=room_id,
-            player_ids=[player_id],
+            player_ids=player_ids,
             quorum=settings.QUORUM)
     else:
         old_waiting_room = waiting_rooms[room_id]
         room_player_ids = waiting_rooms[room_id].player_ids
 
-        if player_id not in room_player_ids:
+        if player_id in room_player_ids or player_id is None:
+            new_waiting_room = old_waiting_room
+        else:
             new_waiting_room = old_waiting_room.copy(
                 player_ids=old_waiting_room.player_ids + [player_id])
-        else:
-            new_waiting_room = old_waiting_room
 
     waiting_rooms[room_id] = new_waiting_room
 
