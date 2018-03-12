@@ -24,10 +24,6 @@ const serverSocket = {
 }[env];
 
 
-/** URL regex for extracting the room id and player id. */
-const waitingRoomUrlRegex = /twenty-questions\/waiting-room\/(.*)\/player\/(.*)/;
-
-
 /**
  * Create the URL for a game room.
  *
@@ -44,7 +40,6 @@ function makeGameRoomUrl(roomId, playerId) {
 /** Settings to be exported. */
 const settings = {
   serverSocket,
-  waitingRoomUrlRegex,
   makeGameRoomUrl
 };
 

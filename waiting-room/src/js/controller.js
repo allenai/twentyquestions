@@ -49,16 +49,15 @@ class Controller {
    * to the server.
    */
   initializeWaitingRoom() {
-    // set the room id and the player id from the URL
-    const urlMatches = settings.waitingRoomUrlRegex.exec(
-      window.location.href
-    );
-    if (urlMatches === null) {
-      throw new Error('Failed to match against URL.');
+    // set the room id and the player id from the URL query params
+    const queryParams = {};
+    const queryBits = window.location.href.split('?')[1].split('&');
+    for (let i = 0; i < queryBits.length; i++) {
+      const [key, val] = queryBits[i].split('=');
+      queryParams[key] = val;
     }
-    const [_, roomId, playerId] = urlMatches;
-    this.roomId = roomId;
-    this.playerId = playerId;
+    this.roomId = queryParams.hitId;
+    this.playerId = queryParams.assignmentId;
 
     // open up the socket
     this._socket = io.connect(settings.serverSocket);
