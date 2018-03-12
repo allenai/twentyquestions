@@ -23,13 +23,6 @@ module.exports = {
     filename: 'twenty-questions/static/twentyquestions/waitingroom.bundle.js',
     path: paths.dist
   },
-  devtool: 'inline-source-map',
-  devServer: {
-    index: 'waitingroom.html',
-    historyApiFallback: {
-      rewrites: [ { from: /./, to: '/' } ]
-    }
-  },
   module: {
     rules: [
       {

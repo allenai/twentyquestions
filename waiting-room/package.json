@@ -2,10 +2,10 @@
   "name": "waiting-room",
   "version": "0.0.1",
   "description": "A react app for waiting rooms for playing games.",
-  "main": "webpack.config.js",
+  "main": "webpack.prod.js",
   "scripts": {
-    "build": "webpack",
-    "dev": "webpack-dev-server --open"
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack-dev-server --open --config webpack.dev.js"
   },
   "author": "Nicholas Lourie <nicholasl@allenai.org>",
   "license": "",
@@ -19,7 +19,8 @@
     "file-loader": "^1.1.9",
     "html-webpack-plugin": "^2.30.1",
     "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.1"
+    "webpack-dev-server": "^2.11.1",
+    "webpack-merge": "^4.1.2"
   },
   "dependencies": {
     "material-ui": "^1.0.0-beta.34",
