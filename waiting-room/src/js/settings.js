@@ -29,11 +29,14 @@ const serverSocket = {
  *
  * @param {String} roomId - The ID for the game room.
  * @param {String} playerId - The ID for the player to enter as.
+ * @param {String} queryString - The query string from the waiting room
+ *   URL so that we can forward the query string parameters.
  *
  * @return {String} The game room's URL.
  */
-function makeGameRoomUrl(roomId, playerId) {
-  return `/twenty-questions/game-room/${roomId}/player/${playerId}`;
+function makeGameRoomUrl(roomId, playerId, queryString) {
+  return `/twenty-questions/game-room/${roomId}/player/${playerId}`
+    + `?${queryString}`;
 }
 
 

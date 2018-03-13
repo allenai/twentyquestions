@@ -141,9 +141,15 @@ class Controller {
   enterGameRoom() {
     const {roomId, playerId} = this;
 
+    const [_, queryString] = window.location.href.split('?');
+
     console.log(`Entering game room ${roomId} as ${playerId}.`);
 
-    window.location.href = settings.makeGameRoomUrl(roomId, playerId);
+    window.location.href = settings.makeGameRoomUrl(
+      roomId,
+      playerId,
+      queryString
+    );
   }
 }
 
