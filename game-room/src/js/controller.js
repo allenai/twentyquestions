@@ -76,10 +76,6 @@ class Controller {
   joinGameRoom() {
     const {roomId, playerId} = this;
 
-    console.log(
-      `Asking to join game room ${roomId} as player ${playerId}.`
-    );
-
     this._socket.emit('joinGameRoom', {roomId, playerId});
   }
 
@@ -95,11 +91,6 @@ class Controller {
   setClientGameState(message) {
     const gameObject = message;
 
-    console.log(
-      `Updating client game state to:`
-        + `\n${JSON.stringify(gameObject, null, 2)}`
-    );
-
     this.game = this.model.Game.fromObject(gameObject);
     this.renderView();
   }
@@ -111,11 +102,6 @@ class Controller {
    */
   setServerGameState() {
     const {roomId, playerId, game} = this;
-
-    console.log(
-      `Updating server game state to:`
-        + `\n${JSON.stringify(game.toObject(), null, 2)}`
-    );
 
     this._socket.emit(
       'setServerGameState',

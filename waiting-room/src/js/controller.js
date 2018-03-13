@@ -91,10 +91,6 @@ class Controller {
   joinWaitingRoom() {
     const {roomId, playerId} = this;
 
-    console.log(
-      `Asking to join waiting room ${roomId} as player ${playerId}.`
-    );
-
     this._socket.emit('joinWaitingRoom', {roomId, playerId});
   }
 
@@ -110,11 +106,6 @@ class Controller {
    */
   setClientWaitingRoom(message) {
     const waitingRoomObject = message;
-
-    console.log(
-      `Updating waiting room to:`
-        + `\n${JSON.stringify(waitingRoomObject, null, 2)}`
-    );
 
     this.waitingRoom = this.model.WaitingRoom.fromObject(
       waitingRoomObject
@@ -142,8 +133,6 @@ class Controller {
     const {roomId, playerId} = this;
 
     const [_, queryString] = window.location.href.split('?');
-
-    console.log(`Entering game room ${roomId} as ${playerId}.`);
 
     window.location.href = settings.makeGameRoomUrl(
       roomId,
