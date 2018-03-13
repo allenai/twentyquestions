@@ -7,4 +7,4 @@ logger = logging.getLogger(__name__)
 
 
 # The number of players to a game room
-QUORUM = 3
+QUORUM = 2
