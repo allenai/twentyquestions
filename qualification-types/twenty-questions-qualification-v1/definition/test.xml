@@ -1,0 +1,175 @@
+<QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2017-11-06/QuestionForm.xsd">
+  <Overview>
+    <Title>20 Questions Qualification</Title>
+    <Text>
+      We're looking for people to play 20 Questions so that we can gather
+      common sense facts. This qualification allows you to play the
+      games, and will test your understanding of the kinds of data we're
+      looking for.
+
+      When running the HITs, we'll send out an email beforehand with the
+      time and title for the HITs we'll post, and then people can show
+      up and play the games at that time.
+    </Text>
+  </Overview>
+  <Overview>
+    <FormattedContent>
+      <![CDATA[
+        To start a round of 20 Questions, you'll have to choose a
+        <i>subject</i>. It should be an object or thing that the other
+        players will know well and <b>not</b> the name of something
+        specific or another kind of unique thing.
+      ]]>
+    </FormattedContent>
+    <FormattedContent>
+      <![CDATA[
+        <b>Good</b> Examples:
+      ]]>
+    </FormattedContent>
+    <List>
+      <ListItem>chair</ListItem>
+      <ListItem>air</ListItem>
+      <ListItem>time</ListItem>
+    </List>
+    <FormattedContent>
+      <![CDATA[
+        <b>Bad</b> Examples:
+      ]]>
+    </FormattedContent>
+    <List>
+      <ListItem>Barack Obama</ListItem>
+      <ListItem>2018</ListItem>
+      <ListItem>The Titanic</ListItem>
+    </List>
+  </Overview>
+  <Question>
+    <QuestionIdentifier>subject_mark_twain</QuestionIdentifier>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+      <FormattedContent>
+        <![CDATA[
+          Is <b>Mark Twain</b> an acceptable choice of subject?
+        ]]>
+      </FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>radiobutton</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>yes</SelectionIdentifier>
+            <Text>yes</Text>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>no</SelectionIdentifier>
+            <Text>no</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+  <Question>
+    <QuestionIdentifier>subject_day</QuestionIdentifier>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+      <FormattedContent>
+        <![CDATA[
+          Is <b>day</b> an acceptable choice of subject?
+        ]]>
+      </FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>radiobutton</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>yes</SelectionIdentifier>
+            <Text>yes</Text>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>no</SelectionIdentifier>
+            <Text>no</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+  <Question>
+    <QuestionIdentifier>subject_three</QuestionIdentifier>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+      <FormattedContent>
+        <![CDATA[
+          Is <b>three</b> an acceptable choice of subject?
+        ]]>
+      </FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>radiobutton</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>yes</SelectionIdentifier>
+            <Text>yes</Text>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>no</SelectionIdentifier>
+            <Text>no</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+  <Question>
+    <QuestionIdentifier>subject_canada</QuestionIdentifier>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+      <FormattedContent>
+        <![CDATA[
+          Is <b>Canada</b> an acceptable choice of subject?
+        ]]>
+      </FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>radiobutton</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>yes</SelectionIdentifier>
+            <Text>yes</Text>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>no</SelectionIdentifier>
+            <Text>no</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+  <Question>
+    <QuestionIdentifier>subject_happiness</QuestionIdentifier>
+    <IsRequired>true</IsRequired>
+    <QuestionContent>
+      <FormattedContent>
+        <![CDATA[
+          Is <b>happiness</b> an acceptable choice of subject?
+        ]]>
+      </FormattedContent>
+    </QuestionContent>
+    <AnswerSpecification>
+      <SelectionAnswer>
+        <StyleSuggestion>radiobutton</StyleSuggestion>
+        <Selections>
+          <Selection>
+            <SelectionIdentifier>yes</SelectionIdentifier>
+            <Text>yes</Text>
+          </Selection>
+          <Selection>
+            <SelectionIdentifier>no</SelectionIdentifier>
+            <Text>no</Text>
+          </Selection>
+        </Selections>
+      </SelectionAnswer>
+    </AnswerSpecification>
+  </Question>
+</QuestionForm>
