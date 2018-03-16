@@ -1,24 +1,23 @@
 <QuestionForm xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2017-11-06/QuestionForm.xsd">
   <Overview>
     <Title>20 Questions Qualification</Title>
-    <Text>
-      We're looking for people to play 20 Questions so that we can gather
-      common sense facts. This qualification allows you to play the
-      games, and will test your understanding of the kinds of data we're
-      looking for.
+    <FormattedContent>
+      <![CDATA[
+        <p>This qualification allows you to play 20 Questions in our HITs.</p>
 
-      When running the HITs, we'll send out an email beforehand with the
-      time and title for the HITs we'll post, and then people can show
-      up and play the games at that time.
-    </Text>
+        <p>
+          When we run a game, we'll send you an email beforehand with
+          the time and title for the HITs we'll post.
+        </p>
+      ]]>
+    </FormattedContent>
   </Overview>
   <Overview>
     <FormattedContent>
       <![CDATA[
-        To start a round of 20 Questions, you'll have to choose a
-        <i>subject</i>. It should be an object or thing that the other
-        players will know well and <b>not</b> the name of something
-        specific or another kind of unique thing.
+        To start a round of 20 Questions, you must choose a <i>subject</i>. It
+        should be something that the other players will know well. It
+        should <b>not</b> be a name or something that is very specific.
       ]]>
     </FormattedContent>
     <FormattedContent>
@@ -48,7 +47,7 @@
     <QuestionContent>
       <FormattedContent>
         <![CDATA[
-          Is <b>Mark Twain</b> an acceptable choice of subject?
+          <b>Mark Twain</b> is <b>not</b> an acceptable choice of subject <i>because</i>
         ]]>
       </FormattedContent>
     </QuestionContent>
@@ -57,12 +56,12 @@
         <StyleSuggestion>radiobutton</StyleSuggestion>
         <Selections>
           <Selection>
-            <SelectionIdentifier>yes</SelectionIdentifier>
-            <Text>yes</Text>
+            <SelectionIdentifier>A</SelectionIdentifier>
+            <Text>Mark Twain is a name.</Text>
           </Selection>
           <Selection>
-            <SelectionIdentifier>no</SelectionIdentifier>
-            <Text>no</Text>
+            <SelectionIdentifier>B</SelectionIdentifier>
+            <Text>Mark Twain is no longer alive.</Text>
           </Selection>
         </Selections>
       </SelectionAnswer>
@@ -74,7 +73,7 @@
     <QuestionContent>
       <FormattedContent>
         <![CDATA[
-          Is <b>day</b> an acceptable choice of subject?
+          A <b>day</b> is an acceptable choice of subject <i>because</i>
         ]]>
       </FormattedContent>
     </QuestionContent>
@@ -83,24 +82,24 @@
         <StyleSuggestion>radiobutton</StyleSuggestion>
         <Selections>
           <Selection>
-            <SelectionIdentifier>yes</SelectionIdentifier>
-            <Text>yes</Text>
+            <SelectionIdentifier>A</SelectionIdentifier>
+            <Text>There is one day in the week.</Text>
           </Selection>
           <Selection>
-            <SelectionIdentifier>no</SelectionIdentifier>
-            <Text>no</Text>
+            <SelectionIdentifier>B</SelectionIdentifier>
+            <Text>A day is something that other players will be familiar with.</Text>
           </Selection>
         </Selections>
       </SelectionAnswer>
     </AnswerSpecification>
   </Question>
   <Question>
-    <QuestionIdentifier>subject_three</QuestionIdentifier>
+    <QuestionIdentifier>subject_seventy_two</QuestionIdentifier>
     <IsRequired>true</IsRequired>
     <QuestionContent>
       <FormattedContent>
         <![CDATA[
-          Is <b>three</b> an acceptable choice of subject?
+          The number <b>seventy two</b> is <b>not</b> an acceptable choice of subject <i>because</i>
         ]]>
       </FormattedContent>
     </QuestionContent>
@@ -109,12 +108,15 @@
         <StyleSuggestion>radiobutton</StyleSuggestion>
         <Selections>
           <Selection>
-            <SelectionIdentifier>yes</SelectionIdentifier>
-            <Text>yes</Text>
+            <SelectionIdentifier>A</SelectionIdentifier>
+            <Text>
+              Seventy two is too specific, and "number" would be a better
+              choice of subject.
+            </Text>
           </Selection>
           <Selection>
-            <SelectionIdentifier>no</SelectionIdentifier>
-            <Text>no</Text>
+            <SelectionIdentifier>B</SelectionIdentifier>
+            <Text>Seventy two is an even number.</Text>
           </Selection>
         </Selections>
       </SelectionAnswer>
@@ -126,7 +128,7 @@
     <QuestionContent>
       <FormattedContent>
         <![CDATA[
-          Is <b>Canada</b> an acceptable choice of subject?
+          <b>Canada</b> is <b>not</b> an acceptable choice of subject <i>because</i>
         ]]>
       </FormattedContent>
     </QuestionContent>
@@ -135,12 +137,12 @@
         <StyleSuggestion>radiobutton</StyleSuggestion>
         <Selections>
           <Selection>
-            <SelectionIdentifier>yes</SelectionIdentifier>
-            <Text>yes</Text>
+            <SelectionIdentifier>A</SelectionIdentifier>
+            <Text>Canada is too familiar to other Turkers.</Text>
           </Selection>
           <Selection>
-            <SelectionIdentifier>no</SelectionIdentifier>
-            <Text>no</Text>
+            <SelectionIdentifier>B</SelectionIdentifier>
+            <Text>Canada is the name of a specific country.</Text>
           </Selection>
         </Selections>
       </SelectionAnswer>
@@ -152,7 +154,7 @@
     <QuestionContent>
       <FormattedContent>
         <![CDATA[
-          Is <b>happiness</b> an acceptable choice of subject?
+          <b>Happiness</b> is an acceptable choice of subject <i>because</i>
         ]]>
       </FormattedContent>
     </QuestionContent>
@@ -161,12 +163,12 @@
         <StyleSuggestion>radiobutton</StyleSuggestion>
         <Selections>
           <Selection>
-            <SelectionIdentifier>yes</SelectionIdentifier>
-            <Text>yes</Text>
+            <SelectionIdentifier>A</SelectionIdentifier>
+            <Text>Happiness is a common thing that people know about.</Text>
           </Selection>
           <Selection>
-            <SelectionIdentifier>no</SelectionIdentifier>
-            <Text>no</Text>
+            <SelectionIdentifier>B</SelectionIdentifier>
+            <Text>People like to be happy.</Text>
           </Selection>
         </Selections>
       </SelectionAnswer>

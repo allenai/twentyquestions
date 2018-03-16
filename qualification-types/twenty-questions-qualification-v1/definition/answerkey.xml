@@ -2,35 +2,35 @@
   <Question>
     <QuestionIdentifier>subject_mark_twain</QuestionIdentifier>
     <AnswerOption>
-      <SelectionIdentifier>no</SelectionIdentifier>
+      <SelectionIdentifier>A</SelectionIdentifier>
       <AnswerScore>20</AnswerScore>
     </AnswerOption>
   </Question>
   <Question>
     <QuestionIdentifier>subject_day</QuestionIdentifier>
     <AnswerOption>
-      <SelectionIdentifier>yes</SelectionIdentifier>
+      <SelectionIdentifier>B</SelectionIdentifier>
       <AnswerScore>20</AnswerScore>
     </AnswerOption>
   </Question>
   <Question>
-    <QuestionIdentifier>subject_three</QuestionIdentifier>
+    <QuestionIdentifier>subject_seventy_two</QuestionIdentifier>
     <AnswerOption>
-      <SelectionIdentifier>no</SelectionIdentifier>
+      <SelectionIdentifier>A</SelectionIdentifier>
       <AnswerScore>20</AnswerScore>
     </AnswerOption>
   </Question>
   <Question>
     <QuestionIdentifier>subject_canada</QuestionIdentifier>
     <AnswerOption>
-      <SelectionIdentifier>no</SelectionIdentifier>
+      <SelectionIdentifier>B</SelectionIdentifier>
       <AnswerScore>20</AnswerScore>
     </AnswerOption>
   </Question>
   <Question>
     <QuestionIdentifier>subject_happiness</QuestionIdentifier>
     <AnswerOption>
-      <SelectionIdentifier>yes</SelectionIdentifier>
+      <SelectionIdentifier>A</SelectionIdentifier>
       <AnswerScore>20</AnswerScore>
     </AnswerOption>
   </Question>
