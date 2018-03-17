@@ -1,7 +1,7 @@
 {
   "AutoApprovalDelayInSeconds": 300,
   "AssignmentDurationInSeconds": 3600,
-  "Reward": "0.07",
+  "Reward": "0.15",
   "Title": "Qualify for Playing 20 Questions",
   "Keywords": "Qualification HIT, Qualification Type, 20 Questions, game, common sense, text",
   "Description": "Pass the qualification test for playing 20 Questions and then submit this HIT.",
