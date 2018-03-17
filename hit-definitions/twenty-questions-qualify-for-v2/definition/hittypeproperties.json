@@ -7,7 +7,7 @@
   "Description": "Pass the qualification test for playing 20 Questions and then submit this HIT.",
   "QualificationRequirements": [
     {
-      "QualificationTypeId": "3ZPJ66GO0HCX366E1LF6ED7P7SNLOB",
+      "QualificationTypeId": "3WHKV9Z6RB5OCWOCVGJJRJERFV6WAP",
       "Comparator": "GreaterThanOrEqualTo",
       "IntegerValues": [
         100
