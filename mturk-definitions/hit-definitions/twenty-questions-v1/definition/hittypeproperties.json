@@ -2,16 +2,13 @@
   "AutoApprovalDelayInSeconds": 36000,
   "AssignmentDurationInSeconds": 3600,
   "Reward": "1.00",
-  "Title": "Let's Play 20 Questions!",
+  "Title": "Play 20 Questions",
   "Keywords": "20 Questions, Game, Common Sense",
-  "Description": "Play a round of 20 Questions with other Turkers.",
+  "Description": "Play one round of 20 Questions with other Turkers.",
   "QualificationRequirements": [
     {
-      "QualificationTypeId": "3R5PEB0CKOS22455COCG94GU7Y6O9H",
-      "Comparator": "GreaterThanOrEqualTo",
-      "IntegerValues": [
-        100
-      ],
+      "QualificationTypeId": "3OC6D1W5XCI7L8NMUHRLXYAB1OITJC",
+      "Comparator": "Exists",
       "RequiredToPreview": false
     }
   ]
