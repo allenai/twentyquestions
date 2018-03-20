@@ -35,7 +35,7 @@ class SubjectForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {chooseSubject, playerId} = this.props;
+    const {playerId, chooseSubject} = this.props;
 
     chooseSubject(playerId, this.state.value);
   }
@@ -60,7 +60,8 @@ class SubjectForm extends React.Component {
               margin='normal'
               InputLabelProps={ {shrink: true} }
               helperText='Choose an object for the round that the other players will know well.'
-              fullWidth/>
+              fullWidth
+              required/>
           </Grid>
           <Grid item xs={12}>
             <Button
