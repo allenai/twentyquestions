@@ -124,6 +124,8 @@ class Controller {
           chooseSubject: this.chooseSubject.bind(this),
           askQuestion: this.askQuestion.bind(this),
           provideAnswer: this.provideAnswer.bind(this),
+          makeGuess: this.makeGuess.bind(this),
+          answerGuess: this.answerGuess.bind(this),
           submitResults: this.submitResults.bind(this)
         },
         null
@@ -161,6 +163,28 @@ class Controller {
    */
   provideAnswer(answererId, answerBool) {
     this.game = this.game.provideAnswer(answererId, answerBool);
+    this.renderView();
+    this.setServerGameState();
+  }
+
+  /**
+   * Update client and server game state using makeGuess.
+   *
+   * @see model.Game
+   */
+  makeGuess(askerId, guessText) {
+    this.game = this.game.makeGuess(askerId, guessText);
+    this.renderView();
+    this.setServerGameState();
+  }
+
+  /**
+   * Update client and server game state using answerGuess.
+   *
+   * @see model.Game
+   */
+  answerGuess(answererId, isCorrect) {
+    this.game = this.game.answerGuess(answererId, isCorrect);
     this.renderView();
     this.setServerGameState();
   }

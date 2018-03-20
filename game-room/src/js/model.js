@@ -74,7 +74,10 @@ const MAXQUESTIONS = 20;
 const STATES = {
   CHOOSESUBJECT: 'CHOOSESUBJECT',
   ASKQUESTION: 'ASKQUESTION',
-  PROVIDEANSWER: 'PROVIDEANSWER'
+  PROVIDEANSWER: 'PROVIDEANSWER',
+  MAKEGUESS: 'MAKEGUESS',
+  ANSWERGUESS: 'ANSWERGUESS',
+  SUBMITRESULTS: 'SUBMITRESULTS'
 };
 
 
@@ -132,30 +135,25 @@ class Question extends Data {
    *   question.
    * @param {String} questionText - A string representing the question
    *   asked.
-   * @param {Boolean} isGuess - A boolean indicating whether or not this
-   *   question was a guess.
    *
    * @return {Question} The new Question instance.
    */
   constructor(
     askerId,
-    questionText,
-    isGuess
+    questionText
   ) {
     super();
 
     // bind attributes to instance
     this.askerId = askerId;
     this.questionText = questionText;
-    this.isGuess = isGuess;
   }
 
   /** @see documentation for Data. */
   static fromObject(obj) {
     return new Question(
       obj.askerId,
-      obj.questionText,
-      obj.isGuess
+      obj.questionText
     );
   }
 
@@ -163,8 +161,7 @@ class Question extends Data {
   toObject() {
     return {
       askerId: this.askerId,
-      questionText: this.questionText,
-      isGuess: this.isGuess
+      questionText: this.questionText
     };
   }
 }
@@ -259,6 +256,49 @@ class QuestionAndAnswer extends Data {
 
 
 /**
+ * A class for representing a guess at the end of a round.
+ *
+ * @extends Data
+ */
+class Guess extends Data {
+  /**
+   * Create a new Guess instance.
+   *
+   * @param {String} guessText - The text of the guess.
+   * @param {Optional[Boolean]} isCorrect - Whether or not the guess is
+   *   correct. If isCorrect is not present it must be null.
+   *
+   * @return {Guess} The new Guess instance.
+   */
+  constructor(
+    guessText,
+    isCorrect
+  ) {
+    super();
+
+    this.guessText = guessText;
+    this.isCorrect = isCorrect;
+  }
+
+  /** @see documentation for Data. */
+  static fromObject(obj) {
+    return new Guess(
+      obj.guessText,
+      obj.isCorrect
+    );
+  }
+
+  /** @see documentation for Data. */
+  toObject() {
+    return {
+      guessText: this.guessText,
+      isCorrect: this.isCorrect
+    };
+  }
+}
+
+
+/**
  * A class for representing a round of twenty questions.
  *
  * @extends Data
@@ -274,6 +314,9 @@ class Round extends Data {
    * @param {Optional[String]} subject - The subject for this round, or the object
    *   that the askers are trying to guess. If the subject is not present
    *   it must be null.
+   * @param {Optional[Guess]} guess - The guess for this round, or the
+   *   guess that the asker gets to make at the end of the game. If the
+   *   guess is not present it must be null.
    * @param {Array[QuestionAndAnswer]} questionAndAnswers - An array of
    *   QuestionAndAnswer instances representing the questions that have
    *   been asked and the answers that have been given so far in the
@@ -285,6 +328,7 @@ class Round extends Data {
     answererId,
     askerIds,
     subject,
+    guess,
     questionAndAnswers
   ) {
     super();
@@ -293,6 +337,7 @@ class Round extends Data {
     this.answererId = answererId;
     this.askerIds = askerIds;
     this.subject = subject;
+    this.guess = guess;
     this.questionAndAnswers = questionAndAnswers;
   }
 
@@ -302,6 +347,7 @@ class Round extends Data {
       obj.answererId,
       obj.askerIds,
       obj.subject,
+      obj.guess && Guess.fromObject(obj.guess),
       obj.questionAndAnswers.map(o => QuestionAndAnswer.fromObject(o))
     );
   }
@@ -312,6 +358,7 @@ class Round extends Data {
       answererId: this.answererId,
       askerIds: this.askerIds,
       subject: this.subject,
+      guess: this.guess && this.guess.toObject(),
       questionAndAnswers: this.questionAndAnswers.map(qa => qa.toObject())
     };
   }
@@ -431,12 +478,10 @@ class Game extends Data {
    *   question.
    * @param {String} questionText - A string representing the question to be
    *   asked.
-   * @param {Boolean} isGuess - A boolean indicating whether or not this
-   *   question is a guess at what the subject is.
    *
    * @returns {Game} The game with the new question asked.
    */
-  askQuestion(askerId, questionText, isGuess) {
+  askQuestion(askerId, questionText) {
     // check pre-conditions
     if (this.state !== STATES.ASKQUESTION) {
       throw new Error(
@@ -453,8 +498,7 @@ class Game extends Data {
     const newQuestionAndAnswer = QuestionAndAnswer.fromObject({
       question: Question.fromObject({
         askerId,
-        questionText,
-        isGuess
+        questionText
       }),
       answer: null
     });
@@ -483,13 +527,12 @@ class Game extends Data {
   /**
    * Return a new Game where answererId has provided answerBool.
    *
-   * Return a new Game where answererId has provided answerBool. If the
-   * current round should continue, then the new Game is in state
-   * ASKQUESTION. If a new round should start, then the new game is in
-   * state CHOOSESUBJECT, the answerer is advanced to the next player,
-   * and a new active asker is set. provideAnswer can only be called by
-   * the answerer in state PROVIDEQUESTION. Calling provideAnswer any
-   * other way is an error.
+   * Return a new Game where answererId has provided answerBool. If
+   * fewer than 20 Questions have been asked, then the new Game is in
+   * state ASKQUESTION. If 20 Questions have been asked, then the new
+   * game is in state MAKEGUESS. provideAnswer can only be called by the
+   * answerer in state PROVIDEQUESTION. Calling provideAnswer any other
+   * way is an error.
    *
    * @param {String} answererId - The ID for the player who's answering
    *   the question.
@@ -530,55 +573,102 @@ class Game extends Data {
       ]
     });
 
-    // create the new Game that we'll return
-    let newGame = null;
-    // determine if the round is finished
-    const outOfQuestions = (
-      updatedCurrentRound.questionAndAnswers.length === MAXQUESTIONS
+    // determine if the round is ready for the guess to be made
+    const questionsLeft = (
+      updatedCurrentRound.questionAndAnswers.length < MAXQUESTIONS
     );
-    const guessedCorrectly = (
-      updatedCurrentRound.questionAndAnswers[0].question.isGuess
-        && updatedCurrentRound.questionAndAnswers[0].answer.answerBool
-    );
-    if (outOfQuestions || guessedCorrectly) {
-      // advance the answerer to the next player
 
-      const playerIds = this.players.map(p => p.playerId);
-      const answererIndex = playerIds.findIndex(
-        id => id === updatedCurrentRound.answererId
-      );
-      // copy playerIds to newAskerIds which we'll mutate
-      const newAskerIds = [...playerIds];
-      // mutate newAskerIds to remove the new answerer id
-      const [newAnswererId] = newAskerIds.splice(
-        (answererIndex + 1) % newAskerIds.length,
-        1
-      );
+    return this.copy({
+      state: questionsLeft ? STATES.ASKQUESTION : STATES.MAKEGUESS,
+      currentRound: updatedCurrentRound
+    });
+  }
 
-      newGame = this.copy({
-        state: STATES.CHOOSESUBJECT,
-        activeAskerId: null,
-        currentRound: Round.fromObject({
-          answererId: newAnswererId,
-          askerIds: newAskerIds,
-          subject: null,
-          questionAndAnswers: []
-        }),
-        pastRounds: [
-          updatedCurrentRound,
-          ...this.pastRounds
-        ]
-      });
-    } else {
-      // the active asker id should've been advanced after the most
-      // recent question was asked, so we don't need to do that here.
-      newGame = this.copy({
-        state: STATES.ASKQUESTION,
-        currentRound: updatedCurrentRound
-      });
+  /**
+   * Return a new Game where askerId has made guess.
+   *
+   * The new Game will be in state ANSWERGUESS. makeGuess can only be
+   * called by the active asker when the game is in state
+   * MAKEGUESS. Calling makeGuess any other way is an error.
+   *
+   * @param {String} askerId - The ID for the player who is making the
+   *   guess.
+   * @param {String} guessText - The text of the guess.
+   *
+   * @return {Game} The new Game instance with the guess made.
+   */
+  makeGuess(askerId, guessText) {
+    // check pre-conditions
+    if (this.state !== STATES.MAKEGUESS) {
+      throw new Error(
+        'An guess can only be made when the game is in state'
+          + ' "MAKEGUESS".'
+      );
+    } else if (askerId !== this.activeAskerId) {
+      throw new Error(
+        'Only the active asker can make a guess.'
+      );
     }
 
-    return newGame;
+    // make the guess
+    if (this.currentRound.guess !== null) {
+      throw new Error(
+        'A guess cannot be made twice.'
+      );
+    }
+
+    return this.copy({
+      state: STATES.ANSWERGUESS,
+      currentRound: this.currentRound.copy({
+        guess: Guess.fromObject({
+          guessText: guessText,
+          isCorrect: null
+        })
+      })
+    });
+  }
+
+
+  /**
+   * Return a new Game where answererId has answered the guess.
+   *
+   * The new game is in state CHOOSESUBJECT, the answerer is advanced to
+   * the other player, and a new active asker is set.
+   *
+   * @param {String} answererId - The ID of the player who answered the
+   *   guess.
+   * @param {Boolean} isCorrect - Whether or not the guess is correct.
+   *
+   * @return {Game} The new Game instance with the guess answered.
+   */
+  answerGuess(answererId, isCorrect) {
+    // check pre-conditions
+    if (this.state !== STATES.ANSWERGUESS) {
+      throw new Error(
+        'An guess may only be answered when the game is in state'
+          + ' "ANSWERGUESS".'
+      );
+    } else if (answererId !== this.currentRound.answererId) {
+      throw new Error(
+        'Only the answerer can answer a guess.'
+      );
+    }
+
+    // answer the guess
+    if (this.currentRound.guess.isCorrect !== null) {
+      throw new Error(
+        'A guess cannot be answered twice.'
+      );
+    }
+
+    return this.copy({
+      state: STATES.SUBMITRESULTS,
+      currentRound: this.currentRound.copy({
+        guess: this.currentRound.guess.copy({
+          isCorrect: isCorrect
+        })
+      })
+    });
   }
 }
 

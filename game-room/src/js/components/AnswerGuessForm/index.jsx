@@ -1,4 +1,4 @@
-/* Components for answering questions */
+/** Components for answering a guess at the end of a round. */
 
 import React from 'react';
 import Button from 'material-ui/Button';
@@ -22,14 +22,14 @@ const styles = theme => ({});
 
 
 /**
- * A react component to answer a question.
+ * A react component to answer a guess.
  *
  * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} provideAnswer - The controller callback for providing
- *   an answer.
+ * @prop {Function} provideAnswer - The controller callback for
+ *   answering a guess.
  */
-class AnswerForm extends React.Component {
+class AnswerGuessForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -50,35 +50,28 @@ class AnswerForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {playerId, provideAnswer} = this.props;
+    const {playerId, answerGuess} = this.props;
 
-    const answerBool = this._answerStringMap[this.state.answerString];
+    const isCorrect = this._answerStringMap[this.state.answerString];
 
     this.setState({answerString: ''});
 
-    provideAnswer(playerId, answerBool);
+    answerGuess(playerId, isCorrect);
   }
 
   render() {
     const {game, playerId} = this.props;
 
-    let questionToDisplay = null;
-    if (game.currentRound.questionAndAnswers.length > 0) {
-      questionToDisplay = game
-        .currentRound
-        .questionAndAnswers[0]
-        .question
-        .questionText;
-    } else {
-      questionToDisplay = 'No questions have been asked yet.';
-    };
-    const enableForm = game.state === model.STATES.PROVIDEANSWER;
+    const guessText = game.currentRound.guess !== null ?
+          game.currentRound.guess.guessText
+          : 'No guess has been made yet.';
+    const enableForm = game.state === model.STATES.ANSWERGUESS;
 
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='subheading'>Submit Answers</Typography>
+            <Typography variant='subheading'>Answer the Guess</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography>
@@ -96,9 +89,9 @@ class AnswerForm extends React.Component {
           <Grid item xs={12}>
             <FormControl
               component='fieldset'>
-              <FormLabel component='legend'>{questionToDisplay}</FormLabel>
+              <FormLabel component='legend'>{guessText}</FormLabel>
               <RadioGroup
-                aria-label={questionToDisplay}
+                aria-label={guessText}
                 name='answer'
                 value={this.state.answerString}
                 onChange={this.handleChange.bind(this)}>
@@ -131,4 +124,4 @@ class AnswerForm extends React.Component {
 }
 
 
-export default withStyles(styles)(AnswerForm);
+export default withStyles(styles)(AnswerGuessForm);

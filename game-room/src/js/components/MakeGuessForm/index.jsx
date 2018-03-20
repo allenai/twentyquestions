@@ -1,4 +1,4 @@
-/** Components for asking questions */
+/** Components for making a guess at the end of a round. */
 
 import React from 'react';
 import Button from 'material-ui/Button';
@@ -16,14 +16,14 @@ const styles = theme => ({});
 
 
 /**
- * A react component for the asker to ask questions.
+ * A react component for the asker to make a guess at the subject.
  *
- * @prop {Game} game - The game.
+ * @prop {string} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} askQuestion - The controller callback for asking a
- *   question.
+ * @prop {Function} makeGuess - The controller callback for making a
+ *   guess.
  */
-class QuestionForm extends React.Component {
+class MakeGuessForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -39,21 +39,21 @@ class QuestionForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {askQuestion, playerId} = this.props;
-    const questionText = this.state.value;
+    const {playerId, makeGuess} = this.props;
+    const guessText = this.state.value;
 
     this.setState({
       value: ''
     });
 
-    askQuestion(playerId, questionText);
+    makeGuess(playerId, guessText);
   }
 
   render() {
     const {game, playerId} = this.props;
 
     const enableForm = (
-      game.state === model.STATES.ASKQUESTION
+      game.state === model.STATES.MAKEGUESS
         && game.activeAskerId === playerId
     );
 
@@ -61,7 +61,9 @@ class QuestionForm extends React.Component {
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='subheading'>Ask Questions</Typography>
+            <Typography variant='subheading'>
+              Make a Guess
+            </Typography>
           </Grid>
           { !enableForm &&
             <Grid item xs={12}>
@@ -73,15 +75,16 @@ class QuestionForm extends React.Component {
           }
           <Grid item xs={12}>
             <TextField
-              id='question-input'
-              label='Question'
-              placeholder='Ask a yes-or-no question.'
+              id='guess-input'
+              label='Guess'
+              placeholder='i.e., dog, chair, bowl'
               value={this.state.value}
               autoComplete='off'
               disabled={!enableForm}
               onChange={this.handleChange.bind(this)}
               margin='normal'
               InputLabelProps={ {shrink: true} }
+              helperText='Guess what the subject of the round was.'
               fullWidth
               required/>
           </Grid>
@@ -101,4 +104,4 @@ class QuestionForm extends React.Component {
 }
 
 
-export default withStyles(styles)(QuestionForm);
+export default withStyles(styles)(MakeGuessForm);

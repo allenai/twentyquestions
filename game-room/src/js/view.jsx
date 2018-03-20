@@ -3,7 +3,6 @@
 import React from 'react';
 
 import GameRoom from './components/GameRoom';
-import SubmitResultsForm from './components/SubmitResultsForm';
 
 
 /**
@@ -19,6 +18,10 @@ import SubmitResultsForm from './components/SubmitResultsForm';
  *   question.
  * @prop {Function} provideAnswer - The controller callback for
  *   providing an answer to a question.
+ * @prop {Function} makeGuess - The controller callback for making a
+ *   guess.
+ * @prop {Function} answerGuess - The controller callback for answering
+ *   a guess.
  * @prop {Function} submitResults - The controller callback for
  *   submitting results to MTurk.
  */
@@ -30,22 +33,22 @@ class View extends React.Component {
       chooseSubject,
       askQuestion,
       provideAnswer,
+      makeGuess,
+      answerGuess,
       submitResults
     } =  this.props;
 
-    const display = game.pastRounds.length == 0 ?
+    return (
       <GameRoom
         game={game}
         playerId={playerId}
         chooseSubject={chooseSubject}
         askQuestion={askQuestion}
-        provideAnswer={provideAnswer}/>
-      : <SubmitResultsForm
-          game={game}
-          playerId={playerId}
-          submitResults={submitResults}/>;
-
-    return display;
+        provideAnswer={provideAnswer}
+        makeGuess={makeGuess}
+        answerGuess={answerGuess}
+        submitResults={submitResults}/>
+    );
   }
 }
 

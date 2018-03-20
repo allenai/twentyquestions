@@ -126,6 +126,7 @@ def join_game_room(message):
                     answerer_id=player_id,
                     asker_ids=[],
                     subject=None,
+                    guess=None,
                     question_and_answers=[]),
                 past_rounds=[]))
     else:

@@ -91,7 +91,10 @@ ROLES = {
 STATES = {
     'CHOOSESUBJECT': 'CHOOSESUBJECT',
     'ASKQUESTION': 'ASKQUESTION',
-    'PROVIDEANSWER': 'PROVIDEANSWER'
+    'PROVIDEANSWER': 'PROVIDEANSWER',
+    'MAKEGUESS': 'MAKEGUESS',
+    'ANSWERGUESS': 'ANSWERGUESS',
+    'SUBMITRESULTS': 'SUBMITRESULTS'
 }
 
 
@@ -136,8 +139,7 @@ class Question(Data):
     def __init__(
             self,
             asker_id,
-            question_text,
-            is_guess):
+            question_text):
         """Create an instance.
 
         Parameters
@@ -146,8 +148,6 @@ class Question(Data):
             The ID for the player who asked the question.
         question_text : str
             The text of the question.
-        is_guess : bool
-            A boolean indicating whether or not the question is a guess.
 
         Returns
         -------
@@ -156,22 +156,19 @@ class Question(Data):
         """
         self.asker_id = asker_id
         self.question_text = question_text
-        self.is_guess = is_guess
 
     @classmethod
     def from_dict(cls, data):
         """See ``Data``."""
         return cls(
             asker_id=data['askerId'],
-            question_text=data['questionText'],
-            is_guess=data['isGuess'])
+            question_text=data['questionText'])
 
     def to_dict(self):
         """See ``Data``."""
         return {
             'askerId': self.asker_id,
-            'questionText': self.question_text,
-            'isGuess': self.is_guess
+            'questionText': self.question_text
         }
 
 
@@ -265,6 +262,45 @@ class QuestionAndAnswer(Data):
         }
 
 
+class Guess(Data):
+    """A model for a guess."""
+
+    def __init__(
+            self,
+            guess_text,
+            is_correct):
+        """Create a new instance.
+
+        Parameters
+        ----------
+        guess_text : str
+            The text of the guess.
+        is_correct : Optional[bool]
+            Whether or not the guess is correct.
+
+        Returns
+        -------
+        Guess
+            The new instance.
+        """
+        self.guess_text = guess_text
+        self.is_correct = is_correct
+
+    @classmethod
+    def from_dict(cls, data):
+        """See ``Data``."""
+        return cls(
+            guess_text=data['guessText'],
+            is_correct=data['isCorrect'])
+
+    def to_dict(self):
+        """See ``Data``."""
+        return {
+            'guessText': self.guess_text,
+            'isCorrect': self.is_correct
+        }
+
+
 class Round(Data):
     """A model of a single round of the game."""
 
@@ -273,6 +309,7 @@ class Round(Data):
             answerer_id,
             asker_ids,
             subject,
+            guess,
             question_and_answers):
         """Create a new instance.
 
@@ -285,6 +322,8 @@ class Round(Data):
         subject : Optional[str]
             A string giving the subject of the round, i.e. what the
             askers are trying to guess.
+        guess : Optional[Guess]
+            The guess for what the subject is.
         question_and_answers : List[QuestionAndAnswer]
             A list of question-answer pairs that have been asked and
             answered so far this round.
@@ -297,15 +336,22 @@ class Round(Data):
         self.answerer_id = answerer_id
         self.asker_ids = asker_ids
         self.subject = subject
+        self.guess = guess
         self.question_and_answers = question_and_answers
 
     @classmethod
     def from_dict(cls, data):
         """See ``Data``."""
+        if data['guess'] is None:
+            guess = None
+        else:
+            guess = Guess.from_dict(data['guess'])
+
         return cls(
             answerer_id=data['answererId'],
             asker_ids=data['askerIds'],
             subject=data['subject'],
+            guess=guess,
             question_and_answers=[
                 QuestionAndAnswer.from_dict(d)
                 for d in data['questionAndAnswers']
@@ -313,10 +359,16 @@ class Round(Data):
 
     def to_dict(self):
         """See ``Data``."""
+        if self.guess is None:
+            guess = None
+        else:
+            guess = self.guess.to_dict()
+
         return {
             'answererId': self.answerer_id,
             'askerIds': self.asker_ids,
             'subject': self.subject,
+            'guess': guess,
             'questionAndAnswers': [
                 qna.to_dict()
                 for qna in self.question_and_answers

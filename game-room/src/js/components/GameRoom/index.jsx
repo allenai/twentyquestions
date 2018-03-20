@@ -12,8 +12,12 @@ import model from '../../model';
 import PlayerContext from '../PlayerContext';
 import QuestionForm from '../QuestionForm';
 import AnswerForm from '../AnswerForm';
-import QnABoard from '../QnABoard';
 import SubjectForm from '../SubjectForm';
+import MakeGuessForm from '../MakeGuessForm';
+import AnswerGuessForm from '../AnswerGuessForm';
+import SubmitResultsForm from '../SubmitResultsForm';
+import QnABoard from '../QnABoard';
+
 
 
 /**
@@ -30,18 +34,18 @@ const ROLES = {
     id: 'asker',
     label: 'asker',
     description: 'As the "asker", you ask yes-or-no questions and try to'
-      + ' guess the object. At any point, instead of asking a question'
-      + ' you may guess what the object is. You win if you can guess the'
-      + ' object correctly in 20 questions or less.'
+      + ' identify the object. After you have asked 20 questions, you'
+      + ' can guess what the object is. If you guess the object'
+      + ' correctly, then you win!'
   },
   answerer: {
     id: 'answerer',
     label: 'answerer',
-    description: 'As the "answerer", you should choose a common everyday'
-      + ' object to start the round and then truthfully answer any'
-      + ' questions the other players ask about that object. You win if'
-      + ' they are unable to identify the object in 20 questions or'
-      + ' less.'
+    description: 'As the "answerer", you choose a common everyday object'
+      + ' to start the round and then truthfully answer any questions'
+      + ' the other players ask about that object. After the other'
+      + ' player has asked 20 questions, the other player will make'
+      + ' their best guess. If they guess incorrectly then you win!'
   }
 };
 
@@ -77,7 +81,10 @@ class Game extends React.Component {
       playerId,
       chooseSubject,
       askQuestion,
-      provideAnswer
+      provideAnswer,
+      makeGuess,
+      answerGuess,
+      submitResults
     } = this.props;
 
     const currentRound = game.currentRound;
@@ -101,28 +108,74 @@ class Game extends React.Component {
     // identify the correct action form to display
     let actionForm = null;
     if (playerRole.id === ROLES.asker.id) {
-      actionForm = (
-        <QuestionForm
-          game={game}
-          playerId={playerId}
-          askQuestion={askQuestion}/>
-      );
-    } else if (
-      playerRole.id === ROLES.answerer.id
-        && game.state === model.STATES.CHOOSESUBJECT
-    ) {
-      actionForm = (
-        <SubjectForm
-          playerId={playerId}
-          chooseSubject={chooseSubject}/>
-      );
+      if (
+        game.state === model.STATES.CHOOSESUBJECT
+          || game.state === model.STATES.ASKQUESTION
+          || game.state === model.STATES.PROVIDEANSWER
+      ) {
+        actionForm = (
+          <QuestionForm
+            game={game}
+            playerId={playerId}
+            askQuestion={askQuestion}/>
+        );
+      } else if (
+        game.state === model.STATES.MAKEGUESS
+          || game.state === model.STATES.ANSWERGUESS
+      ) {
+        actionForm = (
+          <MakeGuessForm
+            game={game}
+            playerId={playerId}
+            makeGuess={makeGuess}/>
+        );
+      } else if (game.state === model.STATES.SUBMITRESULTS) {
+        actionForm = (
+          <SubmitResultsForm
+            game={game}
+            playerId={playerId}
+            submitResults={submitResults}/>
+        );
+      } else {
+        throw new Error(`Game is in unknown state: ${game.state}`);
+      }
     } else if (playerRole.id === ROLES.answerer.id) {
-      actionForm = (
-        <AnswerForm
-          game={game}
-          playerId={playerId}
-          provideAnswer={provideAnswer}/>
-      );
+      if (game.state === model.STATES.CHOOSESUBJECT) {
+        actionForm = (
+          <SubjectForm
+            playerId={playerId}
+            chooseSubject={chooseSubject}/>
+        );
+      } else if (
+        game.state === model.STATES.ASKQUESTION
+          || game.state === model.STATES.PROVIDEANSWER
+      ) {
+        actionForm = (
+          <AnswerForm
+            game={game}
+            playerId={playerId}
+            provideAnswer={provideAnswer}/>
+        );
+      } else if (
+        game.state === model.STATES.MAKEGUESS
+          || game.state === model.STATES.ANSWERGUESS
+      ) {
+        actionForm = (
+          <AnswerGuessForm
+            game={game}
+            playerId={playerId}
+            answerGuess={answerGuess}/>
+        );
+      } else if (game.state === model.STATES.SUBMITRESULTS) {
+        actionForm = (
+          <SubmitResultsForm
+            game={game}
+            playerId={playerId}
+            submitResults={submitResults}/>
+        );
+      } else {
+        throw new Error(`Game is in unknown state: ${game.state}`);
+      }
     } else {
       throw new Error("Could not find the player's role.");
     }

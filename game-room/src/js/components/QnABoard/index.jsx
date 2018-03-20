@@ -33,10 +33,6 @@ class QnA extends React.Component {
     const answer = questionAndAnswer.answer;
 
     const questionText = question.questionText;
-    const isGuess = question.isGuess;
-
-    const questionLetter = isGuess ? 'G' : 'Q';
-    const questionType = isGuess ? 'guess' : 'question';
 
     let answerText = null;
     if (answer === null) {
@@ -49,10 +45,8 @@ class QnA extends React.Component {
       <ListItem disableGutters>
         <Tooltip
           id='tooltip-question'
-          title={ questionType }>
-          <Avatar>
-            {questionLetter}
-          </Avatar>
+          title='question'>
+          <Avatar>Q</Avatar>
         </Tooltip>
         <ListItemText
           primary={ questionText }
