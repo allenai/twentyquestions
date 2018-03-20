@@ -80,6 +80,11 @@ class AnswerForm extends React.Component {
           <Grid item xs={12}>
             <Typography variant='subheading'>Submit Answers</Typography>
           </Grid>
+          <Grid item xs={12}>
+            <Typography>
+              You chose the subject: <em>{game.currentRound.subject}</em>
+            </Typography>
+          </Grid>
           { !enableForm &&
             <Grid item xs={12}>
               <Typography align='center' variant='caption'>
