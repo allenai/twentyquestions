@@ -109,7 +109,7 @@ class Game extends React.Component {
       );
     } else if (
       playerRole.id === ROLES.answerer.id
-        && game.state == model.STATES.CHOOSESUBJECT
+        && game.state === model.STATES.CHOOSESUBJECT
     ) {
       actionForm = (
         <SubjectForm
@@ -145,7 +145,7 @@ class Game extends React.Component {
 
         <Paper
           className={`${classes.padded} ${classes.margined}`}>
-            {actionForm}
+          {actionForm}
         </Paper>
 
         <Paper
