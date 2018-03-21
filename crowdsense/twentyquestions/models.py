@@ -262,45 +262,6 @@ class QuestionAndAnswer(Data):
         }
 
 
-class Guess(Data):
-    """A model for a guess."""
-
-    def __init__(
-            self,
-            guess_text,
-            is_correct):
-        """Create a new instance.
-
-        Parameters
-        ----------
-        guess_text : str
-            The text of the guess.
-        is_correct : Optional[bool]
-            Whether or not the guess is correct.
-
-        Returns
-        -------
-        Guess
-            The new instance.
-        """
-        self.guess_text = guess_text
-        self.is_correct = is_correct
-
-    @classmethod
-    def from_dict(cls, data):
-        """See ``Data``."""
-        return cls(
-            guess_text=data['guessText'],
-            is_correct=data['isCorrect'])
-
-    def to_dict(self):
-        """See ``Data``."""
-        return {
-            'guessText': self.guess_text,
-            'isCorrect': self.is_correct
-        }
-
-
 class Round(Data):
     """A model of a single round of the game."""
 
@@ -322,7 +283,7 @@ class Round(Data):
         subject : Optional[str]
             A string giving the subject of the round, i.e. what the
             askers are trying to guess.
-        guess : Optional[Guess]
+        guess : Optional[QuestionAndAnswer]
             The guess for what the subject is.
         question_and_answers : List[QuestionAndAnswer]
             A list of question-answer pairs that have been asked and
@@ -345,7 +306,7 @@ class Round(Data):
         if data['guess'] is None:
             guess = None
         else:
-            guess = Guess.from_dict(data['guess'])
+            guess = QuestionAndAnswer.from_dict(data['guess'])
 
         return cls(
             answerer_id=data['answererId'],

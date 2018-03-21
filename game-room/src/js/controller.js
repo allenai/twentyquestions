@@ -172,8 +172,8 @@ class Controller {
    *
    * @see model.Game
    */
-  makeGuess(askerId, guessText) {
-    this.game = this.game.makeGuess(askerId, guessText);
+  makeGuess(askerId, questionText) {
+    this.game = this.game.makeGuess(askerId, questionText);
     this.renderView();
     this.setServerGameState();
   }
@@ -183,8 +183,8 @@ class Controller {
    *
    * @see model.Game
    */
-  answerGuess(answererId, isCorrect) {
-    this.game = this.game.answerGuess(answererId, isCorrect);
+  answerGuess(answererId, answerBool) {
+    this.game = this.game.answerGuess(answererId, answerBool);
     this.renderView();
     this.setServerGameState();
   }

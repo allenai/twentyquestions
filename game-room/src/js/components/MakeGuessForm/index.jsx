@@ -40,13 +40,13 @@ class MakeGuessForm extends React.Component {
     e.preventDefault();
 
     const {playerId, makeGuess} = this.props;
-    const guessText = this.state.value;
+    const questionText = this.state.value;
 
     this.setState({
       value: ''
     });
 
-    makeGuess(playerId, guessText);
+    makeGuess(playerId, questionText);
   }
 
   render() {

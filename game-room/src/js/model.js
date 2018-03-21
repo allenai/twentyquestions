@@ -255,47 +255,6 @@ class QuestionAndAnswer extends Data {
 }
 
 
-/**
- * A class for representing a guess at the end of a round.
- *
- * @extends Data
- */
-class Guess extends Data {
-  /**
-   * Create a new Guess instance.
-   *
-   * @param {String} guessText - The text of the guess.
-   * @param {Optional[Boolean]} isCorrect - Whether or not the guess is
-   *   correct. If isCorrect is not present it must be null.
-   *
-   * @return {Guess} The new Guess instance.
-   */
-  constructor(
-    guessText,
-    isCorrect
-  ) {
-    super();
-
-    this.guessText = guessText;
-    this.isCorrect = isCorrect;
-  }
-
-  /** @see documentation for Data. */
-  static fromObject(obj) {
-    return new Guess(
-      obj.guessText,
-      obj.isCorrect
-    );
-  }
-
-  /** @see documentation for Data. */
-  toObject() {
-    return {
-      guessText: this.guessText,
-      isCorrect: this.isCorrect
-    };
-  }
-}
 
 
 /**
@@ -307,16 +266,16 @@ class Round extends Data {
   /**
    * Create a new Round instance.
    *
-   * @param {String} answererId - The playerId for the player who is
-   *   the answerer for this round.
-   * @param {Array[String]} askerIds - An array of strings providing the
-   *   playerIds for the players who are askers for this round.
-   * @param {Optional[String]} subject - The subject for this round, or the object
-   *   that the askers are trying to guess. If the subject is not present
-   *   it must be null.
-   * @param {Optional[Guess]} guess - The guess for this round, or the
-   *   guess that the asker gets to make at the end of the game. If the
-   *   guess is not present it must be null.
+   * @param {Optional[String]} answererId - The playerId for the player who is the
+   *   answerer for this round. If answererId is not present it must be null.
+   * @param {Optional[String]} askerId - The playerId for the player who is the
+   *   asker for this round. If askerId is not present it must be null.
+   * @param {Optional[String]} subject - The subject for this round, or
+   *   the object that the asker is trying to guess. If the subject is
+   *   not present it must be null.
+   * @param {Optional[QuestionAndAnswer]} guess - The guess for this
+   *   round, or the guess that the asker gets to make at the end of the
+   *   game. If the guess is not present it must be null.
    * @param {Array[QuestionAndAnswer]} questionAndAnswers - An array of
    *   QuestionAndAnswer instances representing the questions that have
    *   been asked and the answers that have been given so far in the
@@ -347,7 +306,7 @@ class Round extends Data {
       obj.answererId,
       obj.askerIds,
       obj.subject,
-      obj.guess && Guess.fromObject(obj.guess),
+      obj.guess && QuestionAndAnswer.fromObject(obj.guess),
       obj.questionAndAnswers.map(o => QuestionAndAnswer.fromObject(o))
     );
   }
@@ -593,11 +552,11 @@ class Game extends Data {
    *
    * @param {String} askerId - The ID for the player who is making the
    *   guess.
-   * @param {String} guessText - The text of the guess.
+   * @param {String} questionText - The text of the guess.
    *
    * @return {Game} The new Game instance with the guess made.
    */
-  makeGuess(askerId, guessText) {
+  makeGuess(askerId, questionText) {
     // check pre-conditions
     if (this.state !== STATES.MAKEGUESS) {
       throw new Error(
@@ -620,9 +579,12 @@ class Game extends Data {
     return this.copy({
       state: STATES.ANSWERGUESS,
       currentRound: this.currentRound.copy({
-        guess: Guess.fromObject({
-          guessText: guessText,
-          isCorrect: null
+        guess: QuestionAndAnswer.fromObject({
+          question: Question.fromObject({
+            askerId: askerId,
+            questionText: questionText
+          }),
+          answer: null
         })
       })
     });
@@ -637,11 +599,11 @@ class Game extends Data {
    *
    * @param {String} answererId - The ID of the player who answered the
    *   guess.
-   * @param {Boolean} isCorrect - Whether or not the guess is correct.
+   * @param {Boolean} answerBool - Whether or not the guess is correct.
    *
    * @return {Game} The new Game instance with the guess answered.
    */
-  answerGuess(answererId, isCorrect) {
+  answerGuess(answererId, answerBool) {
     // check pre-conditions
     if (this.state !== STATES.ANSWERGUESS) {
       throw new Error(
@@ -655,7 +617,7 @@ class Game extends Data {
     }
 
     // answer the guess
-    if (this.currentRound.guess.isCorrect !== null) {
+    if (this.currentRound.guess.answer !== null) {
       throw new Error(
         'A guess cannot be answered twice.'
       );
@@ -665,7 +627,10 @@ class Game extends Data {
       state: STATES.SUBMITRESULTS,
       currentRound: this.currentRound.copy({
         guess: this.currentRound.guess.copy({
-          isCorrect: isCorrect
+          answer: Answer.fromObject({
+            answererId: answererId,
+            answerBool: answerBool
+          })
         })
       })
     });

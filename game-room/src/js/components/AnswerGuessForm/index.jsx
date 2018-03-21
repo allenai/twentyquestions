@@ -52,18 +52,18 @@ class AnswerGuessForm extends React.Component {
 
     const {playerId, answerGuess} = this.props;
 
-    const isCorrect = this._answerStringMap[this.state.answerString];
+    const answerBool = this._answerStringMap[this.state.answerString];
 
     this.setState({answerString: ''});
 
-    answerGuess(playerId, isCorrect);
+    answerGuess(playerId, answerBool);
   }
 
   render() {
     const {game, playerId} = this.props;
 
-    const guessText = game.currentRound.guess !== null ?
-          game.currentRound.guess.guessText
+    const questionText = game.currentRound.guess !== null ?
+          game.currentRound.guess.question.questionText
           : 'No guess has been made yet.';
     const enableForm = game.state === model.STATES.ANSWERGUESS;
 
@@ -89,9 +89,9 @@ class AnswerGuessForm extends React.Component {
           <Grid item xs={12}>
             <FormControl
               component='fieldset'>
-              <FormLabel component='legend'>{guessText}</FormLabel>
+              <FormLabel component='legend'>{questionText}</FormLabel>
               <RadioGroup
-                aria-label={guessText}
+                aria-label={questionText}
                 name='answer'
                 value={this.state.answerString}
                 onChange={this.handleChange.bind(this)}>
