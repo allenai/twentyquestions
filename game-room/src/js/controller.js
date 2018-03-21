@@ -150,8 +150,8 @@ class Controller {
    *
    * @see model.Game
    */
-  askQuestion(askerId, questionText, isGuess) {
-    this.game = this.game.askQuestion(askerId, questionText, isGuess);
+  askQuestion(askerId, questionText) {
+    this.game = this.game.askQuestion(askerId, questionText);
     this.renderView();
     this.setServerGameState();
   }
