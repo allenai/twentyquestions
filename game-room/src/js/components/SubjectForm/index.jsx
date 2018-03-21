@@ -15,9 +15,9 @@ const styles = theme => ({});
 /**
  * A react component for the answerer to set the subject of a round.
  *
+ * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} chooseSubject - The controller callback for choosing
- *   a subject.
+ * @prop {Controller} controller - The controller for the application.
  */
 class SubjectForm extends React.Component {
   constructor(props) {
@@ -35,9 +35,16 @@ class SubjectForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {playerId, chooseSubject} = this.props;
+    const {playerId, controller} = this.props;
 
-    chooseSubject(playerId, this.state.value);
+    const subject = this.state.value;
+
+    this.setState({value: ''});
+
+    controller.dispatchAction(
+      'chooseSubject',
+      [playerId, subject]
+    );
   }
 
   render() {

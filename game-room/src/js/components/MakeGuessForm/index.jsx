@@ -20,8 +20,7 @@ const styles = theme => ({});
  *
  * @prop {string} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} makeGuess - The controller callback for making a
- *   guess.
+ * @prop {Controller} controller - The controller for the application.
  */
 class MakeGuessForm extends React.Component {
   constructor(props) {
@@ -39,14 +38,17 @@ class MakeGuessForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {playerId, makeGuess} = this.props;
+    const {playerId, controller} = this.props;
     const questionText = this.state.value;
 
     this.setState({
       value: ''
     });
 
-    makeGuess(playerId, questionText);
+    controller.dispatchAction(
+      'makeGuess',
+      [playerId, questionText]
+    );
   }
 
   render() {

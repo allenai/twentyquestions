@@ -121,12 +121,7 @@ class Controller {
         {
           game: this.game,
           playerId: this.playerId,
-          chooseSubject: this.chooseSubject.bind(this),
-          askQuestion: this.askQuestion.bind(this),
-          provideAnswer: this.provideAnswer.bind(this),
-          makeGuess: this.makeGuess.bind(this),
-          answerGuess: this.answerGuess.bind(this),
-          submitResults: this.submitResults.bind(this)
+          controller: this
         },
         null
       ),
@@ -135,56 +130,15 @@ class Controller {
   }
 
   /**
-   * Update client and server game state using chooseSubject.
+   * Dispatch an action, updating the model, view and server.
    *
-   * @see model.Game
+   * @param {String} methodName - The name of the method on the Game
+   *   object that you wish to call.
+   * @param {Array} args - The arguments with which you wish to call
+   *   methodName.
    */
-  chooseSubject(playerId, subject) {
-    this.game = this.game.chooseSubject(playerId, subject);
-    this.renderView();
-    this.setServerGameState();
-  }
-
-  /**
-   * Update client and server game state using askQuestion.
-   *
-   * @see model.Game
-   */
-  askQuestion(askerId, questionText) {
-    this.game = this.game.askQuestion(askerId, questionText);
-    this.renderView();
-    this.setServerGameState();
-  }
-
-  /**
-   * Update client and server game state using provideAnswer.
-   *
-   * @see model.Game
-   */
-  provideAnswer(answererId, answerBool) {
-    this.game = this.game.provideAnswer(answererId, answerBool);
-    this.renderView();
-    this.setServerGameState();
-  }
-
-  /**
-   * Update client and server game state using makeGuess.
-   *
-   * @see model.Game
-   */
-  makeGuess(askerId, questionText) {
-    this.game = this.game.makeGuess(askerId, questionText);
-    this.renderView();
-    this.setServerGameState();
-  }
-
-  /**
-   * Update client and server game state using answerGuess.
-   *
-   * @see model.Game
-   */
-  answerGuess(answererId, answerBool) {
-    this.game = this.game.answerGuess(answererId, answerBool);
+  dispatchAction(methodName, args) {
+    this.game = this.game[methodName](...args);
     this.renderView();
     this.setServerGameState();
   }

@@ -61,24 +61,25 @@ const styles = theme => ({
  *
  * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} submitResults - The controller callback for
- *   submitting the results back to MTurk.
+ * @prop {Controller} controller - The controller for the application.
  */
 class SubmitResultsForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {submitResults} = this.props;
+    const {controller} = this.props;
 
-    submitResults();
+    controller.dispatchAction(
+      'submitResults',
+      []
+    );
   }
 
   render() {
     const { classes } = this.props;
     const {
       game,
-      playerId,
-      submitResults
+      playerId
     } = this.props;
 
     // identify this player's role

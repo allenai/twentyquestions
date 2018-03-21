@@ -26,8 +26,7 @@ const styles = theme => ({});
  *
  * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} provideAnswer - The controller callback for providing
- *   an answer.
+ * @prop {Controller} controller - The controller for the application.
  */
 class AnswerForm extends React.Component {
   constructor(props) {
@@ -50,13 +49,16 @@ class AnswerForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    const {playerId, provideAnswer} = this.props;
+    const {playerId, controller} = this.props;
 
     const answerBool = this._answerStringMap[this.state.answerString];
 
     this.setState({answerString: ''});
 
-    provideAnswer(playerId, answerBool);
+    controller.dispatchAction(
+      'provideAnswer',
+      [playerId, answerBool]
+    );
   }
 
   render() {

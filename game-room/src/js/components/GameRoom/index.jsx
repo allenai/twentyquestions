@@ -66,12 +66,7 @@ const styles = theme => ({
  *
  * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {Function} chooseSubject - The controller callback for choosing
- *   a subject.
- * @prop {Function} askQuestion - The controller callback for asking a
- *   question.
- * @prop {Function} provideAnswer - The controller callback for
- *   providing an answer.
+ * @prop {Controller} controller - The controller for the application.
  */
 class Game extends React.Component {
   render() {
@@ -79,12 +74,7 @@ class Game extends React.Component {
     const {
       game,
       playerId,
-      chooseSubject,
-      askQuestion,
-      provideAnswer,
-      makeGuess,
-      answerGuess,
-      submitResults
+      controller
     } = this.props;
 
     const currentRound = game.currentRound;
@@ -117,7 +107,7 @@ class Game extends React.Component {
           <QuestionForm
             game={game}
             playerId={playerId}
-            askQuestion={askQuestion}/>
+            controller={controller}/>
         );
       } else if (
         game.state === model.STATES.MAKEGUESS
@@ -127,14 +117,14 @@ class Game extends React.Component {
           <MakeGuessForm
             game={game}
             playerId={playerId}
-            makeGuess={makeGuess}/>
+            controller={controller}/>
         );
       } else if (game.state === model.STATES.SUBMITRESULTS) {
         actionForm = (
           <SubmitResultsForm
             game={game}
             playerId={playerId}
-            submitResults={submitResults}/>
+            controller={controller}/>
         );
       } else {
         throw new Error(`Game is in unknown state: ${game.state}`);
@@ -143,8 +133,9 @@ class Game extends React.Component {
       if (game.state === model.STATES.CHOOSESUBJECT) {
         actionForm = (
           <SubjectForm
+            game={game}
             playerId={playerId}
-            chooseSubject={chooseSubject}/>
+            controller={controller}/>
         );
       } else if (
         game.state === model.STATES.ASKQUESTION
@@ -154,7 +145,7 @@ class Game extends React.Component {
           <AnswerForm
             game={game}
             playerId={playerId}
-            provideAnswer={provideAnswer}/>
+            controller={controller}/>
         );
       } else if (
         game.state === model.STATES.MAKEGUESS
@@ -164,14 +155,14 @@ class Game extends React.Component {
           <AnswerGuessForm
             game={game}
             playerId={playerId}
-            answerGuess={answerGuess}/>
+            controller={controller}/>
         );
       } else if (game.state === model.STATES.SUBMITRESULTS) {
         actionForm = (
           <SubmitResultsForm
             game={game}
             playerId={playerId}
-            submitResults={submitResults}/>
+            controller={controller}/>
         );
       } else {
         throw new Error(`Game is in unknown state: ${game.state}`);
