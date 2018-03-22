@@ -1,4 +1,4 @@
-"""Build crowdsense.
+"""Build twentyquestions.
 
 See ``python build.py --help`` for more information.
 """
@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
         'help_option_names': ['-h', '--help']
     })
 def build():
-    """Build crowdsense.
+    """Build twentyquestions.
 
-    Build crowdsense by building the frontend clients and copying them
+    Build twentyquestions by building the frontend clients and copying them
     into the proper locations for the backend.
     """
     # build the waiting room client

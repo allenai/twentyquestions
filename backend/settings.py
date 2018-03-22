@@ -38,12 +38,12 @@ ENVS = {
 # docker images
 CONTAINER_REGISTRY = 'gcr.io'
 PROJECT_ID = 'ai2-alexandria'
-SERVER_IMAGE_NAME = 'crowdsense-server'
+SERVER_IMAGE_NAME = 'twentyquestions-server'
 
 KUBERNETES_CONFIG = os.path.join(
-    REPO_DIR, 'ops/crowdsense.yaml')
+    REPO_DIR, 'ops/twentyquestions.yaml')
 
-CERT_SECRET_NAME = 'crowdsense-cert'
+CERT_SECRET_NAME = 'twentyquestions-cert'
 
 
 ###################

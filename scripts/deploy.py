@@ -1,4 +1,4 @@
-"""Deploy crowdsense.
+"""Deploy twentyquestions.
 
 See ``python deploy.py --help`` for more information.
 """
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
     'key',
     type=click.Path(exists=True, file_okay=True, dir_okay=False))
 def deploy(env, cert, key):
-    """Deploy crowdsense to ENV.
+    """Deploy twentyquestions to ENV.
 
     Deploy the current docker image for ENV to kubernetes using the
     certificate defined by CERT and KEY to provide HTTPS traffic.

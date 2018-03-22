@@ -1,3 +1,3 @@
-This batch of HITs comes from the allenai/crowdsense repo.
+This batch of HITs comes from the allenai/twentyquestions repo.
 
-In order to run this HIT you must deploy the crowdsense webapp to crowdsense.allenai.org.
+In order to run this HIT you must deploy the twentyquestions webapp to twentyquestions.allenai.org.

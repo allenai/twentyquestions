@@ -32,7 +32,7 @@ def promote(source, dest):
     involves re-tagging the image locally with the proper label and then
     pushing the image to Google Container Registry.
 
-    SOURCE and DEST must be valid environments for crowdsense.
+    SOURCE and DEST must be valid environments for twentyquestions.
     """
     registry = settings.CONTAINER_REGISTRY
     docker_repo = settings.PROJECT_ID

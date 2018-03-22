@@ -1,21 +1,21 @@
-# kubernetes resources for deploying crowdsense
+# kubernetes resources for deploying twentyquestions
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: crowdsense-server
+  name: twentyquestions-server
   labels:
-    app: crowdsense
+    app: twentyquestions
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: crowdsense
+        app: twentyquestions
     spec:
       containers:
-      - name: crowdsense-server
-        image: gcr.io/ai2-alexandria/crowdsense-server:dev
+      - name: twentyquestions-server
+        image: gcr.io/ai2-alexandria/twentyquestions-server:dev
         imagePullPolicy: Always
         command:
           - python
@@ -29,27 +29,27 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: crowdsense-loadbalancer
+  name: twentyquestions-loadbalancer
   labels:
-    app: crowdsense
+    app: twentyquestions
 spec:
   type: LoadBalancer
   ports:
   - port: 80
     targetPort: http-server
   selector:
-    app: crowdsense
+    app: twentyquestions
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: crowdsense-ssl
+  name: twentyquestions-ssl
   labels:
-    app: crowdsense
+    app: twentyquestions
 spec:
   tls:
-  - secretName: crowdsense-cert
+  - secretName: twentyquestions-cert
   backend:
-    serviceName: crowdsense-loadbalancer
+    serviceName: twentyquestions-loadbalancer
     servicePort: 80
 ---

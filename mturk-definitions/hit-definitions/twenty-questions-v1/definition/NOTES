@@ -1,8 +1,8 @@
-This batch of HITs comes from the allenai/crowdsense repo.
+This batch of HITs comes from the allenai/twentyquestions repo.
 
 In order to run this HIT you must follow these steps:
 
-  1. Deploy the crowdsense webapp to crowdsense.allenai.org.
+  1. Deploy the twentyquestions webapp to twentyquestions.allenai.org.
   2. To get the Turkers to play the game at the same time, post a 'Sign
      Up HIT' that Turkers simply fill out saying they're interested in
      playing the game.

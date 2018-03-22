@@ -1,4 +1,4 @@
-"""Management commands for crowdsense."""
+"""Management commands for twentyquestions."""
 
 import logging
 import sys
@@ -26,7 +26,7 @@ LOG_FORMAT = '%(asctime)s:%(levelname)s:%(name)s:%(message)s'
     type=str,
     help='Log to the provided file path instead of stdout.')
 def manage(verbose, log_file):
-    """A high-level interface to admin scripts for crowdsense."""
+    """A high-level interface to admin scripts for twentyquestions."""
     log_level = logging.DEBUG if verbose else logging.INFO
 
     if log_file:

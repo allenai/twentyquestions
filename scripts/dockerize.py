@@ -1,4 +1,4 @@
-"""Create the docker image for running crowdsense.
+"""Create the docker image for running twentyquestions.
 
 See ``python dockerize.py --help`` for more information.
 """
@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
         'help_option_names': ['-h', '--help']
     })
 def dockerize():
-    """Create the docker image for running crowdsense.
+    """Create the docker image for running twentyquestions.
 
-    Create the docker image for running crowdsense. The created image
-    will be tagged 'crowdsense'.
+    Create the docker image for running twentyquestions. The created image
+    will be tagged 'twentyquestions'.
     """
     local_env = settings.ENVS['local']
 

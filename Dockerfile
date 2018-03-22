@@ -1,11 +1,11 @@
-# Deployment image for crowdsense
+# Deployment image for twentyquestions
 
 FROM library/python:3.6-slim-jessie
 
 
 # set the working directory
 
-WORKDIR /crowdsense
+WORKDIR /twentyquestions
 
 
 # install python packages

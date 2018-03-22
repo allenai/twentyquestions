@@ -1,4 +1,4 @@
-"""Serve crowdsense.
+"""Serve twentyquestions.
 
 See ``python serve.py --help`` for more information.
 """
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help='Run the server in debug mode.')
 def serve(debug=False):
-    """Serve crowdsense on port 5000."""
+    """Serve twentyquestions on port 5000."""
 
     if debug:
         logger.info('Running debug server on http://127.0.0.1:5000/')

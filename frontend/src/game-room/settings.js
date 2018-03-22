@@ -7,7 +7,7 @@
  * The current environment. This constant should be one of `'local'`,
  * or `'live'`. local settings imply that we're using separate
  * servers for the frontend and the backend. `'live'` implies that we're
- * serving from the crowdsense site.
+ * serving from the twentyquestions site.
  */
 const env = 'live';
 
