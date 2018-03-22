@@ -6,9 +6,6 @@
 !requirements.txt
 !manage.py
 
-# whitelist the dockerfiles
-!dockerfiles
-
 # whitelist files in the backend package
 !backend
 
