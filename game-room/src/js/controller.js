@@ -91,6 +91,13 @@ class Controller {
   setClientGameState(message) {
     const gameObject = message;
 
+    if (settings.shouldLog) {
+      console.log(
+        `Setting client game state:`
+          + `\n${JSON.stringify(gameObject, null, 2)}`
+      );
+    }
+
     this.game = this.model.Game.fromObject(gameObject);
     this.renderView();
   }
@@ -102,6 +109,13 @@ class Controller {
    */
   setServerGameState() {
     const {roomId, playerId, game} = this;
+
+    if (settings.shouldLog) {
+      console.log(
+        `Setting server game state:`
+          + `\n${JSON.stringify(game.toObject(), null, 2)}`
+      );
+    }
 
     this._socket.emit(
       'setServerGameState',

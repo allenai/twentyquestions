@@ -12,6 +12,13 @@
 const env = 'live';
 
 
+/** Whether or not to log. */
+const shouldLog = {
+  local: true,
+  live: false
+}[env];
+
+
 /**
  * The URL for the server's websocket.
  *
@@ -30,6 +37,7 @@ const gameRoomUrlRegex = /twenty-questions\/game-room\/(.*)\/player\/([^?]*)/;
 
 /** Settings to be exported. */
 const settings = {
+  shouldLog,
   serverSocket,
   gameRoomUrlRegex
 };
