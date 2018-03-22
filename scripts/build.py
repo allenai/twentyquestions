@@ -9,7 +9,7 @@ import subprocess
 
 import click
 
-from crowdsense import settings
+from backend import settings
 
 
 logger = logging.getLogger(__name__)

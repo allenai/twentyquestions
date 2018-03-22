@@ -9,8 +9,8 @@
 # whitelist the dockerfiles
 !dockerfiles
 
-# whitelist files in the crowdsense package
-!crowdsense
+# whitelist files in the backend package
+!backend
 
 # whitelist files in the scripts package
 !scripts

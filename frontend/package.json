@@ -1,5 +1,5 @@
 {
-  "name": "twenty-questions",
+  "name": "twentyquestions",
   "version": "0.0.1",
   "description": "A react app for playing 20 questions.",
   "main": "webpack.prod.js",

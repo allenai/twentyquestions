@@ -1,5 +1,5 @@
-crowdsense.data
-===============
+data
+====
 This directory can hold local data while ignoring it from git.
 
 Use this directory to store on your dev machine the data from running

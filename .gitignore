@@ -24,8 +24,8 @@ node_modules
 dist
 
 # frontend assets
-crowdsense/static/twentyquestions/twentyquestions.bundle.js
-crowdsense/templates/twentyquestions/twentyquestions.html
+backend/static/twentyquestions/twentyquestions.bundle.js
+backend/templates/twentyquestions/twentyquestions.html
 
 # data
 data/

@@ -1,4 +1,4 @@
-"""Views for ``crowdsense.twentyquestions``"""
+"""Views for the backend."""
 
 import logging
 

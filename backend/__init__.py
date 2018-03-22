@@ -1,10 +1,10 @@
-"""A backend for playing twentyquestions."""
+"""A backend for playing twenty questions."""
 
 import logging
 
 import flask
 
-from crowdsense.views import (
+from backend.views import (
     twentyquestions,
     socketio)
 
@@ -27,7 +27,6 @@ def root():
 
 
 # register blueprints
-
 app.register_blueprint(
     twentyquestions, url_prefix='/twenty-questions')
 

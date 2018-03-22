@@ -1,4 +1,4 @@
-"""Settings and constants for crowdsense."""
+"""Settings and constants."""
 
 import os
 
@@ -22,13 +22,13 @@ FRONTEND_BUNDLE = os.path.join(
 
 BACKEND_TEMPLATES_DIR = os.path.join(
     REPO_DIR,
-    'crowdsense/templates/twentyquestions')
+    'backend/templates/twentyquestions')
 BACKEND_STATIC_DIR = os.path.join(
     REPO_DIR,
-    'crowdsense/static/twentyquestions')
+    'backend/static/twentyquestions')
 
 
-# the different environments for crowdsense
+# the different environments
 ENVS = {
     'local': 'local',
     'dev': 'dev',
