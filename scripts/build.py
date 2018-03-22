@@ -28,27 +28,16 @@ def build():
     # build the waiting room client
     subprocess.run(
         ['npm', 'run', 'build'],
-        cwd=settings.WAITING_ROOM_DIR)
+        cwd=settings.FRONTEND_DIR)
 
-    # build the game room client
-    subprocess.run(
-        ['npm', 'run', 'build'],
-        cwd=settings.GAME_ROOM_DIR)
-
-    # copy the index files to the backend's templates folder
+    # copy the index file to the backend's templates folder
     shutil.copy(
-        settings.WAITING_ROOM_INDEX,
-        settings.BACKEND_TEMPLATES_DIR)
-    shutil.copy(
-        settings.GAME_ROOM_INDEX,
+        settings.FRONTEND_INDEX,
         settings.BACKEND_TEMPLATES_DIR)
 
-    # copy the bundle files to the backend's static directory
+    # copy the bundle file to the backend's static directory
     shutil.copy(
-        settings.WAITING_ROOM_BUNDLE,
-        settings.BACKEND_STATIC_DIR)
-    shutil.copy(
-        settings.GAME_ROOM_BUNDLE,
+        settings.FRONTEND_BUNDLE,
         settings.BACKEND_STATIC_DIR)
 
 

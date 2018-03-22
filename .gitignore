@@ -24,10 +24,8 @@ node_modules
 dist
 
 # frontend assets
-crowdsense/twentyquestions/static/twentyquestions/gameroom.bundle.js
-crowdsense/twentyquestions/static/twentyquestions/waitingroom.bundle.js
-crowdsense/twentyquestions/templates/twentyquestions/gameroom.html
-crowdsense/twentyquestions/templates/twentyquestions/waitingroom.html
+crowdsense/twentyquestions/static/twentyquestions/twentyquestions.bundle.js
+crowdsense/twentyquestions/templates/twentyquestions/twentyquestions.html
 
 # data
 data/
