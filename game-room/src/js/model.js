@@ -81,6 +81,14 @@ const STATES = {
 };
 
 
+/** The statuses that a player can have */
+const PLAYERSTATUSES = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  ABANDONED: 'ABANDONED'
+};
+
+
 
 /* data models */
 
@@ -94,29 +102,35 @@ class Player extends Data {
    * Create a Player instance.
    *
    * @param {String} playerId - A unique ID for the player.
+   * @param {String} status - The current status of the player, must be
+   *   one the values enumerated in the PLAYERSTATUSES constant.
    *
    * @return {Player} The new Player instance.
    */
   constructor(
-    playerId
+    playerId,
+    status
   ) {
     super();
 
     // bind attributes to instance
     this.playerId = playerId;
+    this.status = status;
   }
 
   /** @see documentation for Data. */
   static fromObject(obj) {
     return new Player(
-      obj.playerId
+      obj.playerId,
+      obj.status
     );
   }
 
   /** @see documentation for Data. */
   toObject() {
     return {
-      playerId: this.playerId
+      playerId: this.playerId,
+      status: this.status
     };
   }
 }

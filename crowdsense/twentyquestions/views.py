@@ -118,7 +118,9 @@ def join_game_room(message):
             room_id=room_id,
             game=models.Game(
                 players=[
-                    models.Player(player_id=player_id)
+                    models.Player(
+                        player_id=player_id,
+                        status=models.PLAYERSTATUSES['ACTIVE'])
                 ],
                 state=models.STATES['CHOOSESUBJECT'],
                 answerer_id=player_id,
@@ -135,7 +137,9 @@ def join_game_room(message):
             for player in game_rooms[room_id].game.players
         ]
         if player_id not in room_player_ids:
-            player = models.Player(player_id=player_id)
+            player = models.Player(
+                player_id=player_id,
+                status=models.PLAYERSTATUSES['ACTIVE'])
             if old_game_room.game.asker_id is None:
                 new_game_room = old_game_room.copy(
                     game=old_game.copy(

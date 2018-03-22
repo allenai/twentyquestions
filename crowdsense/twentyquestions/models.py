@@ -97,6 +97,13 @@ STATES = {
     'SUBMITRESULTS': 'SUBMITRESULTS'
 }
 
+# statuses that a player may occupy
+PLAYERSTATUSES = {
+    'ACTIVE': 'ACTIVE',
+    'INACTIVE': 'INACTIVE',
+    'ABANDONED': 'ABANDONED'
+}
+
 
 # data models
 
@@ -105,13 +112,16 @@ class Player(Data):
 
     def __init__(
             self,
-            player_id):
+            player_id,
+            status):
         """Create a new instance.
 
         Parameters
         ----------
         player_id : str
             The ID for the player.
+        status : str
+            The current status for the player.
 
         Returns
         -------
@@ -119,17 +129,20 @@ class Player(Data):
             The new instance.
         """
         self.player_id = player_id
+        self.status = status
 
     @classmethod
     def from_dict(cls, data):
         """See ``Data``."""
         return cls(
-            player_id=data['playerId'])
+            player_id=data['playerId'],
+            status=data['status'])
 
     def to_dict(self):
         """See ``Data``."""
         return {
-            'playerId': self.player_id
+            'playerId': self.player_id,
+            'status': self.status
         }
 
 
