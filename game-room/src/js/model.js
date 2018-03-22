@@ -266,10 +266,6 @@ class Round extends Data {
   /**
    * Create a new Round instance.
    *
-   * @param {Optional[String]} answererId - The playerId for the player who is the
-   *   answerer for this round. If answererId is not present it must be null.
-   * @param {Optional[String]} askerId - The playerId for the player who is the
-   *   asker for this round. If askerId is not present it must be null.
    * @param {Optional[String]} subject - The subject for this round, or
    *   the object that the asker is trying to guess. If the subject is
    *   not present it must be null.
@@ -284,8 +280,6 @@ class Round extends Data {
    * @return {Round} The new Round instance.
    */
   constructor(
-    answererId,
-    askerId,
     subject,
     guess,
     questionAndAnswers
@@ -293,8 +287,6 @@ class Round extends Data {
     super();
 
     // bind attributes to instance
-    this.answererId = answererId;
-    this.askerId = askerId;
     this.subject = subject;
     this.guess = guess;
     this.questionAndAnswers = questionAndAnswers;
@@ -303,8 +295,6 @@ class Round extends Data {
   /** @see documentation for Data. */
   static fromObject(obj) {
     return new Round(
-      obj.answererId,
-      obj.askerId,
       obj.subject,
       obj.guess && QuestionAndAnswer.fromObject(obj.guess),
       obj.questionAndAnswers.map(o => QuestionAndAnswer.fromObject(o))
@@ -314,8 +304,6 @@ class Round extends Data {
   /** @see documentation for Data. */
   toObject() {
     return {
-      answererId: this.answererId,
-      askerId: this.askerId,
       subject: this.subject,
       guess: this.guess && this.guess.toObject(),
       questionAndAnswers: this.questionAndAnswers.map(qa => qa.toObject())
@@ -338,6 +326,10 @@ class Game extends Data {
    *   the game. This state captures things like whether or not a new
    *   round just started and we need a subject for it, or whether or
    *   not a player is currently asking a question.
+   * @param {Optional[String]} answererId - The playerId for the player who is the
+   *   answerer for this round. If answererId is not present it must be null.
+   * @param {Optional[String]} askerId - The playerId for the player who is the
+   *   asker for this round. If askerId is not present it must be null.
    * @param {Optional[Round]} currentRound - The current round of the
    *   game. This attribute may be null in which case the game has no
    *   current round.
@@ -349,6 +341,8 @@ class Game extends Data {
   constructor(
     players,
     state,
+    answererId,
+    askerId,
     currentRound,
     pastRounds
   ) {
@@ -357,6 +351,8 @@ class Game extends Data {
     // bind attributes to instance
     this.players = players;
     this.state = state;
+    this.answererId = answererId;
+    this.askerId = askerId;
     this.currentRound = currentRound;
     this.pastRounds = pastRounds;
   }
@@ -366,6 +362,8 @@ class Game extends Data {
     return new Game(
       obj.players.map(o => Player.fromObject(o)),
       obj.state,
+      obj.answererId,
+      obj.askerId,
       Round.fromObject(obj.currentRound),
       obj.pastRounds.map(o => Round.fromObject(o))
     );
@@ -376,6 +374,8 @@ class Game extends Data {
     return {
       players: this.players.map(p => p.toObject()),
       state: this.state,
+      answererId: this.answererId,
+      askerId: this.askerId,
       currentRound: this.currentRound.toObject(),
       pastRounds: this.pastRounds.map(r => r.toObject())
     };
@@ -405,7 +405,7 @@ class Game extends Data {
         'A subject can only be set when the game is in state'
           + ' "CHOOSESUBJECT".'
       );
-    } else if (answererId !== this.currentRound.answererId) {
+    } else if (answererId !== this.answererId) {
       throw new Error(
         'Only the answerer can set the subject.'
       );
@@ -439,7 +439,7 @@ class Game extends Data {
         'A question can only be asked when the game is in state'
           + ' "ASKQUESTION".'
       );
-    } else if (askerId !== this.currentRound.askerId) {
+    } else if (askerId !== this.askerId) {
       throw new Error(
         'Only the asker can ask a question.'
       );
@@ -486,7 +486,7 @@ class Game extends Data {
         'An answer can only be provided when the game is in state'
           + ' "PROVIDEANSWER".'
       );
-    } else if (answererId !== this.currentRound.answererId) {
+    } else if (answererId !== this.answererId) {
       throw new Error(
         'Only the answerer can provide an answer.'
       );
@@ -542,7 +542,7 @@ class Game extends Data {
         'An guess can only be made when the game is in state'
           + ' "MAKEGUESS".'
       );
-    } else if (askerId !== this.currentRound.askerId) {
+    } else if (askerId !== this.askerId) {
       throw new Error(
         'Only the asker can make a guess.'
       );
@@ -589,7 +589,7 @@ class Game extends Data {
         'An guess may only be answered when the game is in state'
           + ' "ANSWERGUESS".'
       );
-    } else if (answererId !== this.currentRound.answererId) {
+    } else if (answererId !== this.answererId) {
       throw new Error(
         'Only the answerer can answer a guess.'
       );
