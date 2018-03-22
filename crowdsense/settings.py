@@ -3,6 +3,10 @@
 import os
 
 
+####################
+# Project Settings #
+####################
+
 # paths
 
 REPO_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -18,10 +22,10 @@ FRONTEND_BUNDLE = os.path.join(
 
 BACKEND_TEMPLATES_DIR = os.path.join(
     REPO_DIR,
-    'crowdsense/twentyquestions/templates/twentyquestions')
+    'crowdsense/templates/twentyquestions')
 BACKEND_STATIC_DIR = os.path.join(
     REPO_DIR,
-    'crowdsense/twentyquestions/static/twentyquestions')
+    'crowdsense/static/twentyquestions')
 
 
 # the different environments for crowdsense
@@ -40,3 +44,10 @@ KUBERNETES_CONFIG = os.path.join(
     REPO_DIR, 'ops/crowdsense.yaml')
 
 CERT_SECRET_NAME = 'crowdsense-cert'
+
+
+###################
+# Server Settings #
+###################
+
+QUORUM = 2

@@ -8,7 +8,7 @@ import logging
 import click
 from gevent.wsgi import WSGIServer
 
-from crowdsense import server
+import crowdsense
 from crowdsense import settings
 
 
@@ -28,10 +28,10 @@ def serve(debug=False):
 
     if debug:
         logger.info('Running debug server on http://127.0.0.1:5000/')
-        server.app.run(host='0.0.0.0', debug=True)
+        crowdsense.app.run(host='0.0.0.0', debug=True)
     else:
         logger.info('Running prod server on http://127.0.0.1:5000/')
-        http_server = WSGIServer(('0.0.0.0', 5000), server.app)
+        http_server = WSGIServer(('0.0.0.0', 5000), crowdsense.app)
         http_server.serve_forever()
 
 

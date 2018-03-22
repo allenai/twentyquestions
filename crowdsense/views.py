@@ -37,7 +37,7 @@ def waiting_room():
     for subsequent players.
     """
     return flask.render_template(
-        'twentyquestions/waitingroom.html')
+        'twentyquestions/twentyquestions.html')
 
 
 @socketio.on('joinWaitingRoom', namespace='/waiting-room')
@@ -95,7 +95,7 @@ game_rooms = {}
 def game_room(room_id, player_id):
     """A room to play the game in."""
     return flask.render_template(
-        'twentyquestions/gameroom.html')
+        'twentyquestions/twentyquestions.html')
 
 
 @socketio.on(
