@@ -269,8 +269,6 @@ class QuestionAndAnswer extends Data {
 }
 
 
-
-
 /**
  * A class for representing a round of twenty questions.
  *
