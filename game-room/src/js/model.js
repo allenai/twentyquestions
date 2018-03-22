@@ -330,11 +330,8 @@ class Game extends Data {
    *   answerer for this round. If answererId is not present it must be null.
    * @param {Optional[String]} askerId - The playerId for the player who is the
    *   asker for this round. If askerId is not present it must be null.
-   * @param {Optional[Round]} currentRound - The current round of the
-   *   game. This attribute may be null in which case the game has no
-   *   current round.
-   * @param {Array[Round]} pastRounds - A list of rounds that have been
-   *   played in the game so far.
+   * @param {Round} round - Data recording what happened
+   *   during this round of 20 Questions.
    *
    * @return {Game} The new Game instance.
    */
@@ -343,8 +340,7 @@ class Game extends Data {
     state,
     answererId,
     askerId,
-    currentRound,
-    pastRounds
+    round
   ) {
     super();
 
@@ -353,8 +349,7 @@ class Game extends Data {
     this.state = state;
     this.answererId = answererId;
     this.askerId = askerId;
-    this.currentRound = currentRound;
-    this.pastRounds = pastRounds;
+    this.round = round;
   }
 
   /** @see documentation for Data. */
@@ -364,8 +359,7 @@ class Game extends Data {
       obj.state,
       obj.answererId,
       obj.askerId,
-      Round.fromObject(obj.currentRound),
-      obj.pastRounds.map(o => Round.fromObject(o))
+      Round.fromObject(obj.round)
     );
   }
 
@@ -376,19 +370,17 @@ class Game extends Data {
       state: this.state,
       answererId: this.answererId,
       askerId: this.askerId,
-      currentRound: this.currentRound.toObject(),
-      pastRounds: this.pastRounds.map(r => r.toObject())
+      round: this.round.toObject()
     };
   }
 
   /**
    * Return a new Game in which a subject has been chosen for the round.
    *
-   * Return a new Game in which the subject for the current round has
-   * been set to subject and the Game is in state ASKQUESTION.
-   * chooseSubject can only be called by the answerer when the game is
-   * in state CHOOSESUBJECT. Calling chooseSubject any other way is an
-   * error.
+   * Return a new Game in which the subject for the round has been set
+   * to subject and the Game is in state ASKQUESTION.  chooseSubject can
+   * only be called by the answerer when the game is in state
+   * CHOOSESUBJECT. Calling chooseSubject any other way is an error.
    *
    * @param {String} answererId - The playerId for the player who is
    *   setting the subject. The player setting the subject should be the
@@ -396,7 +388,7 @@ class Game extends Data {
    * @param {String} subject - The subject to set for the round.
    *
    * @return {Game} A new Game instance in which the subject has been
-   *   set on the current round.
+   *   set on the round.
    */
   chooseSubject(answererId, subject) {
     // check pre-conditions
@@ -413,7 +405,7 @@ class Game extends Data {
 
     return this.copy({
       state: STATES.ASKQUESTION,
-      currentRound: this.currentRound.copy({subject})
+      round: this.round.copy({subject})
     });
   }
 
@@ -447,7 +439,7 @@ class Game extends Data {
 
     return this.copy({
       state: STATES.PROVIDEANSWER,
-      currentRound: this.currentRound.copy({
+      round: this.round.copy({
         questionAndAnswers: [
           QuestionAndAnswer.fromObject({
             question: Question.fromObject({
@@ -456,7 +448,7 @@ class Game extends Data {
             }),
             answer: null
           }),
-          ...this.currentRound.questionAndAnswers
+          ...this.round.questionAndAnswers
         ]
       })
     });
@@ -492,17 +484,17 @@ class Game extends Data {
       );
     }
 
-    // update the current round with the new answer
+    // update the round with the new answer
     const [
       mostRecentQuestionAndAnswer,
       ...restQuestionAndAnswers
-    ] = this.currentRound.questionAndAnswers;
+    ] = this.round.questionAndAnswers;
     if (mostRecentQuestionAndAnswer.answer !== null) {
       throw new Error(
         'A question cannot be answered twice.'
       );
     }
-    const updatedCurrentRound = this.currentRound.copy({
+    const updatedRound = this.round.copy({
       questionAndAnswers: [
         mostRecentQuestionAndAnswer.copy({
           answer: Answer.fromObject({answererId, answerBool})
@@ -513,12 +505,12 @@ class Game extends Data {
 
     // determine if the round is ready for the guess to be made
     const questionsLeft = (
-      updatedCurrentRound.questionAndAnswers.length < MAXQUESTIONS
+      updatedRound.questionAndAnswers.length < MAXQUESTIONS
     );
 
     return this.copy({
       state: questionsLeft ? STATES.ASKQUESTION : STATES.MAKEGUESS,
-      currentRound: updatedCurrentRound
+      round: updatedRound
     });
   }
 
@@ -549,7 +541,7 @@ class Game extends Data {
     }
 
     // make the guess
-    if (this.currentRound.guess !== null) {
+    if (this.round.guess !== null) {
       throw new Error(
         'A guess cannot be made twice.'
       );
@@ -557,7 +549,7 @@ class Game extends Data {
 
     return this.copy({
       state: STATES.ANSWERGUESS,
-      currentRound: this.currentRound.copy({
+      round: this.round.copy({
         guess: QuestionAndAnswer.fromObject({
           question: Question.fromObject({
             askerId: askerId,
@@ -596,7 +588,7 @@ class Game extends Data {
     }
 
     // answer the guess
-    if (this.currentRound.guess.answer !== null) {
+    if (this.round.guess.answer !== null) {
       throw new Error(
         'A guess cannot be answered twice.'
       );
@@ -604,8 +596,8 @@ class Game extends Data {
 
     return this.copy({
       state: STATES.SUBMITRESULTS,
-      currentRound: this.currentRound.copy({
-        guess: this.currentRound.guess.copy({
+      round: this.round.copy({
+        guess: this.round.guess.copy({
           answer: Answer.fromObject({
             answererId: answererId,
             answerBool: answerBool

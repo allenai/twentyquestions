@@ -77,12 +77,10 @@ class Game extends React.Component {
       controller
     } = this.props;
 
-    const currentRound = game.currentRound;
-
     // calculate some quantities we'll display in the UI
     const numPlayers = game.players.length;
     const numQuestionsLeft = (
-      model.MAXQUESTIONS - currentRound.questionAndAnswers.length
+      model.MAXQUESTIONS - game.round.questionAndAnswers.length
     );
 
     // identify this player's role
@@ -195,7 +193,7 @@ class Game extends React.Component {
         <Paper
           className={`${classes.padded} ${classes.margined}`}>
           <QnABoard
-            questionAndAnswers={currentRound.questionAndAnswers}/>
+            questionAndAnswers={game.round.questionAndAnswers}/>
         </Paper>
       </div>
     );

@@ -64,8 +64,8 @@ class AnswerGuessForm extends React.Component {
   render() {
     const {game, playerId} = this.props;
 
-    const questionText = game.currentRound.guess !== null ?
-          game.currentRound.guess.question.questionText
+    const questionText = game.round.guess !== null ?
+          game.round.guess.question.questionText
           : 'No guess has been made yet.';
     const enableForm = game.state === model.STATES.ANSWERGUESS;
 
@@ -77,7 +77,7 @@ class AnswerGuessForm extends React.Component {
           </Grid>
           <Grid item xs={12}>
             <Typography>
-              You chose the subject: <em>{game.currentRound.subject}</em>
+              You chose the subject: <em>{game.round.subject}</em>
             </Typography>
           </Grid>
           { !enableForm &&

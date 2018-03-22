@@ -334,8 +334,7 @@ class Game(Data):
             state,
             answerer_id,
             asker_id,
-            current_round,
-            past_rounds):
+            round_):
         """Create a new instance.
 
         Parameters
@@ -349,11 +348,8 @@ class Game(Data):
             The ID for the player who answers questions this round.
         asker_id : Optional[str]
             The ID for the player who asks questions this round.
-        current_round : Optional[Round]
-            The currently in progress round. If ``None`` then there is
-            no currently in progress round.
-        past_rounds : List[Round]
-            A list of past rounds played in the game.
+        round_ : Round
+            The round for the game.
 
         Returns
         -------
@@ -364,8 +360,7 @@ class Game(Data):
         self.state = state
         self.answerer_id = answerer_id
         self.asker_id = asker_id
-        self.current_round = current_round
-        self.past_rounds = past_rounds
+        self.round_ = round_
 
     @classmethod
     def from_dict(cls, data):
@@ -375,8 +370,7 @@ class Game(Data):
             state=data['state'],
             answerer_id=data['answererId'],
             asker_id=data['askerId'],
-            current_round=Round.from_dict(data['currentRound']),
-            past_rounds=[Round.from_dict(d) for d in data['pastRounds']])
+            round_=Round.from_dict(data['round']))
 
     def to_dict(self):
         """See ``Data``."""
@@ -385,8 +379,7 @@ class Game(Data):
             'state': self.state,
             'answererId': self.answerer_id,
             'askerId': self.asker_id,
-            'currentRound': self.current_round.to_dict(),
-            'pastRounds': [r.to_dict() for r in self.past_rounds]
+            'round': self.round_.to_dict()
         }
 
 

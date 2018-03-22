@@ -123,11 +123,10 @@ def join_game_room(message):
                 state=models.STATES['CHOOSESUBJECT'],
                 answerer_id=player_id,
                 asker_id=None,
-                current_round=models.Round(
+                round_=models.Round(
                     subject=None,
                     guess=None,
-                    question_and_answers=[]),
-                past_rounds=[]))
+                    question_and_answers=[])))
     else:
         old_game_room = game_rooms[room_id]
         old_game = old_game_room.game

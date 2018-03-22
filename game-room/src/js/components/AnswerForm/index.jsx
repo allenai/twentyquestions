@@ -65,9 +65,9 @@ class AnswerForm extends React.Component {
     const {game, playerId} = this.props;
 
     let questionToDisplay = null;
-    if (game.currentRound.questionAndAnswers.length > 0) {
+    if (game.round.questionAndAnswers.length > 0) {
       questionToDisplay = game
-        .currentRound
+        .round
         .questionAndAnswers[0]
         .question
         .questionText;
@@ -84,7 +84,7 @@ class AnswerForm extends React.Component {
           </Grid>
           <Grid item xs={12}>
             <Typography>
-              You chose the subject: <em>{game.currentRound.subject}</em>
+              You chose the subject: <em>{game.round.subject}</em>
             </Typography>
           </Grid>
           { !enableForm &&

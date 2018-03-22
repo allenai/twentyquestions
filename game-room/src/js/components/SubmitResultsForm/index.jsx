@@ -94,7 +94,7 @@ class SubmitResultsForm extends React.Component {
 
     // determine if the player won the previous round
     let gameOutcome = null;
-    if (game.currentRound.guess.answer.answerBool) {
+    if (game.round.guess.answer.answerBool) {
       gameOutcome = OUTCOMES.guessedCorrectly;
     } else {
       gameOutcome = OUTCOMES.guessedIncorrectly;
@@ -111,8 +111,8 @@ class SubmitResultsForm extends React.Component {
           <Typography
             variant='subheading'>
             <p>
-              The subject was <b>{game.currentRound.subject}</b> and the guess
-              was <b>{game.currentRound.guess.question.questionText}</b>.
+              The subject was <b>{game.round.subject}</b> and the guess
+              was <b>{game.round.guess.question.questionText}</b>.
             </p>
             <p>{ gameOutcome.description[playerRole] }</p>
           </Typography>
