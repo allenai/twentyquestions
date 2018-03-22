@@ -2,8 +2,8 @@
 
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
+import CssBaseline from 'material-ui/CssBaseline';
 import Paper from 'material-ui/Paper';
-import Reboot from 'material-ui/Reboot';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
@@ -171,7 +171,7 @@ class Game extends React.Component {
 
     return (
       <div>
-        <Reboot/>
+        <CssBaseline/>
         <AppBar position="static">
           <Toolbar>
             <Typography variant="title" color="inherit">

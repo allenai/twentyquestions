@@ -3,9 +3,9 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import Button from 'material-ui/Button';
+import CssBaseline from 'material-ui/CssBaseline';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
-import Reboot from 'material-ui/Reboot';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
@@ -41,7 +41,7 @@ class WaitingRoom extends React.Component {
 
     return (
       <div>
-        <Reboot/>
+        <CssBaseline/>
         <AppBar position='static'>
           <Toolbar>
             <Typography
