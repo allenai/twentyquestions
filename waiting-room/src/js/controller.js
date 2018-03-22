@@ -52,7 +52,7 @@ class Controller {
     // set the room id and the player id from the URL query params
     const queryParams = {};
     const [_, queryString] = window.location.href.split('?');
-    if (queryString == undefined) {
+    if (queryString === undefined) {
       throw new Error('No query string found.');
     }
     const queryBits = queryString.split('&');
@@ -60,17 +60,21 @@ class Controller {
       const [key, val] = queryBits[i].split('=');
       queryParams[key] = val;
     }
-    if (queryParams.hitId == undefined) {
+    if (queryParams.hitId === undefined) {
       throw new Error('No HIT ID found.');
     }
-    if (queryParams.assignmentId == undefined) {
+    if (queryParams.assignmentId === undefined) {
       throw new Error('No Assignment ID found.');
     }
+    if (queryParams.workerId === undefined) {
+      throw new Error('No Worker ID found.');
+    }
+
     this.roomId = queryParams.hitId;
     // if the turkers view it in preview mode, then the assignment id is
     // marked as unavailable in which case we'll store it as `null`.
     this.playerId = queryParams.assignmentId != 'ASSIGNMENT_ID_NOT_AVAILABLE' ?
-      queryParams.assignmentId
+      queryParams.workerId
       : null;
 
     // open up the socket
