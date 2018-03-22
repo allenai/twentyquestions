@@ -84,7 +84,7 @@ class SubmitResultsForm extends React.Component {
 
     // identify this player's role
     let playerRole = null;
-    if (game.currentRound.askerIds.includes(playerId)) {
+    if (game.currentRound.askerId === playerId) {
       playerRole = 'asker';
     } else if (game.currentRound.answererId === playerId) {
       playerRole = 'answerer';

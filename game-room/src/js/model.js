@@ -285,7 +285,7 @@ class Round extends Data {
    */
   constructor(
     answererId,
-    askerIds,
+    askerId,
     subject,
     guess,
     questionAndAnswers
@@ -294,7 +294,7 @@ class Round extends Data {
 
     // bind attributes to instance
     this.answererId = answererId;
-    this.askerIds = askerIds;
+    this.askerId = askerId;
     this.subject = subject;
     this.guess = guess;
     this.questionAndAnswers = questionAndAnswers;
@@ -304,7 +304,7 @@ class Round extends Data {
   static fromObject(obj) {
     return new Round(
       obj.answererId,
-      obj.askerIds,
+      obj.askerId,
       obj.subject,
       obj.guess && QuestionAndAnswer.fromObject(obj.guess),
       obj.questionAndAnswers.map(o => QuestionAndAnswer.fromObject(o))
@@ -315,7 +315,7 @@ class Round extends Data {
   toObject() {
     return {
       answererId: this.answererId,
-      askerIds: this.askerIds,
+      askerId: this.askerId,
       subject: this.subject,
       guess: this.guess && this.guess.toObject(),
       questionAndAnswers: this.questionAndAnswers.map(qa => qa.toObject())
@@ -338,8 +338,6 @@ class Game extends Data {
    *   the game. This state captures things like whether or not a new
    *   round just started and we need a subject for it, or whether or
    *   not a player is currently asking a question.
-   * @param {Optional[String]} activeAskerId - The playerId of the
-   *   asker who is currently allowed to ask a question.
    * @param {Optional[Round]} currentRound - The current round of the
    *   game. This attribute may be null in which case the game has no
    *   current round.
@@ -351,7 +349,6 @@ class Game extends Data {
   constructor(
     players,
     state,
-    activeAskerId,
     currentRound,
     pastRounds
   ) {
@@ -360,7 +357,6 @@ class Game extends Data {
     // bind attributes to instance
     this.players = players;
     this.state = state;
-    this.activeAskerId = activeAskerId;
     this.currentRound = currentRound;
     this.pastRounds = pastRounds;
   }
@@ -370,7 +366,6 @@ class Game extends Data {
     return new Game(
       obj.players.map(o => Player.fromObject(o)),
       obj.state,
-      obj.activeAskerId,
       Round.fromObject(obj.currentRound),
       obj.pastRounds.map(o => Round.fromObject(o))
     );
@@ -381,7 +376,6 @@ class Game extends Data {
     return {
       players: this.players.map(p => p.toObject()),
       state: this.state,
-      activeAskerId: this.activeAskerId,
       currentRound: this.currentRound.toObject(),
       pastRounds: this.pastRounds.map(r => r.toObject())
     };
@@ -418,7 +412,6 @@ class Game extends Data {
     }
 
     return this.copy({
-      activeAskerId: this.currentRound.askerIds[0] || null,
       state: STATES.ASKQUESTION,
       currentRound: this.currentRound.copy({subject})
     });
@@ -427,10 +420,9 @@ class Game extends Data {
   /**
    * Return a new Game where askerId has asked questionText.
    *
-   * Return a new Game where askerId has asked questionText, the Game is
-   * in state PROVIDEANSWER, and the active asker has been advanced to
-   * the next asker. askQuestion can only be called by the active asker
-   * in state ASKQUESTION. Calling askQuestion any other way is an
+   * Return a new Game where askerId has asked questionText and the Game
+   * is in state PROVIDEANSWER. askQuestion can only be called by the
+   * asker in state ASKQUESTION. Calling askQuestion any other way is an
    * error.
    *
    * @param {String} askerId - The ID for the player who asked the
@@ -447,36 +439,23 @@ class Game extends Data {
         'A question can only be asked when the game is in state'
           + ' "ASKQUESTION".'
       );
-    } else if (askerId !== this.activeAskerId) {
+    } else if (askerId !== this.currentRound.askerId) {
       throw new Error(
-        'Only the active asker can ask a question.'
+        'Only the asker can ask a question.'
       );
     }
 
-    // create the QuestionAndAnswer instance to be inserted
-    const newQuestionAndAnswer = QuestionAndAnswer.fromObject({
-      question: Question.fromObject({
-        askerId,
-        questionText
-      }),
-      answer: null
-    });
-
-    // advance the active asker to the next asker
-    const askerIds = this.currentRound.askerIds;
-    const activeAskerIdIndex = askerIds.findIndex(
-      id => id === this.activeAskerId
-    );
-    const newActiveAskerId = askerIds[
-      (activeAskerIdIndex + 1) % askerIds.length
-    ];
-
     return this.copy({
-      activeAskerId: newActiveAskerId,
       state: STATES.PROVIDEANSWER,
       currentRound: this.currentRound.copy({
         questionAndAnswers: [
-          newQuestionAndAnswer,
+          QuestionAndAnswer.fromObject({
+            question: Question.fromObject({
+              askerId,
+              questionText
+            }),
+            answer: null
+          }),
           ...this.currentRound.questionAndAnswers
         ]
       })
@@ -547,8 +526,8 @@ class Game extends Data {
    * Return a new Game where askerId has made guess.
    *
    * The new Game will be in state ANSWERGUESS. makeGuess can only be
-   * called by the active asker when the game is in state
-   * MAKEGUESS. Calling makeGuess any other way is an error.
+   * called by the asker when the game is in state MAKEGUESS. Calling
+   * makeGuess any other way is an error.
    *
    * @param {String} askerId - The ID for the player who is making the
    *   guess.
@@ -563,9 +542,9 @@ class Game extends Data {
         'An guess can only be made when the game is in state'
           + ' "MAKEGUESS".'
       );
-    } else if (askerId !== this.activeAskerId) {
+    } else if (askerId !== this.currentRound.askerId) {
       throw new Error(
-        'Only the active asker can make a guess.'
+        'Only the asker can make a guess.'
       );
     }
 

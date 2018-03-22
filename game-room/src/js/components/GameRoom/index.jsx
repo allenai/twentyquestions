@@ -87,7 +87,7 @@ class Game extends React.Component {
 
     // identify this player's role
     let playerRole = null;
-    if (currentRound.askerIds.includes(playerId)) {
+    if (currentRound.askerId === playerId) {
       playerRole = ROLES.asker;
     } else if (currentRound.answererId === playerId) {
       playerRole = ROLES.answerer;

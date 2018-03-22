@@ -121,10 +121,9 @@ def join_game_room(message):
                     models.Player(player_id=player_id)
                 ],
                 state=models.STATES['CHOOSESUBJECT'],
-                active_asker_id=None,
                 current_round=models.Round(
                     answerer_id=player_id,
-                    asker_ids=[],
+                    asker_id=None,
                     subject=None,
                     guess=None,
                     question_and_answers=[]),
@@ -138,20 +137,15 @@ def join_game_room(message):
         ]
         if player_id not in room_player_ids:
             player = models.Player(player_id=player_id)
-            new_asker_ids = [player_id] + old_game.current_round.asker_ids
-            if old_game_room.game.active_asker_id is None:
+            if old_game_room.game.current_round.asker_id is None:
                 new_game_room = old_game_room.copy(
                     game=old_game.copy(
                         players=old_game.players + [player],
                         current_round=old_game.current_round.copy(
-                            asker_ids=new_asker_ids),
-                        active_asker_id=player_id))
+                            asker_id=player_id)))
             else:
-                new_game_room = old_game_room.copy(
-                    game=old_game.copy(
-                        players=old_game.players + [player],
-                        current_round=old_game.current_round.copy(
-                            asker_ids=new_asker_ids)))
+                raise ValueError(
+                    'There can only be one asker in a game.')
         else:
             new_game_room = old_game_room
 

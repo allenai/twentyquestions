@@ -54,10 +54,7 @@ class QuestionForm extends React.Component {
   render() {
     const {game, playerId} = this.props;
 
-    const enableForm = (
-      game.state === model.STATES.ASKQUESTION
-        && game.activeAskerId === playerId
-    );
+    const enableForm = game.state === model.STATES.ASKQUESTION;
 
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>

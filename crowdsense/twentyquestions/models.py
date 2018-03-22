@@ -268,7 +268,7 @@ class Round(Data):
     def __init__(
             self,
             answerer_id,
-            asker_ids,
+            asker_id,
             subject,
             guess,
             question_and_answers):
@@ -276,10 +276,10 @@ class Round(Data):
 
         Parameters
         ----------
-        answerer_id : str
+        answerer_id : Optional[str]
             The ID for the player who answers questions this round.
-        asker_ids : List[str]
-            A list of IDs for the players who ask questions this round.
+        asker_id : Optional[str]
+            The ID for the player who asks questions this round.
         subject : Optional[str]
             A string giving the subject of the round, i.e. what the
             askers are trying to guess.
@@ -295,7 +295,7 @@ class Round(Data):
             The new instance.
         """
         self.answerer_id = answerer_id
-        self.asker_ids = asker_ids
+        self.asker_id = asker_id
         self.subject = subject
         self.guess = guess
         self.question_and_answers = question_and_answers
@@ -310,7 +310,7 @@ class Round(Data):
 
         return cls(
             answerer_id=data['answererId'],
-            asker_ids=data['askerIds'],
+            asker_id=data['askerId'],
             subject=data['subject'],
             guess=guess,
             question_and_answers=[
@@ -327,7 +327,7 @@ class Round(Data):
 
         return {
             'answererId': self.answerer_id,
-            'askerIds': self.asker_ids,
+            'askerId': self.asker_id,
             'subject': self.subject,
             'guess': guess,
             'questionAndAnswers': [
@@ -344,7 +344,6 @@ class Game(Data):
             self,
             players,
             state,
-            active_asker_id,
             current_round,
             past_rounds):
         """Create a new instance.
@@ -356,8 +355,6 @@ class Game(Data):
         state : str
             A string representing the current state of the game. Must be
             on of the values from the models.STATES dictionary.
-        active_asker_id : str
-            The ID of the player who's the currently active asker.
         current_round : Optional[Round]
             The currently in progress round. If ``None`` then there is
             no currently in progress round.
@@ -371,7 +368,6 @@ class Game(Data):
         """
         self.players = players
         self.state = state
-        self.active_asker_id = active_asker_id
         self.current_round = current_round
         self.past_rounds = past_rounds
 
@@ -381,7 +377,6 @@ class Game(Data):
         return cls(
             players=[Player.from_dict(d) for d in data['players']],
             state=data['state'],
-            active_asker_id=data['activeAskerId'],
             current_round=Round.from_dict(data['currentRound']),
             past_rounds=[Round.from_dict(d) for d in data['pastRounds']])
 
@@ -390,7 +385,6 @@ class Game(Data):
         return {
             'players': [p.to_dict() for p in self.players],
             'state': self.state,
-            'activeAskerId': self.active_asker_id,
             'currentRound': self.current_round.to_dict(),
             'pastRounds': [r.to_dict() for r in self.past_rounds]
         }
