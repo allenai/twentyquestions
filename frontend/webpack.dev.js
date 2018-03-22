@@ -6,10 +6,5 @@ const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
   devtool: 'inline-source-map',
-  devServer: {
-    index: 'twentyquestions.html',
-    historyApiFallback: {
-      rewrites: [ { from: /./, to: '/' } ]
-    }
-  }
+  devServer: { historyApiFallback: true }
 });

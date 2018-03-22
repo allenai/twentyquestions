@@ -27,8 +27,7 @@ def root():
 
 
 # register blueprints
-app.register_blueprint(
-    twentyquestions, url_prefix='/twenty-questions')
+app.register_blueprint(twentyquestions)
 
 
 # set up the web socket

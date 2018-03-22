@@ -24,8 +24,8 @@ node_modules
 dist
 
 # frontend assets
-backend/static/twentyquestions/twentyquestions.bundle.js
-backend/templates/twentyquestions/twentyquestions.html
+backend/static/app.bundle.js
+backend/templates/index.html
 
 # data
 data/

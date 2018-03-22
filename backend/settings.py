@@ -15,17 +15,17 @@ DOCKERFILE = os.path.join(REPO_DIR, 'Dockerfile')
 
 FRONTEND_DIR = os.path.join(REPO_DIR, 'frontend')
 FRONTEND_INDEX = os.path.join(
-    FRONTEND_DIR, 'dist/twentyquestions.html')
+    FRONTEND_DIR, 'dist/index.html')
 FRONTEND_BUNDLE = os.path.join(
     FRONTEND_DIR,
-    'dist/twenty-questions/static/twentyquestions/twentyquestions.bundle.js')
+    'dist/static/app.bundle.js')
 
 BACKEND_TEMPLATES_DIR = os.path.join(
     REPO_DIR,
-    'backend/templates/twentyquestions')
+    'backend/templates')
 BACKEND_STATIC_DIR = os.path.join(
     REPO_DIR,
-    'backend/static/twentyquestions')
+    'backend/static')
 
 
 # the different environments

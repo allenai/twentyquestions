@@ -20,7 +20,7 @@ const paths = {
 module.exports = {
   entry: paths.app,
   output: {
-    filename: 'twenty-questions/static/twentyquestions/twentyquestions.bundle.js',
+    filename: 'static/app.bundle.js',
     path: paths.dist
   },
   module: {
@@ -49,7 +49,6 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      filename: 'twentyquestions.html',
       template: paths.index,
       inject: false
     }),

@@ -36,8 +36,7 @@ def waiting_room():
     the room before starting the game. It also serves as an entry point
     for subsequent players.
     """
-    return flask.render_template(
-        'twentyquestions/twentyquestions.html')
+    return flask.render_template('index.html')
 
 
 @socketio.on('joinWaitingRoom', namespace='/waiting-room')
@@ -94,8 +93,7 @@ game_rooms = {}
     '/game-room/<string:room_id>/player/<string:player_id>')
 def game_room(room_id, player_id):
     """A room to play the game in."""
-    return flask.render_template(
-        'twentyquestions/twentyquestions.html')
+    return flask.render_template('index.html')
 
 
 @socketio.on(

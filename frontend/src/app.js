@@ -11,11 +11,11 @@ import WaitingRoomController from './waiting-room/controller';
 /** Routes for the app. */
 const routes = [
   [
-    /twenty-questions\/waiting-room/,
+    /waiting-room/,
     new WaitingRoomController(WaitingRoomView, WaitingRoomModel)
   ],
   [
-    /twenty-questions\/game-room\/(.*)\/player\/([^?]*)/,
+    /game-room\/(.*)\/player\/([^?]*)/,
     new GameController(GameView, GameModel)
   ]
 ];

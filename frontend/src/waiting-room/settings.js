@@ -35,7 +35,7 @@ const serverSocket = {
  * @return {String} The game room's URL.
  */
 function makeGameRoomUrl(roomId, playerId, queryString) {
-  return `/twenty-questions/game-room/${roomId}/player/${playerId}`
+  return `/game-room/${roomId}/player/${playerId}`
     + `?${queryString}`;
 }
 
