@@ -124,7 +124,7 @@ class WaitingRoomController {
         this.view,
         {
           waitingRoom: this.waitingRoom,
-          enterGameRoom: this.enterGameRoom.bind(this)
+          controller: this
         },
         null
       ),

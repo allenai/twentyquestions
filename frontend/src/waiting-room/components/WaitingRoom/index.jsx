@@ -27,13 +27,13 @@ const styles = theme => ({
  *
  * @prop {WaitingRoom} waitingRoom - An instance of the WaitingRoom class
  *   modeling the waiting room state.
- * @prop {Function} enterGameRoom - The controller callback for entering
- *   the game room.
+ * @prop {WaitingRoomController} controller - The controller for the
+ *   waiting room.
  */
 class WaitingRoom extends React.Component {
   render() {
     const {classes} = this.props;
-    const {waitingRoom, enterGameRoom} = this.props;
+    const {waitingRoom, controller} = this.props;
 
     const numPlayers = this.props.waitingRoom.playerIds.length;
     const quorum = this.props.waitingRoom.quorum;
@@ -88,7 +88,7 @@ class WaitingRoom extends React.Component {
               <Button
                 variant='raised'
                 color='primary'
-                onClick={enterGameRoom}
+                onClick={controller.enterGameRoom.bind(controller)}
                 disabled={!readyToPlay}>
                 Play
               </Button>

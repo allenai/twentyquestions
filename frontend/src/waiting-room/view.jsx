@@ -10,20 +10,20 @@ import WaitingRoom from './components/WaitingRoom';
  *
  * @prop {WaitingRoom} waitingRoom - An instance of the WaitingRoom class
  *   modeling the waiting room state.
- * @prop {Function} enterGameRoom - The controller callback for entering
- *   the game room.
+ * @prop {WaitingRoomController} controller - The controller for the
+ *   waiting room.
  */
 class WaitingRoomView extends React.Component {
   render() {
     const {
       waitingRoom,
-      enterGameRoom
+      controller
     } = this.props;
 
     return (
       <WaitingRoom
         waitingRoom={waitingRoom}
-        enterGameRoom={enterGameRoom}/>
+        controller={controller}/>
     );
   }
 }
