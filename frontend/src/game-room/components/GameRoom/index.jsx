@@ -78,7 +78,10 @@ class Game extends React.Component {
     } = this.props;
 
     // calculate some quantities we'll display in the UI
-    const numPlayers = game.players.length;
+    const numPlayers = (
+      (game.answererId !== null ? 1 : 0)
+        + (game.askerId !== null ? 1 : 0)
+    );
     const numQuestionsLeft = (
       model.MAXQUESTIONS - game.round.questionAndAnswers.length
     );

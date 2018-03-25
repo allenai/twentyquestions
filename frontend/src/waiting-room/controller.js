@@ -34,11 +34,7 @@ class WaitingRoomController {
      * socket, `'setClientGameState'` and `'setServerGameState'`.
      */
     this._socket = null;
-    /** The ID for the waiting room that the player is currently in. */
-    this.roomId = null;
-    /** The ID for the player. */
-    this.playerId = null;
-    /** The currently known state of the waiting room. */
+    /** A representation of the waiting room. */
     this.waitingRoom = null;
   }
 
@@ -70,50 +66,56 @@ class WaitingRoomController {
       throw new Error('No Worker ID found.');
     }
 
-    this.roomId = queryParams.hitId;
     // if the turkers view it in preview mode, then the assignment id is
     // marked as unavailable in which case we'll store it as `null`.
-    this.playerId = queryParams.assignmentId != 'ASSIGNMENT_ID_NOT_AVAILABLE' ?
+    const playerId = queryParams.assignmentId != 'ASSIGNMENT_ID_NOT_AVAILABLE' ?
       queryParams.workerId
       : null;
+    this.waitingRoom = this.model.WaitingRoom.fromObject({
+      playerId: playerId,
+      roomId: null,
+      state: this.model.STATES.WAITING
+    });
 
     // open up the socket
     this._socket = io.connect(settings.serverSocket);
     // subscribe to the `'setClientWaitingRoom'` event
     this._socket.on(
-      'setClientWaitingRoom',
-      this.setClientWaitingRoom.bind(this)
+      'readyToPlay',
+      this.handleReadyToPlay.bind(this)
     );
     // after the connection is successful, join the game room
     this._socket.on(
       'connect',
       this.joinWaitingRoom.bind(this)
     );
+
+    this.renderView();
   }
 
   /** Join the waiting room on the server. */
   joinWaitingRoom() {
-    const {roomId, playerId} = this;
+    const {playerId} = this.waitingRoom;
 
-    this._socket.emit('joinWaitingRoom', {roomId, playerId});
+    this._socket.emit('joinWaitingRoom', {playerId});
   }
 
   /**
-   * Set the waiting room state on this client.
+   * Handle a 'readyToPlay' message.
    *
-   * Set the waiting room state on this client. This function is
-   * primarily intended as a callback for the 'setClientWaitingRoom'
-   * event.
+   * When a game is ready to play, the server sends the client a message
+   * containing the game room's id. This callback handles that message.
    *
    * @param {Object} message - The message from the server which
    *   contains the new waiting room state for the client.
    */
-  setClientWaitingRoom(message) {
-    const waitingRoomObject = message;
+  handleReadyToPlay(message) {
+    const {roomId} = message;
 
-    this.waitingRoom = this.model.WaitingRoom.fromObject(
-      waitingRoomObject
-    );
+    this.waitingRoom = this.waitingRoom.copy({
+      roomId: roomId,
+      state: this.model.STATES.READYTOPLAY
+    });
     this.renderView();
   }
 
@@ -134,7 +136,7 @@ class WaitingRoomController {
 
   /** Enter the game room. */
   enterGameRoom() {
-    const {roomId, playerId} = this;
+    const {roomId, playerId} = this.waitingRoom;
 
     const [_, queryString] = window.location.href.split('?');
 

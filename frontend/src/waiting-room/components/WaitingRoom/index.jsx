@@ -4,11 +4,14 @@ import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import Button from 'material-ui/Button';
 import CssBaseline from 'material-ui/CssBaseline';
+import { CircularProgress } from 'material-ui/Progress';
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
+
+import WaitingRoomModel from '../../model';
 
 
 /** Style rules to apply to the component. */
@@ -35,9 +38,8 @@ class WaitingRoom extends React.Component {
     const {classes} = this.props;
     const {waitingRoom, controller} = this.props;
 
-    const numPlayers = this.props.waitingRoom.playerIds.length;
-    const quorum = this.props.waitingRoom.quorum;
-    const readyToPlay = numPlayers >= quorum;
+    const readyToPlay =
+      waitingRoom.state === WaitingRoomModel.STATES.READYTOPLAY;
 
     return (
       <div>
@@ -57,25 +59,29 @@ class WaitingRoom extends React.Component {
             container
             className={classes.padded}>
             <Grid item xs={12}>
-              <Typography
-                variant='headline'
-                align='center'>
-                {`${numPlayers} / ${quorum} Players`}
-              </Typography>
-              <Typography
-                variant='subheading'
-                color='textSecondary'
-                align='center'>
-                present / required
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography
-                align='center'>
-                There are currently {numPlayers} players out
-                of {quorum} players present. The game will start when there
-                are {quorum} players.
-              </Typography>
+              { readyToPlay ?
+                  <Grid container>
+                    <Grid item xs={12}>
+                      <Typography
+                        variant='headline'
+                        align='center'>
+                          Ready to Play!
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  : <Grid container>
+                      <Grid item xs={12}>
+                        <Typography
+                          variant='headline'
+                          align='center'>
+                            Waiting for Players
+                        </Typography>
+                      </Grid>
+                      <Grid item align='center' xs={12}>
+                        <CircularProgress color='primary'/>
+                      </Grid>
+                    </Grid>
+              }
             </Grid>
           </Grid>
           <Grid item xs={12}>

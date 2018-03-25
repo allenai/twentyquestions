@@ -44,10 +44,3 @@ KUBERNETES_CONFIG = os.path.join(
     REPO_DIR, 'ops/twentyquestions.yaml')
 
 CERT_SECRET_NAME = 'twentyquestions-cert'
-
-
-###################
-# Server Settings #
-###################
-
-QUORUM = 2

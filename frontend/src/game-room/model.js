@@ -333,7 +333,6 @@ class Game extends Data {
   /**
    * Create a new Game instance.
    *
-   * @param {Array[Player]} players - An array of the players for the game.
    * @param {String} state - A string signifying the current state of
    *   the game. This state captures things like whether or not a new
    *   round just started and we need a subject for it, or whether or
@@ -348,7 +347,6 @@ class Game extends Data {
    * @return {Game} The new Game instance.
    */
   constructor(
-    players,
     state,
     answererId,
     askerId,
@@ -357,7 +355,6 @@ class Game extends Data {
     super();
 
     // bind attributes to instance
-    this.players = players;
     this.state = state;
     this.answererId = answererId;
     this.askerId = askerId;
@@ -367,7 +364,6 @@ class Game extends Data {
   /** @see documentation for Data. */
   static fromObject(obj) {
     return new Game(
-      obj.players.map(o => Player.fromObject(o)),
       obj.state,
       obj.answererId,
       obj.askerId,
@@ -378,7 +374,6 @@ class Game extends Data {
   /** @see documentation for Data. */
   toObject() {
     return {
-      players: this.players.map(p => p.toObject()),
       state: this.state,
       answererId: this.answererId,
       askerId: this.askerId,

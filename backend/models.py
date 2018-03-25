@@ -1,7 +1,9 @@
 """Code modeling the 20 Questions game."""
 
+import copy
 import json
 import logging
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -103,6 +105,9 @@ PLAYERSTATUSES = {
     'INACTIVE': 'INACTIVE',
     'ABANDONED': 'ABANDONED'
 }
+
+# The required number of players to play a game.
+REQUIREDPLAYERS = 2
 
 
 # data models
@@ -343,7 +348,6 @@ class Game(Data):
 
     def __init__(
             self,
-            players,
             state,
             answerer_id,
             asker_id,
@@ -352,8 +356,6 @@ class Game(Data):
 
         Parameters
         ----------
-        players : List[Player]
-            A list of the players in the game.
         state : str
             A string representing the current state of the game. Must be
             on of the values from the models.STATES dictionary.
@@ -369,7 +371,6 @@ class Game(Data):
         Game
             The new instance.
         """
-        self.players = players
         self.state = state
         self.answerer_id = answerer_id
         self.asker_id = asker_id
@@ -379,7 +380,6 @@ class Game(Data):
     def from_dict(cls, data):
         """See ``Data``."""
         return cls(
-            players=[Player.from_dict(d) for d in data['players']],
             state=data['state'],
             answerer_id=data['answererId'],
             asker_id=data['askerId'],
@@ -388,7 +388,6 @@ class Game(Data):
     def to_dict(self):
         """See ``Data``."""
         return {
-            'players': [p.to_dict() for p in self.players],
             'state': self.state,
             'answererId': self.answerer_id,
             'askerId': self.asker_id,
@@ -396,52 +395,14 @@ class Game(Data):
         }
 
 
-class WaitingRoom(Data):
-    """A room for players to wait for the right number."""
-
-    def __init__(self, room_id, player_ids, quorum):
-        """Create a new instance.
-
-        Parameters
-        ----------
-        room_id : str
-            The ID for the waiting room.
-        player_ids : List[str]
-            A list of IDs for the players in the waiting room.
-        quorum : int
-            The number of players that must enter the waiting room
-            before starting a game.
-
-        Returns
-        -------
-        WaitingRoom
-            The new instance.
-        """
-        self.room_id = room_id
-        self.player_ids = player_ids
-        self.quorum = quorum
-
-    @classmethod
-    def from_dict(cls, data):
-        """See ``Data``."""
-        return cls(
-            room_id=data['roomId'],
-            player_ids=data['playerIds'],
-            quorum=data['quorum'])
-
-    def to_dict(self):
-        """See ``Data``."""
-        return {
-            'roomId': self.room_id,
-            'playerIds': self.player_ids,
-            'quorum': self.quorum
-        }
-
-
 class GameRoom(Data):
     """A room for players to play a game."""
 
-    def __init__(self, room_id, game):
+    def __init__(
+            self,
+            room_id,
+            game,
+            player_ids):
         """Create a new instance.
 
         Parameters
@@ -450,6 +411,8 @@ class GameRoom(Data):
             The ID for the game room.
         game : Game
             The ``Game`` instance being played in the game room.
+        player_ids : List[str]
+            The list of ids for players currently in the game room.
 
         Returns
         -------
@@ -458,17 +421,138 @@ class GameRoom(Data):
         """
         self.room_id = room_id
         self.game = game
+        self.player_ids = player_ids
 
     @classmethod
     def from_dict(cls, data):
         """See ``Data``."""
         return cls(
             room_id=data['roomId'],
-            game=Game.from_dict(data['game']))
+            game=Game.from_dict(data['game']),
+            player_ids=data['playerIds'])
 
     def to_dict(self):
         """See ``Data``."""
         return {
             'roomId': self.room_id,
-            'game': self.game.to_dict()
+            'game': self.game.to_dict(),
+            'playerIds': self.player_ids
         }
+
+
+class PlayerRouter(object):
+    """A class for routing players into games.
+
+    ``PlayerRouter`` does NOT inherit from data, should only be
+    instantiated once and performs mutation on itself.
+    """
+
+    def __init__(
+            self,
+            game_rooms,
+            players,
+            game_room_priorities,
+            player_matches):
+        """Create a new instance.
+
+        Parameters
+        ----------
+        game_rooms : Dict[str, GameRoom]
+            A dictionary mapping room_ids to game rooms.
+        players : Dict[str, Player]
+            A dictionary mapping player ids to players. This dictionary
+            represents all players currently known to the server.
+        game_room_priorities : List[List[str]]
+            A list of lists of game room ids. The i'th index of the
+            outer list returns a stack of game room ids where each game
+            room in the stack has as many players as the value of the
+            index. Games that require fewer players to fill are filled
+            up first.
+        player_matches : Dict[str, str]
+            A dictionary mapping player ids to game room ids.
+
+        Returns
+        -------
+        PlayerRouter
+            The new instance.
+        """
+        self.game_rooms = game_rooms
+        self.players = players
+        # there should be one stack for each possible number of players
+        # in a game which is not full
+        for i in range(len(game_room_priorities), REQUIREDPLAYERS):
+            game_room_priorities.append([])
+        self.game_room_priorities = game_room_priorities
+        self.player_matches = player_matches
+
+    def route_player(self, player_id):
+        """Route a player to a game.
+
+        Route the player represented by ``player_id`` to a game. If no
+        player is known by ``player_id``, then also create a new player
+        for the id.
+
+        If the player is already matched with a game, then nothing
+        happens as this method is idempotent.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID of the player to match to a game.
+
+        Returns
+        -------
+        None
+        """
+        # check if the player has already been matched to a game
+        if player_id in self.player_matches:
+            return
+
+        # create the player if the player is new
+        if player_id not in self.players:
+            self.players[player_id] = Player(
+                player_id=player_id,
+                status=PLAYERSTATUSES['ACTIVE'])
+
+        # get the first list of game_ids
+        for game_room_ids in reversed(self.game_room_priorities):
+            if len(game_room_ids) > 0:
+                break
+
+        if len(game_room_ids) == 0:
+            # there are no partially full game rooms so create a new
+            # game room.
+            room_id = str(uuid.uuid4()).replace('-', '')
+            game_room = GameRoom(
+                room_id=room_id,
+                game=Game(
+                    state=STATES['CHOOSESUBJECT'],
+                    answerer_id=None,
+                    asker_id=None,
+                    round_=Round(
+                        subject=None,
+                        guess=None,
+                        question_and_answers=[])),
+                player_ids=[player_id])
+
+            self.game_rooms[room_id] = game_room
+            self.game_room_priorities[1].append(room_id)
+            self.player_matches[player_id] = room_id
+        else:
+            # take the game room with the most players in it currently
+            # and fill it up
+            room_id = game_room_ids.pop()
+            old_game_room = self.game_rooms[room_id]
+            game_room = old_game_room.copy(
+                player_ids=[
+                    player_id,
+                    *old_game_room.player_ids
+                ])
+
+            self.game_rooms[room_id] = game_room
+
+            num_players = len(game_room.player_ids)
+            if num_players < REQUIREDPLAYERS:
+                game_room_priorities[num_players].append(room_id)
+
+            self.player_matches[player_id] = room_id
