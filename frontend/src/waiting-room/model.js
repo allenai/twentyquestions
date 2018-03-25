@@ -1,5 +1,6 @@
 /** A model of the waiting room. */
 
+import Data from '../utilities/data';
 
 
 /* constants */
@@ -17,7 +18,7 @@ const STATES = {
 
 
 /** A class modeling the waiting room. */
-class WaitingRoom {
+class WaitingRoom extends Data {
   /**
    * A model of the waiting room.
    *
@@ -28,6 +29,8 @@ class WaitingRoom {
    *   be one of the values enumerated in the STATES constant.
    */
   constructor(playerId, roomId, state) {
+    super();
+
     // bind attributes to instance
     this.playerId = playerId;
     this.roomId = roomId;
@@ -48,19 +51,6 @@ class WaitingRoom {
       obj.roomId,
       obj.state
     );
-  }
-
-  /**
-   * Return a copy of this instance, updating attributes with data.
-   *
-   * @param {Object} data - An object containing key-value pairs to
-   *   update in the newly returned instance.
-   *
-   * @return {Data} A copy of this instance with the attributes defined
-   *   in data overriden.
-   */
-  copy(data) {
-    return Object.assign(new this.constructor, this, data);
   }
 }
 
