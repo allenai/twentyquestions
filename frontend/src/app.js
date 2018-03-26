@@ -7,15 +7,17 @@ import WaitingRoomModel from './waiting-room/model';
 import WaitingRoomView from './waiting-room/view';
 import WaitingRoomController from './waiting-room/controller';
 
+import settings from './settings';
+
 
 /** Routes for the app. */
 const routes = [
   [
-    /waiting-room/,
+    settings.waitingRoomUrlRegex,
     new WaitingRoomController(WaitingRoomView, WaitingRoomModel)
   ],
   [
-    /game-room\/(.*)\/player\/([^?]*)/,
+    settings.gameRoomUrlRegex,
     new GameController(GameView, GameModel)
   ]
 ];

@@ -9,7 +9,7 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
 
-import settings from '../../settings';
+import settings from '../../../settings';
 import WaitingRoomModel from '../../model';
 
 

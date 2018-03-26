@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import settings from './settings.js';
+import settings from '../settings.js';
 
 
 /** A class for coordinating the server, models, and UI. */
