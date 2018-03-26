@@ -119,6 +119,34 @@ class WaitingRoomController {
     this.renderView();
   }
 
+  /** Set the player as active. */
+  setPlayerAsActive() {
+    const {playerId} = this.waitingRoom;
+
+    // set the player as active
+    this.waitingRoom = this.waitingRoom.copy({
+      state: this.model.STATES.ACTIVE
+    });
+    this.renderView();
+
+    // alert the server that the player is active
+    this._socket.emit('setPlayerAsActive', {playerId});
+  }
+
+  /** Set the player as inactive. */
+  setPlayerAsInactive() {
+    const {playerId} = this.waitingRoom;
+
+    // set the player to inactive
+    this.waitingRoom = this.waitingRoom.copy({
+      state: this.model.STATES.INACTIVE
+    });
+    this.renderView();
+
+    // alert the server that the player is inactive
+    this._socket.emit('setPlayerAsInactive', {playerId});
+  }
+
   /** Render the view to reflect the current game state. */
   renderView() {
     ReactDOM.render(

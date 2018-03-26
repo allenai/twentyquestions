@@ -19,8 +19,8 @@ const env = 'live';
  * about the current game state.
  */
 const serverSocket = {
-  local: 'http://127.0.0.1:5000/waiting-room',
-  live: '/waiting-room'
+  local: 'http://127.0.0.1:5000/',
+  live: '/'
 }[env];
 
 
@@ -40,10 +40,14 @@ function makeGameRoomUrl(roomId, playerId, queryString) {
 }
 
 
+/** Number of seconds a player has to enter a game. */
+const SECONDSTOPLAY = 15;
+
 /** Settings to be exported. */
 const settings = {
   serverSocket,
-  makeGameRoomUrl
+  makeGameRoomUrl,
+  SECONDSTOPLAY
 };
 
 

@@ -26,8 +26,8 @@ const shouldLog = {
  * about the current game state.
  */
 const serverSocket = {
-  local: 'http://127.0.0.1:5000/game-room',
-  live: '/game-room'
+  local: 'http://127.0.0.1:5000/',
+  live: '/'
 }[env];
 
 

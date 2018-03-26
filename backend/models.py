@@ -102,8 +102,7 @@ STATES = {
 # statuses that a player may occupy
 PLAYERSTATUSES = {
     'ACTIVE': 'ACTIVE',
-    'INACTIVE': 'INACTIVE',
-    'ABANDONED': 'ABANDONED'
+    'INACTIVE': 'INACTIVE'
 }
 
 # The required number of players to play a game.
@@ -556,3 +555,48 @@ class PlayerRouter(object):
                 game_room_priorities[num_players].append(room_id)
 
             self.player_matches[player_id] = room_id
+
+    def set_player_as_inactive(self, player_id):
+        """Set a player as inactive.
+
+        An inactive player will be removed from any game they are
+        currently in and will not be asked to join new games until they
+        confirm that they're no longer inactive.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID of the player to set as inactive.
+
+        Returns
+        -------
+        None
+        """
+        # update the player's status as inactive
+        self.players[player_id] = self.players[player_id].copy(
+            status=PLAYERSTATUSES['INACTIVE'])
+
+        room_id = self.player_matches[player_id]
+        old_game_room = self.game_rooms[room_id]
+        old_game = old_game_room.game
+
+        # remove the player from the game if they're in it
+        if player_id == old_game.asker_id:
+            new_game = old_game.copy(asker_id=None)
+        elif player_id == old_game.answerer_id:
+            new_game = old_game.copy(answerer_id=None)
+        else:
+            new_game = old_game
+
+        # remove the player from the game room
+        new_game_room = old_game_room.copy(
+            game=new_game,
+            player_ids=[
+                x
+                for x in old_game_room.player_ids
+                if x != player_id
+            ])
+        self.game_rooms[room_id] = new_game_room
+
+        # match the player to None
+        self.player_matches[player_id] = None

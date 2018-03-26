@@ -23,8 +23,7 @@ const STATES = {
 /** The statuses that a player can have */
 const PLAYERSTATUSES = {
   ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  ABANDONED: 'ABANDONED'
+  INACTIVE: 'INACTIVE'
 };
 
 
