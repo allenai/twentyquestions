@@ -76,7 +76,7 @@ def update_clients_for_game_room(room_id, player_router):
 # Web Page Endpoints
 
 @twentyquestions.route('/game-room')
-def index(player_id):
+def game_room():
     """The entrypoint for the games."""
     return flask.render_template('index.html')
 
