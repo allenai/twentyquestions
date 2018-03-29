@@ -18,10 +18,17 @@ twentyquestions = flask.Blueprint(
     template_folder='templates',
     static_folder='static')
 
-socketio = flask_socketio.SocketIO()
+socketio = flask_socketio.SocketIO(
+    ping_timeout=settings.TIME_TO_DISCONNECT,
+    ping_interval=settings.TIME_TO_DISCONNECT // 3)
 
 
 # constants / global state
+
+# maps between session IDs and player IDs
+# these maps are necessary for handling connection events
+player_id_from_sid = {}
+most_recent_sid_from_player_id = {}
 
 player_router = models.PlayerRouter(
     game_rooms={},
@@ -32,15 +39,13 @@ player_router = models.PlayerRouter(
 
 # helper functions
 
-def update_client_for_player(player_id, player_router):
+def update_client_for_player(player_id):
     """Update the client state for a single player.
 
     Parameters
     ----------
     player_id : str
         The ID for the player whose client needs its state set.
-    player_router : PlayerRouter
-        The player router that maintains the global state.
     """
     player_data = player_router.players[player_id].to_dict()
     room_id = player_router.player_matches.get(player_id)
@@ -58,19 +63,17 @@ def update_client_for_player(player_id, player_router):
         room=player_id)
 
 
-def update_clients_for_game_room(room_id, player_router):
+def update_clients_for_game_room(room_id):
     """Update the client states for each player in a game room.
 
     Parameters
     ----------
     room_id : str
         The ID for the game room whose players need updating.
-    player_router : PlayerRouter
-        The player router that maintains global state.
     """
     game_room = player_router.game_rooms[room_id]
     for player_id in game_room.player_ids:
-        update_client_for_player(player_id, player_router)
+        update_client_for_player(player_id)
 
 
 # Web Page Endpoints
@@ -82,6 +85,27 @@ def game_room():
 
 
 # Web Socket Endpoints
+
+@socketio.on('disconnect')
+def disconnect():
+    """Websocket endpoint for when a player disconnects."""
+    sid = flask.request.sid
+    player_id = player_id_from_sid[sid]
+    most_recent_sid = most_recent_sid_from_player_id[player_id]
+
+    # delete the old sid -> player_id mapping
+    del player_id_from_sid[sid]
+
+    # only delete the player if they haven't reconnected
+    if sid == most_recent_sid:
+        old_room_id = player_router.player_matches[player_id]
+
+        player_router.delete_player(player_id)
+        del most_recent_sid_from_player_id[player_id]
+
+        if old_room_id is not None:
+            update_clients_for_game_room(old_room_id)
+
 
 @socketio.on('joinServer')
 def join_server(message):
@@ -95,6 +119,11 @@ def join_server(message):
     """
     player_id = message['playerId']
 
+    # record the sid <-> player_id mappings
+    sid = flask.request.sid
+    player_id_from_sid[sid] = player_id
+    most_recent_sid_from_player_id[player_id] = sid
+
     if player_id is None:
         # The client is previewing the HIT but not yet looking for a
         # game.
@@ -107,9 +136,12 @@ def join_server(message):
     if player_id not in player_router.players:
         player_router.create_player(player_id)
 
-    # update everyone in the game room to which the player was matched
+    # update the clients
     room_id = player_router.player_matches[player_id]
-    update_clients_for_game_room(room_id, player_router)
+    if room_id is None:
+        update_client_for_player(player_id)
+    else:
+        update_clients_for_game_room(room_id)
 
 
 @socketio.on('setServerGameState')
@@ -125,16 +157,15 @@ def set_server_game_state(message):
     player = models.Player.from_dict(message['player'])
     game_room = models.GameRoom.from_dict(message['gameRoom'])
 
+    player_id = player.player_id
+
     # update the game room
     player_router.update_game(
-        player_id=player.player_id,
+        player_id=player_id,
         game=game_room.game)
 
     # update the clients
-    update_clients_for_game_room(
-        game_room.room_id,
-        player_router)
-
+    update_clients_for_game_room(game_room.room_id)
 
 @socketio.on('takePlayerAction')
 def take_player_action(message):
@@ -150,7 +181,7 @@ def take_player_action(message):
     action = message['action']
 
     player_id = player.player_id
-    room_id = player_router.player_matches[player_id]
+    old_room_id = player_router.player_matches[player_id]
 
     if action == models.PLAYERACTIONS['STARTPLAYING']:
         player_router.start_playing(player_id)
@@ -164,11 +195,18 @@ def take_player_action(message):
         raise ValueError('Action not recognized.')
 
     # update the clients
-    if room_id is None:
-        # the player is not currently in a game room, update only the
-        # player
-        update_client_for_player(player_id, player_router)
-    else:
-        # the player is currently in a game room, update all
-        # participants in the game
-        update_clients_for_game_room(room_id, player_router)
+
+    # the logic for updating clients depends on whether or not the
+    # player changed rooms.
+    room_id = player_router.player_matches[player_id]
+    if room_id is None and old_room_id is None:
+        update_client_for_player(player_id)
+    elif room_id is None and old_room_id is not None:
+        update_client_for_player(player_id)
+        update_clients_for_game_room(old_room_id)
+    elif room_id is not None and old_room_id is None:
+        update_clients_for_game_room(room_id)
+    elif room_id is not None and old_room_id is not None:
+        update_clients_for_game_room(room_id)
+        if old_room_id != room_id:
+            update_clients_for_game_room(old_room_id)

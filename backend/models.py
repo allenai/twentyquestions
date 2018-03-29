@@ -622,7 +622,7 @@ class PlayerRouter(object):
                         self.players[a_player_id] = a_player.copy(
                             status=PLAYERSTATUSES['READYTOPLAY'])
 
-    # join server actions
+    # server connection actions
 
     def create_player(self, player_id):
         """Create a new player.
@@ -651,6 +651,41 @@ class PlayerRouter(object):
         # match the player to a game room
         self.match_player_to_game_room(player_id)
 
+    def delete_player(self, player_id):
+        """Remove the player from the server.
+
+        Players will be removed from the server after they disconnect
+        unexpectedly or alternatively when they finish a game.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID for the player who just finished a game.
+        """
+        player = self.players[player_id]
+
+        # update the game room that the player is currently in
+        room_id = self.player_matches[player_id]
+        if room_id is not None:
+            old_game_room = self.game_rooms[room_id]
+            game_room = old_game_room.remove_player(player)
+            num_players = len(game_room.player_ids)
+            game_finished = game_room.game.state == STATES['SUBMITRESULTS']
+            if num_players == 0 and game_finished:
+                # the game is complete and all players are gone
+                # delete the game room
+                del self.game_rooms[room_id]
+            elif num_players > 0 and game_finished:
+                # the game is complete but players are left
+                self.game_rooms[room_id] = game_room
+            elif not game_finished:
+                # the game is incomplete, put it back in the queue
+                self.game_room_priorities[num_players].append(room_id)
+
+        # delete the player
+        del self.players[player_id]
+        del self.player_matches[player_id]
+
     # player actions
 
     def start_playing(self, player_id):
@@ -676,7 +711,7 @@ class PlayerRouter(object):
         # they enter the game room.
 
     def finish_game(self, player_id):
-        """Remove the player from the server.
+        """Perform clean up actions for when a player finishes a game.
 
         Most players will leave the server after they finish a game, so
         when players finish games we'll remove them from the server.
@@ -686,22 +721,7 @@ class PlayerRouter(object):
         player_id : str
             The ID for the player who just finished a game.
         """
-        player = self.players[player_id]
-
-        # update the game room that the player is currently in
-        room_id = self.player_matches[player_id]
-        old_game_room = self.game_rooms[room_id]
-        game_room = old_game_room.remove_player(player)
-        if len(game_room.players) == 0:
-            # if all players are gone, delete the game room
-            del self.game_rooms[room_id]
-        else:
-            # if players are left, update the game room
-            self.game_rooms[room_id] = game_room
-
-        # delete the player
-        del self.players[player_id]
-        del self.player_matches[player_id]
+        self.delete_player(player_id)
 
     def go_inactive(self, player_id):
         """Set a player as inactive.
