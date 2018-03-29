@@ -1,6 +1,7 @@
 /** A component for handling inactive players. */
 
 import React from 'react';
+import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 import Modal from 'material-ui/Modal';
 import Paper from 'material-ui/Paper';
@@ -69,16 +70,30 @@ class InactiveModal extends React.Component {
         onClose={() => this.handleClose()}>
         <Paper
           className={`${classes.modal} ${classes.padded}`}>
-          <Typography
-            id='inactive-modal-label'
-            variant='title'>
-            You've Gone Inactive
-          </Typography>
-          <Typography
-            id='inactive-modal-description'
-            variant='subheading'>
-            You've gone inactive. Close this modal to get matched with a game.
-          </Typography>
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography
+                id='inactive-modal-label'
+                variant='title'>
+                You've Gone Inactive
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                id='inactive-modal-description'
+                variant='subheading'>
+                You've gone inactive. Close this modal to get matched with a game.
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant='raised'
+                color='primary'
+                onClick={() => this.handleClose()}>
+                Close
+              </Button>
+            </Grid>
+          </Grid>
         </Paper>
       </Modal>
     );
