@@ -21,7 +21,7 @@ twentyquestions = flask.Blueprint(
 socketio = flask_socketio.SocketIO()
 
 
-# Player Routing Views
+# constants / global state
 
 player_router = models.PlayerRouter(
     game_rooms={},
@@ -30,26 +30,62 @@ player_router = models.PlayerRouter(
     player_matches={})
 
 
-@twentyquestions.route('/waiting-room')
-def waiting_room():
-    """A room to wait to enter a game.
+# helper functions
 
-    This page routes Turkers into either a newly created game, or a game
-    that has an abandoned player.
+def update_client_for_player(player_id, player_router):
+    """Update the client state for a single player.
+
+    Parameters
+    ----------
+    player_id : str
+        The ID for the player whose client needs its state set.
+    player_router : PlayerRouter
+        The player router that maintains the global state.
     """
+    player_data = player_router.players[player_id].to_dict()
+    room_id = player_router.player_matches.get(player_id)
+    if room_id is not None:
+        game_room_data = player_router.game_rooms[room_id].to_dict()
+    else:
+        game_room_data = None
+
+    flask_socketio.emit(
+        'setClientState',
+        {
+            'player': player_data,
+            'gameRoom': game_room_data
+        },
+        room=player_id)
+
+
+def update_clients_for_game_room(room_id, player_router):
+    """Update the client states for each player in a game room.
+
+    Parameters
+    ----------
+    room_id : str
+        The ID for the game room whose players need updating.
+    player_router : PlayerRouter
+        The player router that maintains global state.
+    """
+    game_room = player_router.game_rooms[room_id]
+    for player_id in game_room.player_ids:
+        update_client_for_player(player_id, player_router)
+
+
+# Web Page Endpoints
+
+@twentyquestions.route('/game-room')
+def index(player_id):
+    """The entrypoint for the games."""
     return flask.render_template('index.html')
 
 
-@twentyquestions.route(
-    '/game-room/<string:room_id>/player/<string:player_id>')
-def game_room(room_id, player_id):
-    """A room to play the game in."""
-    return flask.render_template('index.html')
+# Web Socket Endpoints
 
-
-@socketio.on('joinWaitingRoom')
-def join_waiting_room(message):
-    """Websocket endpoint for a player to join the waiting room.
+@socketio.on('joinServer')
+def join_server(message):
+    """Websocket endpoint for a player to join the server.
 
     Parameters
     ----------
@@ -60,123 +96,79 @@ def join_waiting_room(message):
     player_id = message['playerId']
 
     if player_id is None:
-        # The client is previewing the waiting room page, but not
-        # actually looking for a game.
+        # The client is previewing the HIT but not yet looking for a
+        # game.
         return
 
-    # put the player in their own personal room
+    # put the player in a room addressed by player id so that we can
+    # communicate with them later.
     flask_socketio.join_room(player_id)
 
-    # Make sure the player is matched to a game
-    player_router.route_player(player_id)
+    if player_id not in player_router.players:
+        player_router.create_player(player_id)
 
-    player = player_router.players[player_id]
-    if player.status == models.PLAYERSTATUSES['INACTIVE']:
-        return
-
+    # update everyone in the game room to which the player was matched
     room_id = player_router.player_matches[player_id]
-    game_room = player_router.game_rooms[room_id]
-
-    num_players = len(game_room.player_ids)
-    if num_players == models.REQUIREDPLAYERS:
-        # notify the entering players that they can start playing
-        for player_id in game_room.player_ids:
-            flask_socketio.emit(
-                'readyToPlay',
-                {'roomId': room_id},
-                room=player_id)
-
-
-@socketio.on('joinGameRoom')
-def join_game_room(message):
-    """Websocket endpoint for a player to join a game room.
-
-    Parameters
-    ----------
-    message : dict
-        A message from the client containing the ``roomId`` string and
-        the ``playerId`` string for that client.
-    """
-    room_id = message['roomId']
-    player_id = message['playerId']
-
-    if room_id not in player_router.game_rooms:
-        raise ValueError(
-            'A player must enter a game room through the waiting room.')
-
-    game_room = player_router.game_rooms[room_id]
-    player = player_router.players[player_id]
-    if (player.player_id == game_room.game.answerer_id
-        or player.player_id == game_room.game.asker_id):
-        pass
-    elif game_room.game.answerer_id is None:
-        player_router.game_rooms[room_id] = game_room.copy(
-            game=game_room.game.copy(
-                answerer_id=player.player_id))
-    elif game_room.game.asker_id is None:
-        player_router.game_rooms[room_id] = game_room.copy(
-            game=game_room.game.copy(
-                asker_id=player.player_id))
-    else:
-        raise ValueError(
-            'A game can only have one asker and one answerer.')
-
-    flask_socketio.join_room(room_id)
-    flask_socketio.emit(
-        'setClientGameState',
-        player_router.game_rooms[room_id].game.to_dict(),
-        room=room_id)
+    update_clients_for_game_room(room_id, player_router)
 
 
 @socketio.on('setServerGameState')
 def set_server_game_state(message):
-    """Websocket endpoint for broadcasting game state.
-
-    Clients use this websocket endpoint for broadcasting updated game
-    state after they make a move.
+    """Websocket endpoint for clients to set the server's game state.
 
     Parameters
     ----------
     message : dict
-        A message from the client that contains their room id, player
-        id, and the entire serialized game state.
+        A message from the client that contains the serialized state for
+        their player and game room.
     """
-    room_id = message['roomId']
-    player_id = message['playerId']
-
-    game = models.Game.from_dict(message['game'])
+    player = models.Player.from_dict(message['player'])
+    game_room = models.GameRoom.from_dict(message['gameRoom'])
 
     # update the game room
-    player_router.game_rooms[room_id] = \
-        player_router.game_rooms[room_id].copy(game=game)
+    player_router.update_game(
+        player_id=player.player_id,
+        game=game_room.game)
 
     # update the clients
-    flask_socketio.emit(
-        'setClientGameState',
-        game.to_dict(),
-        room=room_id)
+    update_clients_for_game_room(
+        game_room.room_id,
+        player_router)
 
 
-@socketio.on('setPlayerAsInactive')
-def set_player_as_inactive(message):
-    """Websocket endpoint for setting a player as inactive.
+@socketio.on('takePlayerAction')
+def take_player_action(message):
+    """Websocket endpoint for clients to take a player action.
 
     Parameters
     ----------
     message : dict
-        a dictionary containing a 'playerId' key mapping to the client's
-        playerId.
+        A message from the client that contains the action's name and
+        the player id.
     """
-    player_id = message['playerId']
+    player = models.Player.from_dict(message['player'])
+    action = message['action']
 
-    room_id = player_router.player_matches.get(player_id)
+    player_id = player.player_id
+    room_id = player_router.player_matches[player_id]
 
-    player_router.set_player_as_inactive(player_id)
+    if action == models.PLAYERACTIONS['STARTPLAYING']:
+        player_router.start_playing(player_id)
+    elif action == models.PLAYERACTIONS['FINISHGAME']:
+        player_router.finish_game(player_id)
+    elif action == models.PLAYERACTIONS['GOINACTIVE']:
+        player_router.go_inactive(player_id)
+    elif action == models.PLAYERACTIONS['GOACTIVE']:
+        player_router.go_active(player_id)
+    else:
+        raise ValueError('Action not recognized.')
 
-    # if the player was in a room, update the room to reflect that
-    # they've been booted.
-    if room_id:
-        flask_socketio.emit(
-            'setClientGameState',
-            player_router.game_rooms[room_id].game.to_dict(),
-            room=room_id)
+    # update the clients
+    if room_id is None:
+        # the player is not currently in a game room, update only the
+        # player
+        update_client_for_player(player_id, player_router)
+    else:
+        # the player is currently in a game room, update all
+        # participants in the game
+        update_clients_for_game_room(room_id, player_router)

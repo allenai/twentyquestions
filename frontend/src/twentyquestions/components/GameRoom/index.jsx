@@ -1,10 +1,7 @@
 /** A component representing the 20 Questions game. */
 
 import React from 'react';
-import AppBar from 'material-ui/AppBar';
-import CssBaseline from 'material-ui/CssBaseline';
 import Paper from 'material-ui/Paper';
-import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
 
@@ -17,7 +14,6 @@ import MakeGuessForm from '../MakeGuessForm';
 import AnswerGuessForm from '../AnswerGuessForm';
 import SubmitResultsForm from '../SubmitResultsForm';
 import QnABoard from '../QnABoard';
-
 
 
 /**
@@ -64,18 +60,21 @@ const styles = theme => ({
 /**
  * A react component for representing the game.
  *
- * @prop {Game} game - The game.
- * @prop {String} playerId - The ID for the player using this client.
- * @prop {GameController} controller - The controller for the application.
+ * @prop {GameRoom} gameRoom - The game room.
+ * @prop {Player} player - The player for this client.
+ * @prop {Controller} controller - The controller for the application.
  */
 class Game extends React.Component {
   render() {
     const { classes } = this.props;
     const {
-      game,
-      playerId,
+      gameRoom,
+      player,
       controller
     } = this.props;
+
+    const playerId = player.playerId;
+    const game = gameRoom.game;
 
     // calculate some quantities we'll display in the UI
     const numPlayers = (
@@ -174,15 +173,6 @@ class Game extends React.Component {
 
     return (
       <div>
-        <CssBaseline/>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="title" color="inherit">
-              20 Questions
-            </Typography>
-          </Toolbar>
-        </AppBar>
-
         <PlayerContext
           playerRole={playerRole}
           numPlayers={numPlayers}

@@ -60,7 +60,7 @@ const styles = theme => ({
  *
  * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {GameController} controller - The controller for the application.
+ * @prop {Controller} controller - The controller for the application.
  */
 class SubmitResultsForm extends React.Component {
   handleSubmit(e) {
@@ -68,7 +68,7 @@ class SubmitResultsForm extends React.Component {
 
     const {controller} = this.props;
 
-    controller.dispatchAction(
+    controller.takeGameAction(
       'submitResults',
       []
     );

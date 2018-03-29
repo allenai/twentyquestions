@@ -1,33 +1,11 @@
 /** App entry point. */
 
-import GameModel from './game-room/model';
-import GameView from './game-room/view';
-import GameController from './game-room/controller';
-import WaitingRoomModel from './waiting-room/model';
-import WaitingRoomView from './waiting-room/view';
-import WaitingRoomController from './waiting-room/controller';
-
-import settings from './settings';
+import Model from './twentyquestions/model';
+import View from './twentyquestions/view';
+import Controller from './twentyquestions/controller';
 
 
-/** Routes for the app. */
-const routes = [
-  [
-    settings.waitingRoomUrlRegex,
-    new WaitingRoomController(WaitingRoomView, WaitingRoomModel)
-  ],
-  [
-    settings.gameRoomUrlRegex,
-    new GameController(GameView, GameModel)
-  ]
-];
+const controller = new Controller(View, Model);
 
-
-// match the correct URL and then initialize the controller
-for (let i = 0; i < routes.length; i++) {
-  const [urlPattern, controller] = routes[i];
-  if (urlPattern.test(window.location.href)) {
-    controller.initialize();
-    break;
-  }
-}
+// Initialize the application
+controller.initialize();

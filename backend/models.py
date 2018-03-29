@@ -83,6 +83,9 @@ class Data(object):
 
 # constants
 
+# The maximum number of questions that can be asked in a round. */
+MAXQUESTIONS = 20
+
 # roles that the players can take
 ROLES = {
     'asker': 'asker',
@@ -101,12 +104,23 @@ STATES = {
 
 # statuses that a player may occupy
 PLAYERSTATUSES = {
-    'ACTIVE': 'ACTIVE',
-    'INACTIVE': 'INACTIVE'
+    'WAITING': 'WAITING',
+    'READYTOPLAY': 'READYTOPLAY',
+    'PLAYING': 'PLAYING',
+    'INACTIVE': 'INACTIVE',
+    'BANNED': 'BANNED'
 }
 
 # The required number of players to play a game.
 REQUIREDPLAYERS = 2
+
+# the status transitions a player can initiate on themselves
+PLAYERACTIONS = {
+    'STARTPLAYING': 'STARTPLAYING',
+    'FINISHGAME': 'FINISHGAME',
+    'GOINACTIVE': 'GOINACTIVE',
+    'GOACTIVE': 'GOACTIVE'
+}
 
 
 # data models
@@ -438,6 +452,59 @@ class GameRoom(Data):
             'playerIds': self.player_ids
         }
 
+    def add_player(self, player):
+        """Return a new game room with the player added.
+
+        Parameters
+        ----------
+        player : Player
+            The player to add to the game room.
+
+        Returns
+        -------
+        GameRoom
+            The new instance with the player added.
+        """
+        if self.game.answerer_id is None:
+            new_game = self.game.copy(answerer_id=player.player_id)
+        elif self.game.asker_id is None:
+            new_game = self.game.copy(asker_id=player.player_id)
+        else:
+            raise ValueError(
+                'Cannot add a player to a full game room.')
+
+        return self.copy(
+            game=new_game,
+            player_ids=[player.player_id, *self.player_ids])
+
+    def remove_player(self, player):
+        """Return a new game room with the player removed.
+
+        Parameters
+        ----------
+        player : Player
+            The player to remove from the game room.
+
+        Returns
+        -------
+        GameRoom
+            The new instance with the player removed.
+        """
+        if player.player_id == self.game.answerer_id:
+            new_game = self.game.copy(answerer_id=None)
+        elif player.player_id == self.game.asker_id:
+            new_game = self.game.copy(asker_id=None)
+        else:
+            new_game = self.game
+
+        return self.copy(
+            game=new_game,
+            player_ids=[
+                other_player_id
+                for other_player_id in self.player_ids
+                if other_player_id != player.player_id
+            ])
+
 
 class PlayerRouter(object):
     """A class for routing players into games.
@@ -484,43 +551,34 @@ class PlayerRouter(object):
         self.game_room_priorities = game_room_priorities
         self.player_matches = player_matches
 
-    def route_player(self, player_id):
-        """Route a player to a game.
+    # helper methods
 
-        Route the player represented by ``player_id`` to a game. If no
-        player is known by ``player_id``, then also create a new player
-        for the id.
-
-        If the player is already matched with a game, then nothing
-        happens as this method is idempotent.
+    def match_player_to_game_room(self, player_id):
+        """Match the player for ``player_id`` to a game room.
 
         Parameters
         ----------
         player_id : str
-            The ID of the player to match to a game.
-
-        Returns
-        -------
-        None
+            The ID for the player to match to a game room.
         """
-        # check if the player has already been matched to a game
-        if player_id in self.player_matches:
-            return
+        # check pre-conditions
+        player = self.players[player_id]
+        if player.status != PLAYERSTATUSES['WAITING']:
+            raise ValueError(
+                'Only "WAITING" players may be matched to game rooms.')
+        if self.player_matches[player_id] != None:
+            raise ValueError(
+                'Player is already matched to a game.')
 
-        # create the player if the player is new
-        if player_id not in self.players:
-            self.players[player_id] = Player(
-                player_id=player_id,
-                status=PLAYERSTATUSES['ACTIVE'])
-
-        # get the first list of game_ids
+        # get the first list of game ids by priority
         for game_room_ids in reversed(self.game_room_priorities):
             if len(game_room_ids) > 0:
                 break
 
+        # match the player to a game room
         if len(game_room_ids) == 0:
-            # there are no partially full game rooms so create a new
-            # game room.
+            # there are no partially full game rooms
+            # create a new game room for this player
             room_id = str(uuid.uuid4()).replace('-', '')
             game_room = GameRoom(
                 room_id=room_id,
@@ -532,31 +590,120 @@ class PlayerRouter(object):
                         subject=None,
                         guess=None,
                         question_and_answers=[])),
-                player_ids=[player_id])
+                player_ids=[]
+            ).add_player(player)
 
+            # update game room and player matches
             self.game_rooms[room_id] = game_room
-            self.game_room_priorities[1].append(room_id)
             self.player_matches[player_id] = room_id
+
+            # add the game room into the priority queue
+            self.game_room_priorities[1].append(room_id)
         else:
-            # take the game room with the most players in it currently
-            # and fill it up
+            # add the player to the game room that's closest to full
             room_id = game_room_ids.pop()
             old_game_room = self.game_rooms[room_id]
-            game_room = old_game_room.copy(
-                player_ids=[
-                    player_id,
-                    *old_game_room.player_ids
-                ])
+            game_room = old_game_room.add_player(player)
 
+            # update game room and player matches
             self.game_rooms[room_id] = game_room
-
-            num_players = len(game_room.player_ids)
-            if num_players < REQUIREDPLAYERS:
-                game_room_priorities[num_players].append(room_id)
-
             self.player_matches[player_id] = room_id
 
-    def set_player_as_inactive(self, player_id):
+            # add game room into priority queue or kick of play
+            num_players = len(game_room.player_ids)
+            if num_players < REQUIREDPLAYERS:
+                # add the game room back to the priority queue
+                self.game_room_priorities[num_players].append(room_id)
+            else:
+                # change players in room to 'READYTOPLAY'
+                for a_player_id in game_room.player_ids:
+                    a_player = self.players[a_player_id]
+                    if a_player.status == PLAYERSTATUSES['WAITING']:
+                        self.players[a_player_id] = a_player.copy(
+                            status=PLAYERSTATUSES['READYTOPLAY'])
+
+    # join server actions
+
+    def create_player(self, player_id):
+        """Create a new player.
+
+        Create a new player corresponding to ``player_id`` and match the
+        player to a game room. If a player already exists with the ID
+        then an error is thrown.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID of the player to match to a game.
+        """
+        if player_id in self.players:
+            raise ValueError('Player IDs must be unique.')
+
+        # create the player
+        player = Player(
+            player_id=player_id,
+            status=PLAYERSTATUSES['WAITING'])
+        self.players[player_id] = player
+
+        # set the player's match to the None game room
+        self.player_matches[player_id] = None
+
+        # match the player to a game room
+        self.match_player_to_game_room(player_id)
+
+    # player actions
+
+    def start_playing(self, player_id):
+        """Transition ``player_id`` from 'READYTOPLAY' to 'PLAYING'.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID for the player to transition.
+        """
+        room_id = self.player_matches[player_id]
+
+        # update the player's status
+        old_player = self.players[player_id]
+        if old_player.status != PLAYERSTATUSES['READYTOPLAY']:
+            raise ValueError(
+                'Player can only start playing when "READYTOPLAY".')
+        player = old_player.copy(status=PLAYERSTATUSES['PLAYING'])
+        self.players[player_id] = player
+
+        # the game room's state doesn't need to be updated because
+        # players are pre-emptively placed into roles in the game when
+        # they enter the game room.
+
+    def finish_game(self, player_id):
+        """Remove the player from the server.
+
+        Most players will leave the server after they finish a game, so
+        when players finish games we'll remove them from the server.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID for the player who just finished a game.
+        """
+        player = self.players[player_id]
+
+        # update the game room that the player is currently in
+        room_id = self.player_matches[player_id]
+        old_game_room = self.game_rooms[room_id]
+        game_room = old_game_room.remove_player(player)
+        if len(game_room.players) == 0:
+            # if all players are gone, delete the game room
+            del self.game_rooms[room_id]
+        else:
+            # if players are left, update the game room
+            self.game_rooms[room_id] = game_room
+
+        # delete the player
+        del self.players[player_id]
+        del self.player_matches[player_id]
+
+    def go_inactive(self, player_id):
         """Set a player as inactive.
 
         An inactive player will be removed from any game they are
@@ -567,36 +714,54 @@ class PlayerRouter(object):
         ----------
         player_id : str
             The ID of the player to set as inactive.
-
-        Returns
-        -------
-        None
         """
-        # update the player's status as inactive
-        self.players[player_id] = self.players[player_id].copy(
+        # set the player's status as inactive
+        player = self.players[player_id].copy(
             status=PLAYERSTATUSES['INACTIVE'])
-
-        room_id = self.player_matches[player_id]
-        old_game_room = self.game_rooms[room_id]
-        old_game = old_game_room.game
-
-        # remove the player from the game if they're in it
-        if player_id == old_game.asker_id:
-            new_game = old_game.copy(asker_id=None)
-        elif player_id == old_game.answerer_id:
-            new_game = old_game.copy(answerer_id=None)
-        else:
-            new_game = old_game
+        self.players[player_id] = player
 
         # remove the player from the game room
-        new_game_room = old_game_room.copy(
-            game=new_game,
-            player_ids=[
-                x
-                for x in old_game_room.player_ids
-                if x != player_id
-            ])
-        self.game_rooms[room_id] = new_game_room
+        room_id = self.player_matches[player_id]
+        old_game_room = self.game_rooms[room_id]
+        game_room = old_game_room.remove_player(player)
+        num_players = len(game_room.player_ids)
+        self.game_rooms[room_id] = game_room
+        self.game_room_priorities[num_players].append(room_id)
 
         # match the player to None
         self.player_matches[player_id] = None
+
+    def go_active(self, player_id):
+        """Set a player as active.
+
+        Set the player as active and match them to a game room.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID of the player to set as active.
+        """
+        # set the player's status as active
+        player = self.players[player_id].copy(
+            status=PLAYERSTATUSES['WAITING'])
+        self.players[player_id] = player
+
+        # match the player to a game room
+        self.match_player_to_game_room(player_id)
+
+    # update the game state
+
+    def update_game(self, player_id, game):
+        """Update the state for a game.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID for the player who is updating the game.
+        game : Game
+            The new game state to update to.
+        """
+        room_id = self.player_matches[player_id]
+        game_room = self.game_rooms[room_id]
+
+        self.game_rooms[room_id] = game_room.copy(game=game)

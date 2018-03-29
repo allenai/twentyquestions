@@ -17,7 +17,7 @@ const styles = theme => ({});
  *
  * @prop {Game} game - The game.
  * @prop {String} playerId - The ID for the player using this client.
- * @prop {GameController} controller - The controller for the application.
+ * @prop {Controller} controller - The controller for the application.
  */
 class SubjectForm extends React.Component {
   constructor(props) {
@@ -41,7 +41,7 @@ class SubjectForm extends React.Component {
 
     this.setState({value: ''});
 
-    controller.dispatchAction(
+    controller.takeGameAction(
       'chooseSubject',
       [playerId, subject]
     );

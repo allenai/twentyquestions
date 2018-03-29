@@ -9,6 +9,13 @@ import Data from '../utilities/data';
 const MAXQUESTIONS = 20;
 
 
+/** The roles players can have in the game. */
+const ROLES = {
+    asker: 'asker',
+    answerer: 'answerer'
+};
+
+
 /** The states the game can occupy */
 const STATES = {
   CHOOSESUBJECT: 'CHOOSESUBJECT',
@@ -22,10 +29,25 @@ const STATES = {
 
 /** The statuses that a player can have */
 const PLAYERSTATUSES = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE'
+  WAITING: 'WAITING',
+  READYTOPLAY: 'READYTOPLAY',
+  PLAYING: 'PLAYING',
+  INACTIVE: 'INACTIVE',
+  BANNED: 'BANNED'
 };
 
+
+/** The required number of players for a game */
+const REQUIREDPLAYERS = 2;
+
+
+/** The actions that a player can take. */
+const PLAYERACTIONS = {
+  STARTPLAYING: 'STARTPLAYING',
+  FINISHGAME: 'FINISHGAME',
+  GOINACTIVE: 'GOINACTIVE',
+  GOACTIVE: 'GOACTIVE'
+};
 
 
 /* data models */
@@ -276,11 +298,11 @@ class Game extends Data {
    *   round just started and we need a subject for it, or whether or
    *   not a player is currently asking a question.
    * @param {Optional[String]} answererId - The playerId for the player who is the
-   *   answerer for this round. If answererId is not present it must be null.
+   *   currently the answerer. If answererId is not present it must be null.
    * @param {Optional[String]} askerId - The playerId for the player who is the
-   *   asker for this round. If askerId is not present it must be null.
+   *   currently the asker. If askerId is not present it must be null.
    * @param {Round} round - Data recording what happened
-   *   during this round of 20 Questions.
+   *   during the round of 20 Questions.
    *
    * @return {Game} The new Game instance.
    */
@@ -329,7 +351,7 @@ class Game extends Data {
    *
    * @param {String} answererId - The playerId for the player who is
    *   setting the subject. The player setting the subject should be the
-   *   answerer for the round.
+   *   answerer.
    * @param {String} subject - The subject to set for the round.
    *
    * @return {Game} A new Game instance in which the subject has been
@@ -476,7 +498,7 @@ class Game extends Data {
     // check pre-conditions
     if (this.state !== STATES.MAKEGUESS) {
       throw new Error(
-        'An guess can only be made when the game is in state'
+        'A guess can only be made when the game is in state'
           + ' "MAKEGUESS".'
       );
     } else if (askerId !== this.askerId) {
@@ -554,20 +576,75 @@ class Game extends Data {
 }
 
 
+/**
+ * A class representing a single room with a game in it.
+ *
+ * @extends Data
+ */
+class GameRoom extends Data {
+  /**
+   * Create a new GameRoom instance.
+   *
+   * @param {String} roomId - The ID for the game room.
+   * @param {Game} game - The Game instance being played in the game
+   *   room.
+   * @param {Array[String]} playerIds - The IDs for the players
+   *   currently in the game room.
+   *
+   * @return {GameRoom} The new GameRoom instance.
+   */
+  constructor(
+    roomId,
+    game,
+    playerIds
+  ) {
+    super();
+
+    // bind attributes to instance
+    this.roomId = roomId;
+    this.game = game;
+    this.playerIds = playerIds;
+  }
+
+  /** @see documentation for Data. */
+  static fromObject(obj) {
+    return new GameRoom(
+      obj.roomId,
+      Game.fromObject(obj.game),
+      obj.playerIds
+    );
+  }
+
+  /** @see documentation for Data. */
+  toObject() {
+    return {
+      roomId: this.roomId,
+      game: this.game.toObject(),
+      playerIds: this.playerIds
+    };
+  }
+}
+
+
 
 /** Define exports. */
 
 /** The exports for this module. */
-const GameModel = {
+const Model = {
   MAXQUESTIONS,
+  ROLES,
   STATES,
+  PLAYERSTATUSES,
+  REQUIREDPLAYERS,
+  PLAYERACTIONS,
   Player,
   Question,
   Answer,
   QuestionAndAnswer,
   Round,
-  Game
+  Game,
+  GameRoom
 };
 
 
-export default GameModel;
+export default Model;
