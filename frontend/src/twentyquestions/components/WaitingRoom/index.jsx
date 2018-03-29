@@ -27,8 +27,8 @@ const styles = theme => ({
 /**
  * A react component for the waiting room.
  *
- * @prop {GameRoom} gameRoom - The game room.
- * @prop {Player} player - The player for this client.
+ * @prop {Optional[GameRoom]} gameRoom - The game room.
+ * @prop {Optional[Player]} player - The player for this client.
  * @prop {Controller} controller - The controller for the application.
  */
 class WaitingRoom extends React.Component {
@@ -49,9 +49,9 @@ class WaitingRoom extends React.Component {
   decrement() {
     const {player, controller} = this.props;
 
-    const readyToPlay = (
-      player.status === model.PLAYERSTATUSES.READYTOPLAY
-    );
+    const readyToPlay = player === null ?
+          false
+          : player.status === model.PLAYERSTATUSES.READYTOPLAY;
 
     // only change the countdown if in state 'READYTOPLAY'
     if (readyToPlay) {
@@ -83,8 +83,12 @@ class WaitingRoom extends React.Component {
     const {classes} = this.props;
     const {gameRoom, player, controller} = this.props;
 
-    const informationalContent = {
-      WAITING: (
+    let informationalContent = null;
+    if (
+      player === null
+        || player.status === model.PLAYERSTATUSES.WAITING
+    ) {
+      informationalContent = (
         <Grid container>
             <Grid item xs={12}>
               <Typography
@@ -97,8 +101,9 @@ class WaitingRoom extends React.Component {
               <CircularProgress color='primary'/>
             </Grid>
         </Grid>
-      ),
-      READYTOPLAY: (
+      );
+    } else if (player.status === model.PLAYERSTATUSES.READYTOPLAY) {
+      informationalContent = (
         <Grid container>
             <Grid item xs={12}>
               <Typography
@@ -115,14 +120,19 @@ class WaitingRoom extends React.Component {
               </Typography>
             </Grid>
         </Grid>
-      ),
-      INACTIVE: (
+      );
+    } else if (player.status === model.PLAYERSTATUSES.INACTIVE) {
+      informationalContent = (
         <InactiveModal
           gameRoom={gameRoom}
           player={player}
           controller={controller}/>
-      )
-    }[player.status];
+      );
+    }
+
+    const readyToPlay = player === null ?
+          false
+          : player.status === model.PLAYERSTATUSES.READYTOPLAY;
 
     return (
       <div>
@@ -145,7 +155,7 @@ class WaitingRoom extends React.Component {
                 variant='raised'
                 color='primary'
                 onClick={() => this.enterGameRoom()}
-                disabled={player.status !== model.PLAYERSTATUSES.READYTOPLAY}>
+                disabled={!readyToPlay}>
                 Play
               </Button>
             </Grid>

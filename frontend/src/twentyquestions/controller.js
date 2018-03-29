@@ -86,6 +86,8 @@ class Controller {
       'connect',
       (message) => this.joinServer(playerId)
     );
+
+    this.renderView();
   }
 
   /**
@@ -116,7 +118,8 @@ class Controller {
     }
 
     this.player = this.model.Player.fromObject(message.player);
-    this.gameRoom = this.model.GameRoom.fromObject(message.gameRoom);
+    this.gameRoom = message.gameRoom
+      && this.model.GameRoom.fromObject(message.gameRoom);
 
     this.renderView();
   }

@@ -15,8 +15,10 @@ import BannedRoom from './components/BannedRoom';
 /**
  * The UI layer of the application.
  *
- * @prop {GameRoom} gameRoom - The game room that this view is representing.
- * @prop {String} player - The player using this client.
+ * Either player and gameRoom can both be null, or neither should be null.
+ *
+ * @prop {Optional[GameRoom]} gameRoom - The game room that this view is representing.
+ * @prop {Optional[Player]} player - The player using this client.
  * @prop {Controller} controller - The controller for the application.
  */
 class View extends React.Component {
@@ -27,34 +29,38 @@ class View extends React.Component {
       controller
     } =  this.props;
 
-    const roomToDisplay = {
-      WAITING: 'waitingRoom',
-      READYTOPLAY: 'waitingRoom',
-      PLAYING: 'gameRoom',
-      INACTIVE: 'waitingRoom',
-      BANNED: 'bannedRoom'
-    }[player.status];
-
-    const room = {
-      waitingRoom: (
+    let room = null;
+    if (
+      player === null
+        || player.status === controller.model.PLAYERSTATUSES.WAITING
+        || player.status === controller.model.PLAYERSTATUSES.READYTOPLAY
+        || player.status === controller.model.PLAYERSTATUSES.INACTIVE
+    ) {
+      room = (
         <WaitingRoom
           gameRoom={gameRoom}
           player={player}
           controller={controller}/>
-      ),
-      gameRoom: (
+      );
+    } else if (player.status === controller.model.PLAYERSTATUSES.PLAYING) {
+      room = (
         <GameRoom
           gameRoom={gameRoom}
           player={player}
           controller={controller}/>
-      ),
-      bannedRoom: (
+      );
+    } else if (player.status === controller.model.PLAYERSTATUSES.BANNED) {
+      room = (
         <BannedRoom
           gameRoom={gameRoom}
           player={player}
           controller={controller}/>
-      )
-    }[roomToDisplay];
+      );
+    } else {
+      throw new Error(
+        `Player status (${player.status}) not recognized.`
+      );
+    }
 
     return (
       <div>
@@ -66,9 +72,7 @@ class View extends React.Component {
             </Typography>
           </Toolbar>
         </AppBar>
-
         {room}
-
       </div>
     );
   }
