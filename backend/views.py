@@ -93,11 +93,15 @@ def disconnect():
     player_id = player_id_from_sid[sid]
     most_recent_sid = most_recent_sid_from_player_id[player_id]
 
+    logger.info(f'Dropping connection (SID {sid}).')
+
     # delete the old sid -> player_id mapping
     del player_id_from_sid[sid]
 
     # only delete the player if they haven't reconnected
     if sid == most_recent_sid:
+        logger.info(f'Disconnecting player {player_id} from server.')
+
         old_room_id = player_router.player_matches[player_id]
 
         player_router.delete_player(player_id)
@@ -118,16 +122,24 @@ def join_server(message):
         playerId.
     """
     player_id = message['playerId']
-
-    # record the sid <-> player_id mappings
     sid = flask.request.sid
-    player_id_from_sid[sid] = player_id
-    most_recent_sid_from_player_id[player_id] = sid
 
     if player_id is None:
-        # The client is previewing the HIT but not yet looking for a
-        # game.
+        # The client is previewing the HIT, ignore them
         return
+
+    if player_id in most_recent_sid_from_player_id:
+        old_sid = most_recent_sid_from_player_id[player_id]
+        logger.info(
+            f'Player {player_id} reconnecting to server.'
+            f' Updating SID from {old_sid} to {sid}.')
+    else:
+        logger.info(
+            f'Player {player_id} connecting to server with SID {sid}')
+
+    # record the sid <-> player_id mappings
+    player_id_from_sid[sid] = player_id
+    most_recent_sid_from_player_id[player_id] = sid
 
     # put the player in a room addressed by player id so that we can
     # communicate with them later.
@@ -158,6 +170,10 @@ def set_server_game_state(message):
     game_room = models.GameRoom.from_dict(message['gameRoom'])
 
     player_id = player.player_id
+    room_id = game_room.room_id
+
+    logger.info(
+        f'Player {player_id} setting game state for room {room_id}.')
 
     # update the game room
     player_router.update_game(
@@ -165,7 +181,8 @@ def set_server_game_state(message):
         game=game_room.game)
 
     # update the clients
-    update_clients_for_game_room(game_room.room_id)
+    update_clients_for_game_room(room_id)
+
 
 @socketio.on('takePlayerAction')
 def take_player_action(message):
@@ -182,6 +199,8 @@ def take_player_action(message):
 
     player_id = player.player_id
     old_room_id = player_router.player_matches[player_id]
+
+    logger.info(f'Player {player_id} taking action {action}')
 
     if action == models.PLAYERACTIONS['STARTPLAYING']:
         player_router.start_playing(player_id)
