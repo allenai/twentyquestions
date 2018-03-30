@@ -601,7 +601,10 @@ class PlayerRouter(object):
             self.game_room_priorities[1].append(room_id)
         else:
             # add the player to the game room that's closest to full
-            room_id = game_room_ids.pop()
+
+            # pop from the front of the array to get the game that's
+            # been waiting the longest.
+            room_id = game_room_ids.pop(0)
             old_game_room = self.game_rooms[room_id]
             game_room = old_game_room.add_player(player)
 
