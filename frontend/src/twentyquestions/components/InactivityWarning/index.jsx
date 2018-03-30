@@ -102,6 +102,14 @@ class InactivityWarning extends React.Component {
         });
         controller.takePlayerAction(model.PLAYERACTIONS.GOINACTIVE);
       }
+    } else {
+      // make sure that the countdowns are reset when not on the
+      // player's turn
+      this.setState({
+        open: false,
+        countDownToWarning: settings.SECONDSTOWARNING,
+        countDownToRespond: settings.SECONDSTORESPOND
+      });
     }
   }
 
