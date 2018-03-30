@@ -31,15 +31,25 @@ const serverSocket = {
 }[env];
 
 
-/** Number of seconds a player has to enter a game. */
-const SECONDSTOPLAY = 10;
+/** The seconds a player has before asking if they're active. */
+const SECONDSTOWARNING = 30;
+
+
+/**
+ * The seconds a player has to respond before going inactive.
+ *
+ * This number is used both for inactivity checks and for how long a
+ * player has to enter a game before going inactive.
+ */
+const SECONDSTORESPOND = 10;
 
 
 /** Settings to be exported. */
 const settings = {
   shouldLog,
   serverSocket,
-  SECONDSTOPLAY
+  SECONDSTOWARNING,
+  SECONDSTORESPOND
 };
 
 

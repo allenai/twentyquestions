@@ -6,6 +6,7 @@ import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
 
 import model from '../../model';
+import InactivityWarning from '../InactivityWarning';
 import PlayerContext from '../PlayerContext';
 import QuestionForm from '../QuestionForm';
 import AnswerForm from '../AnswerForm';
@@ -173,6 +174,11 @@ class Game extends React.Component {
 
     return (
       <div>
+        <InactivityWarning
+          gameRoom={gameRoom}
+          player={player}
+          controller={controller}/>
+
         <PlayerContext
           playerRole={playerRole}
           numPlayers={numPlayers}

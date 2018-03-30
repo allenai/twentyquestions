@@ -36,7 +36,7 @@ class WaitingRoom extends React.Component {
     super(props);
 
     this.state = {
-      secondsLeft: settings.SECONDSTOPLAY
+      secondsLeft: settings.SECONDSTORESPOND
     };
   }
 
@@ -61,7 +61,7 @@ class WaitingRoom extends React.Component {
       this.setState({secondsLeft: secondsLeft - 1});
 
       if (secondsLeft - 1 === 0) {
-        this.setState({secondsLeft: settings.SECONDSTOPLAY});
+        this.setState({secondsLeft: settings.SECONDSTORESPOND});
 
         controller.takePlayerAction(model.PLAYERACTIONS.GOINACTIVE);
       }
@@ -69,10 +69,7 @@ class WaitingRoom extends React.Component {
   }
 
   componentDidMount() {
-    this.countdown = setInterval(
-      () => this.decrement(),
-      1000
-    );
+    this.countdown = setInterval(() => this.decrement(), 1000);
   }
 
   componentWillUnmount() {
