@@ -5,8 +5,7 @@ import Button from 'material-ui/Button';
 import {
   FormLabel,
   FormControl,
-  FormControlLabel,
-  FormHelperText
+  FormControlLabel
 } from 'material-ui/Form';
 import Grid from 'material-ui/Grid';
 import { LinearProgress } from 'material-ui/Progress';
@@ -73,27 +72,32 @@ class AnswerGuessForm extends React.Component {
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='subheading'>Answer the Guess</Typography>
+            <Typography variant='title'>Answer the Guess</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography>
               You chose the subject: <em>{game.round.subject}</em>
             </Typography>
           </Grid>
-          { !enableForm &&
-            <Grid item xs={12}>
-              <Typography align='center' variant='caption'>
-                waiting for your turn
-              </Typography>
-              <LinearProgress variant='query'/>
-            </Grid>
+          { enableForm ?
+                <Grid item xs={12}>
+                  <Typography variant='headline'>
+                    {questionText}
+                  </Typography>
+                </Grid>
+              : <Grid item xs={12}>
+                  <Typography align='center' variant='caption'>
+                    waiting for your turn
+                  </Typography>
+                  <LinearProgress variant='query'/>
+                </Grid>
           }
           <Grid item xs={12}>
             <FormControl
               component='fieldset'>
-              <FormLabel component='legend'>{questionText}</FormLabel>
+              <FormLabel component='legend'>answer</FormLabel>
               <RadioGroup
-                aria-label={questionText}
+                aria-label='answer'
                 name='answer'
                 value={this.state.answerString}
                 onChange={this.handleChange.bind(this)}>

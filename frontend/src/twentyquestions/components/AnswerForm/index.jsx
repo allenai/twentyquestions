@@ -1,4 +1,4 @@
-/* Components for answering questions */
+/** Components for answering questions */
 
 import React from 'react';
 import Button from 'material-ui/Button';
@@ -6,7 +6,6 @@ import {
   FormLabel,
   FormControl,
   FormControlLabel,
-  FormHelperText
 } from 'material-ui/Form';
 import Grid from 'material-ui/Grid';
 import { LinearProgress } from 'material-ui/Progress';
@@ -80,27 +79,32 @@ class AnswerForm extends React.Component {
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='subheading'>Submit Answers</Typography>
+            <Typography variant='title'>Submit Answers</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography>
               You chose the subject: <em>{game.round.subject}</em>
             </Typography>
           </Grid>
-          { !enableForm &&
-            <Grid item xs={12}>
-              <Typography align='center' variant='caption'>
-                waiting for your turn
-              </Typography>
-              <LinearProgress variant='query'/>
-            </Grid>
+          { enableForm ?
+                <Grid item xs={12}>
+                  <Typography variant='headline'>
+                    {questionToDisplay}
+                  </Typography>
+                </Grid>
+              : <Grid item xs={12}>
+                  <Typography align='center' variant='caption'>
+                    waiting for your turn
+                  </Typography>
+                  <LinearProgress variant='query'/>
+                </Grid>
           }
           <Grid item xs={12}>
             <FormControl
               component='fieldset'>
-              <FormLabel component='legend'>{questionToDisplay}</FormLabel>
+              <FormLabel component='legend'>answer</FormLabel>
               <RadioGroup
-                aria-label={questionToDisplay}
+                aria-label='answer'
                 name='answer'
                 value={this.state.answerString}
                 onChange={this.handleChange.bind(this)}>

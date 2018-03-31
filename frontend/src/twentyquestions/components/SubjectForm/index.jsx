@@ -52,7 +52,7 @@ class SubjectForm extends React.Component {
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='subheading'>
+            <Typography variant='title'>
               Choose a Subject
             </Typography>
           </Grid>

@@ -60,7 +60,7 @@ class QuestionForm extends React.Component {
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='subheading'>Ask Questions</Typography>
+            <Typography variant='title'>Ask Questions</Typography>
           </Grid>
           { !enableForm &&
             <Grid item xs={12}>
