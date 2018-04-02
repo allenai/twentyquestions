@@ -68,10 +68,7 @@ class SubmitResultsForm extends React.Component {
 
     const {controller} = this.props;
 
-    controller.takeGameAction(
-      'submitResults',
-      []
-    );
+    controller.submitResults();
   }
 
   render() {
