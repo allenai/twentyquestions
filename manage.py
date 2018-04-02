@@ -47,7 +47,8 @@ subcommands = [
     scripts.dockerize,
     scripts.serve,
     scripts.promote,
-    scripts.deploy
+    scripts.deploy,
+    scripts.extractgames
 ]
 
 for subcommand in subcommands:
