@@ -59,7 +59,10 @@ class Controller {
     if (queryParams.assignmentId === undefined) {
       throw new Error('No Assignment ID found.');
     }
-    if (queryParams.workerId === undefined) {
+    if (
+      queryParams.workerId === undefined
+        && queryParams.assignmentId !== 'ASSIGNMENT_ID_NOT_AVAILABLE'
+    ) {
       throw new Error('No Worker ID found.');
     }
 
