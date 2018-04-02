@@ -93,6 +93,14 @@ class WaitingRoom extends React.Component {
                 align='center'>
                 Waiting for Players
               </Typography>
+              <Typography
+                variant='subheading'
+                align='center'>
+                You're currently waiting for another player to
+                join. Once a Turker takes up one of the other HITs,
+                we'll match them to you and the game will get
+                started.
+              </Typography>
             </Grid>
             <Grid item align='center' xs={12}>
               <CircularProgress color='primary'/>
