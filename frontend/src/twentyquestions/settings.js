@@ -44,12 +44,34 @@ const SECONDSTOWARNING = 30;
 const SECONDSTORESPOND = 10;
 
 
+/**
+ * A function to normalize subject strings before checking the blacklist.
+ */
+function blacklistNormalizer(s) {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[!,.:;?]/, '');
+}
+
+
+/**
+ * A blacklist of subjects that players are not allowed to choose.
+ */
+const subjectBlacklist = [
+  'dog',
+  'cat'
+].map(blacklistNormalizer);
+
+
 /** Settings to be exported. */
 const settings = {
   shouldLog,
   serverSocket,
   SECONDSTOWARNING,
-  SECONDSTORESPOND
+  SECONDSTORESPOND,
+  blacklistNormalizer,
+  subjectBlacklist
 };
 
 

@@ -7,6 +7,8 @@ import TextField from 'material-ui/TextField';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
 
+import settings from '../../settings';
+
 
 /** Style rules to apply to the component. */
 const styles = theme => ({});
@@ -24,12 +26,21 @@ class SubjectForm extends React.Component {
     super(props);
 
     this.state = {
-      value: ''
+      value: '',
+      subjectOk: false
     };
   }
 
   handleChange(e) {
-    this.setState({value: e.target.value});
+    const value = e.target.value;
+
+    this.setState({
+      value: value,
+      subjectOk: value.length > 2
+        && !settings.subjectBlacklist.includes(
+          settings.blacklistNormalizer(value)
+        )
+    });
   }
 
   handleSubmit(e) {
@@ -48,6 +59,11 @@ class SubjectForm extends React.Component {
   }
 
   render() {
+    const errorText = (
+      `The subject must be longer than two characters and can't be`
+        + ` any of ${settings.subjectBlacklist.join(', ')}.`
+    );
+
     return (
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
@@ -57,6 +73,10 @@ class SubjectForm extends React.Component {
             </Typography>
           </Grid>
           <Grid item xs={12}>
+            { !this.state.subjectOk ?
+                <Typography>{ errorText} </Typography>
+                : null
+            }
             <TextField
               id='subject-input'
               label='Subject'
@@ -74,7 +94,8 @@ class SubjectForm extends React.Component {
             <Button
               type='submit'
               variant='raised'
-              color='primary'>
+              color='primary'
+              disabled={!this.state.subjectOk}>
               Submit
             </Button>
           </Grid>
