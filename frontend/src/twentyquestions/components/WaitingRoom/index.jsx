@@ -109,25 +109,26 @@ class WaitingRoom extends React.Component {
               <ol>
                 <li>
                   <Typography>
-                    The first player chooses a hidden object.
+                    The first player will choose a hidden object.
                   </Typography>
                 </li>
                 <li>
                   <Typography>
-                    The second player has to ask 20 yes-no questions
+                    The second player will ask 20 yes-no questions
                     about the object.
                   </Typography>
                 </li>
                 <li>
                   <Typography>
-                    The first player answers the questions truthfully.
+                    The first player will answer the questions
+                    truthfully.
                   </Typography>
                 </li>
                 <li>
                   <Typography>
                     <b>
                       <i>Only</i> after 20 questions have been asked,
-                      the second player guesses what the object is.
+                      the second player will guess what the object is.
                     </b>
                   </Typography>
                 </li>

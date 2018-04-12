@@ -29,20 +29,11 @@ import QnABoard from '../QnABoard';
 const ROLES = {
   asker: {
     id: 'asker',
-    label: 'asker',
-    description: 'As the "asker", you ask yes-or-no questions and try to'
-      + ' identify the object. After you have asked 20 questions, you'
-      + ' can guess what the object is. If you guess the object'
-      + ' correctly, then you win!'
+    label: 'asker'
   },
   answerer: {
     id: 'answerer',
-    label: 'answerer',
-    description: 'As the "answerer", you choose a common everyday object'
-      + ' to start the round and then truthfully answer any questions'
-      + ' the other players ask about that object. After the other'
-      + ' player has asked 20 questions, the other player will make'
-      + ' their best guess. If they guess incorrectly then you win!'
+    label: 'answerer'
   }
 };
 

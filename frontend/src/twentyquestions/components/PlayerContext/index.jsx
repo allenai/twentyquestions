@@ -50,6 +50,13 @@ class PlayerContext extends React.Component {
     const { classes } = this.props;
     const { playerRole, numPlayers, numQuestionsLeft } = this.props;
 
+    const askerName = playerRole.id === 'asker' ?
+          'You'
+          : 'The other player';
+    const answererName = playerRole.id === 'answerer' ?
+          'You'
+          : 'The other player';
+
     return (
       <ExpansionPanel defaultExpanded>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -70,7 +77,44 @@ class PlayerContext extends React.Component {
           </Grid>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <Typography>{playerRole.description}</Typography>
+          <Grid container>
+            <Grid item xs={12}>
+              <Typography
+                variant='headline'>
+                Instructions
+              </Typography>
+              <Typography>
+                You are the <b>{playerRole.label}</b>.
+              </Typography>
+              <ol>
+                <li>
+                  <Typography>
+                    {answererName} will choose a hidden object.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    {askerName} will ask 20 yes-no questions
+                    about the object.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    {answererName} will answer the questions
+                    truthfully.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    <b>
+                      {askerName} will guess what the object
+                      is <i>after</i> 20 questions have been asked.
+                    </b>
+                  </Typography>
+                </li>
+              </ol>
+            </Grid>
+          </Grid>
         </ExpansionPanelDetails>
       </ExpansionPanel>
     );
