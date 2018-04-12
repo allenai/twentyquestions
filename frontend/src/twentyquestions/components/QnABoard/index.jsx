@@ -38,7 +38,7 @@ class QnA extends React.Component {
     if (answer === null) {
       answerText = '';
     } else {
-      answerText = answer.answerBool ? 'yes' : 'no';
+      answerText = answer.answerValue;
     }
 
     return (

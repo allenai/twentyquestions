@@ -209,15 +209,16 @@ class Answer(Data):
     def __init__(
             self,
             answerer_id,
-            answer_bool):
+            answer_value):
         """Create an instance.
 
         Parameters
         ----------
         answerer_id : str
             The ID of the player who provided this answer.
-        answer_bool : bool
-            A boolean indicating the answer to the question.
+        answer_value : str
+            A string indicating the answer, must be one of 'always',
+            'usually', 'sometimes', 'rarely', 'never'.
 
         Returns
         -------
@@ -225,20 +226,20 @@ class Answer(Data):
             The new instance.
         """
         self.answerer_id = answerer_id
-        self.answer_bool = answer_bool
+        self.answer_value = answer_value
 
     @classmethod
     def from_dict(cls, data):
         """See ``Data``."""
         return cls(
             answerer_id=data['answererId'],
-            answer_bool=data['answerBool'])
+            answer_value=data['answerValue'])
 
     def to_dict(self):
         """See ``Data``."""
         return {
             'answererId': self.answerer_id,
-            'answerBool': self.answer_bool
+            'answerValue': self.answer_value
         }
 
 
@@ -293,13 +294,142 @@ class QuestionAndAnswer(Data):
         }
 
 
+class Guess(Data):
+    """A model of a guess."""
+
+    def __init__(
+            self,
+            asker_id,
+            guess_text):
+        """Create an instance.
+
+        Parameters
+        ----------
+        asker_id : str
+            The ID for the player who made the guess.
+        guess_text : str
+            The text of the guess.
+
+        Returns
+        -------
+        Guess
+            The new instance.
+        """
+        self.asker_id = asker_id
+        self.guess_text = guess_text
+
+    @classmethod
+    def from_dict(cls, data):
+        """See ``Data``."""
+        return cls(
+            asker_id=data['askerId'],
+            guess_text=data['guessText'])
+
+    def to_dict(self):
+        """See ``Data``."""
+        return {
+            'askerId': self.asker_id,
+            'guessText': self.guess_text
+        }
+
+
+class GuessAnswer(Data):
+    """A model of an answer to a guess."""
+
+    def __init__(
+            self,
+            answerer_id,
+            correct):
+        """Create an instance.
+
+        Parameters
+        ----------
+        answerer_id : str
+            The ID of the player who provided this answer to the guess.
+        correct : bool
+            A boolean indicating whether or not the guess is correct.
+
+        Returns
+        -------
+        GuessAnswer
+            The new instance.
+        """
+        self.answerer_id = answerer_id
+        self.correct = correct
+
+    @classmethod
+    def from_dict(cls, data):
+        """See ``Data``."""
+        return cls(
+            answerer_id=data['answererId'],
+            correct=data['correct'])
+
+    def to_dict(self):
+        """See ``Data``."""
+        return {
+            'answererId': self.answerer_id,
+            'correct': self.correct
+        }
+
+
+class GuessAndAnswer(Data):
+    """A model for a guess - guess answer pair."""
+
+    def __init__(
+            self,
+            guess,
+            guess_answer):
+        """Create an instance.
+
+        Parameters
+        ----------
+        guess : Guess
+            The ``Guess`` instance representing the guess for the
+            pair.
+        guess_answer : Optional[GuessAnswer]
+            An optional ``GuessAnswer`` instance representing the answer
+            to the guess.
+
+        Returns
+        -------
+        GuessAndAnswer
+            The new instance.
+        """
+        self.guess = guess
+        self.guess_answer = guess_answer
+
+    @classmethod
+    def from_dict(cls, data):
+        """See ``Data``."""
+        if data['guessAnswer'] is None:
+            guess_answer = None
+        else:
+            guess_answer = GuessAnswer.from_dict(data['guessAnswer'])
+
+        return cls(
+            guess=Guess.from_dict(data['guess']),
+            guess_answer=guess_answer)
+
+    def to_dict(self):
+        """See ``Data``."""
+        if self.guess_answer is None:
+            guess_answer = None
+        else:
+            guess_answer = self.guess_answer.to_dict()
+
+        return {
+            'guess': self.guess.to_dict(),
+            'guessAnswer': guess_answer
+        }
+
+
 class Round(Data):
     """A model of a single round of the game."""
 
     def __init__(
             self,
             subject,
-            guess,
+            guess_and_answer,
             question_and_answers):
         """Create a new instance.
 
@@ -308,8 +438,8 @@ class Round(Data):
         subject : Optional[str]
             A string giving the subject of the round, i.e. what the
             askers are trying to guess.
-        guess : Optional[QuestionAndAnswer]
-            The guess for what the subject is.
+        guess_and_answer : Optional[GuessAndAnswer]
+            The guess and answer pair for what the subject is.
         question_and_answers : List[QuestionAndAnswer]
             A list of question-answer pairs that have been asked and
             answered so far this round.
@@ -320,20 +450,20 @@ class Round(Data):
             The new instance.
         """
         self.subject = subject
-        self.guess = guess
+        self.guess_and_answer = guess_and_answer
         self.question_and_answers = question_and_answers
 
     @classmethod
     def from_dict(cls, data):
         """See ``Data``."""
-        if data['guess'] is None:
-            guess = None
+        if data['guessAndAnswer'] is None:
+            guess_and_answer = None
         else:
-            guess = QuestionAndAnswer.from_dict(data['guess'])
+            guess_and_answer = GuessAndAnswer.from_dict(data['guessAndAnswer'])
 
         return cls(
             subject=data['subject'],
-            guess=guess,
+            guess_and_answer=guess_and_answer,
             question_and_answers=[
                 QuestionAndAnswer.from_dict(d)
                 for d in data['questionAndAnswers']
@@ -341,14 +471,14 @@ class Round(Data):
 
     def to_dict(self):
         """See ``Data``."""
-        if self.guess is None:
-            guess = None
+        if self.guess_and_answer is None:
+            guess_and_answer = None
         else:
-            guess = self.guess.to_dict()
+            guess_and_answer = self.guess_and_answer.to_dict()
 
         return {
             'subject': self.subject,
-            'guess': guess,
+            'guessAndAnswer': guess_and_answer,
             'questionAndAnswers': [
                 qna.to_dict()
                 for qna in self.question_and_answers
@@ -588,7 +718,7 @@ class PlayerRouter(object):
                     asker_id=None,
                     round_=Round(
                         subject=None,
-                        guess=None,
+                        guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=[]
             ).add_player(player)

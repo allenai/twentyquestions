@@ -31,18 +31,13 @@ class AnswerForm extends React.Component {
   constructor(props) {
     super(props);
 
-    this._answerStringMap = {
-      true: true,
-      false: false
-    };
-
     this.state = {
-      answerString: ''
+      answerValue: ''
     };
   }
 
   handleChange(e) {
-    this.setState({answerString: e.target.value});
+    this.setState({answerValue: e.target.value});
   }
 
   handleSubmit(e) {
@@ -50,13 +45,13 @@ class AnswerForm extends React.Component {
 
     const {playerId, controller} = this.props;
 
-    const answerBool = this._answerStringMap[this.state.answerString];
+    const {answerValue} = this.state;
 
-    this.setState({answerString: ''});
+    this.setState({answerValue: ''});
 
     controller.takeGameAction(
       'provideAnswer',
-      [playerId, answerBool]
+      [playerId, answerValue]
     );
   }
 
@@ -106,16 +101,31 @@ class AnswerForm extends React.Component {
               <RadioGroup
                 aria-label='answer'
                 name='answer'
-                value={this.state.answerString}
+                value={this.state.answerValue}
                 onChange={this.handleChange.bind(this)}>
                 <FormControlLabel
-                  label='yes'
-                  value='true'
+                  label='Always'
+                  value='always'
                   control={<Radio inputProps={ {required: true} }/>}
                   disabled={!enableForm}/>
                 <FormControlLabel
-                  label='no'
-                  value='false'
+                  label='Usually'
+                  value='usually'
+                  control={<Radio inputProps={ {required: true} }/>}
+                  disabled={!enableForm}/>
+                <FormControlLabel
+                  label='Sometimes'
+                  value='sometimes'
+                  control={<Radio inputProps={ {required: true} }/>}
+                  disabled={!enableForm}/>
+                <FormControlLabel
+                  label='Rarely'
+                  value='rarely'
+                  control={<Radio inputProps={ {required: true} }/>}
+                  disabled={!enableForm}/>
+                <FormControlLabel
+                  label='Never'
+                  value='never'
                   control={<Radio inputProps={ {required: true} }/>}
                   disabled={!enableForm}/>
               </RadioGroup>

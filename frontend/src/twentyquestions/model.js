@@ -152,26 +152,41 @@ class Answer extends Data {
    *
    * @param {String} answererId - The ID for the player who provided the
    *   answer.
-   * @param {Boolean} answerBool - The yes-no answer to the question.
+   * @param {String} answerValue - A string giving the answer to the
+   *   question. Must be one of 'always', 'usually', 'sometimes',
+   *   'rarely', 'never'.
    *
    * @return {Answer} The new Answer instance.
    */
   constructor(
     answererId,
-    answerBool
+    answerValue
   ) {
     super();
 
+    const allowedValues = [
+      'always',
+      'usually',
+      'sometimes',
+      'rarely',
+      'never'
+    ];
+    if (!allowedValues.includes(answerValue)) {
+      throw new Error(
+        `${answerValue} not in allowed values.`
+      );
+    }
+
     // bind attributes to instance
     this.answererId = answererId;
-    this.answerBool = answerBool;
+    this.answerValue = answerValue;
   }
 
   /** @see documentation for Data. */
   static fromObject(obj) {
     return new Answer(
       obj.answererId,
-      obj.answerBool
+      obj.answerValue
     );
   }
 
@@ -179,7 +194,7 @@ class Answer extends Data {
   toObject() {
     return {
       answererId: this.answererId,
-      answerBool: this.answerBool
+      answerValue: this.answerValue
     };
   }
 }
@@ -230,6 +245,138 @@ class QuestionAndAnswer extends Data {
 
 
 /**
+ * A class representing a guess.
+ *
+ * @extends Data
+ */
+class Guess extends Data {
+  /**
+   * Create a Guess instance.
+   *
+   * @param {String} askerId - The ID for the player who made the
+   *   guess.
+   * @param {String} guessText - A string representing the guess made.
+   *
+   * @return {Guess} The new Guess instance.
+   */
+  constructor(
+    askerId,
+    guessText
+  ) {
+    super();
+
+    // bind attributes to instance
+    this.askerId = askerId;
+    this.guessText = guessText;
+  }
+
+  /** @see documentation for Data. */
+  static fromObject(obj) {
+    return new Guess(
+      obj.askerId,
+      obj.guessText
+    );
+  }
+
+  /** @see documentation for Data. */
+  toObject() {
+    return {
+      askerId: this.askerId,
+      guessText: this.guessText
+    };
+  }
+}
+
+
+/**
+ * A class representing an answer to a guess.
+ *
+ * @extends Data
+ */
+class GuessAnswer extends Data {
+  /**
+   * Create a GuessAnswer instance.
+   *
+   * @param {String} answererId - The ID for the player who provided the
+   *   answer to the guess.
+   * @param {Boolean} correct - A boolean giving the answer to the guess.
+   *
+   * @return {GuessAnswer} The new GuessAnswer instance.
+   */
+  constructor(
+    answererId,
+    correct
+  ) {
+    super();
+
+    // bind attributes to instance
+    this.answererId = answererId;
+    this.correct = correct;
+  }
+
+  /** @see documentation for Data. */
+  static fromObject(obj) {
+    return new GuessAnswer(
+      obj.answererId,
+      obj.correct
+    );
+  }
+
+  /** @see documentation for Data. */
+  toObject() {
+    return {
+      answererId: this.answererId,
+      correct: this.correct
+    };
+  }
+}
+
+
+/**
+ * A class representing a guess - guess answer pair.
+ *
+ * @extends Data
+ */
+class GuessAndAnswer extends Data {
+  /**
+   * Create a new GuessAndAnswer instance.
+   *
+   * @param {Guess} guess - The guess that was made.
+   * @param {Optional[GuessAnswer]} guessAnswer - An optional answer to the
+   *   guess. If the answer is not present, it must be null.
+   *
+   * @return {GuessAndAnswer} The new GuessAndAnswer instance.
+   */
+  constructor(
+    guess,
+    guessAnswer
+  ) {
+    super();
+
+    // bind attributes to instance
+    this.guess = guess;
+    this.guessAnswer = guessAnswer;
+  }
+
+  /** @see documentation for Data. */
+  static fromObject(obj) {
+    return new GuessAndAnswer(
+      Guess.fromObject(obj.guess),
+      obj.guessAnswer && GuessAnswer.fromObject(obj.guessAnswer)
+    );
+  }
+
+  /** @see documentation for Data. */
+  toObject() {
+    return {
+      guess: this.guess.toObject(),
+      guessAnswer: this.guessAnswer && this.guessAnswer.toObject()
+    };
+  }
+}
+
+
+/**
  * A class for representing a round of twenty questions.
  *
  * @extends Data
@@ -241,7 +388,7 @@ class Round extends Data {
    * @param {Optional[String]} subject - The subject for this round, or
    *   the object that the asker is trying to guess. If the subject is
    *   not present it must be null.
-   * @param {Optional[QuestionAndAnswer]} guess - The guess for this
+   * @param {Optional[GuessAndAnswer]} guessAndAnswer - The guess for this
    *   round, or the guess that the asker gets to make at the end of the
    *   game. If the guess is not present it must be null.
    * @param {Array[QuestionAndAnswer]} questionAndAnswers - An array of
@@ -253,14 +400,14 @@ class Round extends Data {
    */
   constructor(
     subject,
-    guess,
+    guessAndAnswer,
     questionAndAnswers
   ) {
     super();
 
     // bind attributes to instance
     this.subject = subject;
-    this.guess = guess;
+    this.guessAndAnswer = guessAndAnswer;
     this.questionAndAnswers = questionAndAnswers;
   }
 
@@ -268,7 +415,7 @@ class Round extends Data {
   static fromObject(obj) {
     return new Round(
       obj.subject,
-      obj.guess && QuestionAndAnswer.fromObject(obj.guess),
+      obj.guessAndAnswer && GuessAndAnswer.fromObject(obj.guessAndAnswer),
       obj.questionAndAnswers.map(o => QuestionAndAnswer.fromObject(o))
     );
   }
@@ -277,7 +424,7 @@ class Round extends Data {
   toObject() {
     return {
       subject: this.subject,
-      guess: this.guess && this.guess.toObject(),
+      guessAndAnswer: this.guessAndAnswer && this.guessAndAnswer.toObject(),
       questionAndAnswers: this.questionAndAnswers.map(qa => qa.toObject())
     };
   }
@@ -422,9 +569,9 @@ class Game extends Data {
   }
 
   /**
-   * Return a new Game where answererId has provided answerBool.
+   * Return a new Game where answererId has provided answerValue.
    *
-   * Return a new Game where answererId has provided answerBool. If
+   * Return a new Game where answererId has provided answerValue. If
    * fewer than 20 Questions have been asked, then the new Game is in
    * state ASKQUESTION. If 20 Questions have been asked, then the new
    * game is in state MAKEGUESS. provideAnswer can only be called by the
@@ -433,12 +580,13 @@ class Game extends Data {
    *
    * @param {String} answererId - The ID for the player who's answering
    *   the question.
-   * @param {Boolean} answerBool - A boolean representing the answer to
-   *   the most recently asked question.
+   * @param {String} answerValue - A string representing the answer to
+   *   the most recently asked question. Must be one of the allowed
+   *   values for an answer, @see Answer.
    *
    * @returns {Game} The game with the most recent question answered.
    */
-  provideAnswer(answererId, answerBool) {
+  provideAnswer(answererId, answerValue) {
     // check pre-conditions
     if (this.state !== STATES.PROVIDEANSWER) {
       throw new Error(
@@ -464,7 +612,7 @@ class Game extends Data {
     const updatedRound = this.round.copy({
       questionAndAnswers: [
         mostRecentQuestionAndAnswer.copy({
-          answer: Answer.fromObject({answererId, answerBool})
+          answer: Answer.fromObject({answererId, answerValue})
         }),
         ...restQuestionAndAnswers
       ]
@@ -490,11 +638,11 @@ class Game extends Data {
    *
    * @param {String} askerId - The ID for the player who is making the
    *   guess.
-   * @param {String} questionText - The text of the guess.
+   * @param {String} guessText - The text of the guess.
    *
    * @return {Game} The new Game instance with the guess made.
    */
-  makeGuess(askerId, questionText) {
+  makeGuess(askerId, guessText) {
     // check pre-conditions
     if (this.state !== STATES.MAKEGUESS) {
       throw new Error(
@@ -508,7 +656,7 @@ class Game extends Data {
     }
 
     // make the guess
-    if (this.round.guess !== null) {
+    if (this.round.guessAndAnswer !== null) {
       throw new Error(
         'A guess cannot be made twice.'
       );
@@ -517,12 +665,12 @@ class Game extends Data {
     return this.copy({
       state: STATES.ANSWERGUESS,
       round: this.round.copy({
-        guess: QuestionAndAnswer.fromObject({
-          question: Question.fromObject({
+        guessAndAnswer: GuessAndAnswer.fromObject({
+          guess: Guess.fromObject({
             askerId: askerId,
-            questionText: questionText
+            guessText: guessText
           }),
-          answer: null
+          guessAnswer: null
         })
       })
     });
@@ -532,16 +680,15 @@ class Game extends Data {
   /**
    * Return a new Game where answererId has answered the guess.
    *
-   * The new game is in state CHOOSESUBJECT, the answerer is advanced to
-   * the other player, and a new active asker is set.
+   * The new game is in state SUBMITRESULTS.
    *
    * @param {String} answererId - The ID of the player who answered the
    *   guess.
-   * @param {Boolean} answerBool - Whether or not the guess is correct.
+   * @param {Boolean} correct - Whether or not the guess is correct.
    *
    * @return {Game} The new Game instance with the guess answered.
    */
-  answerGuess(answererId, answerBool) {
+  answerGuess(answererId, correct) {
     // check pre-conditions
     if (this.state !== STATES.ANSWERGUESS) {
       throw new Error(
@@ -555,7 +702,7 @@ class Game extends Data {
     }
 
     // answer the guess
-    if (this.round.guess.answer !== null) {
+    if (this.round.guessAndAnswer.guessAnswer !== null) {
       throw new Error(
         'A guess cannot be answered twice.'
       );
@@ -564,10 +711,10 @@ class Game extends Data {
     return this.copy({
       state: STATES.SUBMITRESULTS,
       round: this.round.copy({
-        guess: this.round.guess.copy({
-          answer: Answer.fromObject({
+        guessAndAnswer: this.round.guessAndAnswer.copy({
+          guessAnswer: GuessAnswer.fromObject({
             answererId: answererId,
-            answerBool: answerBool
+            correct: correct
           })
         })
       })
@@ -641,6 +788,9 @@ const Model = {
   Question,
   Answer,
   QuestionAndAnswer,
+  Guess,
+  GuessAnswer,
+  GuessAndAnswer,
   Round,
   Game,
   GameRoom

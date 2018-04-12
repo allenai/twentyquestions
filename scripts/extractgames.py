@@ -59,7 +59,7 @@ def extractgames(xml_dir, output_dir):
                 triple = (
                     subject,
                     questionAndAnswer['question']['questionText'],
-                    questionAndAnswer['answer']['answerBool']
+                    questionAndAnswer['answer']['answerValue']
                 )
                 triples.add(json.dumps(triple))
 

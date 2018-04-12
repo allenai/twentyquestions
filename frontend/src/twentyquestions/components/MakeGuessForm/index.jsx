@@ -39,7 +39,7 @@ class MakeGuessForm extends React.Component {
     e.preventDefault();
 
     const {playerId, controller} = this.props;
-    const questionText = this.state.value;
+    const guessText = this.state.value;
 
     this.setState({
       value: ''
@@ -47,7 +47,7 @@ class MakeGuessForm extends React.Component {
 
     controller.takeGameAction(
       'makeGuess',
-      [playerId, questionText]
+      [playerId, guessText]
     );
   }
 

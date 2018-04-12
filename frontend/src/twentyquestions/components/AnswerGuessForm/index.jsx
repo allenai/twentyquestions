@@ -50,21 +50,21 @@ class AnswerGuessForm extends React.Component {
 
     const {playerId, controller} = this.props;
 
-    const answerBool = this._answerStringMap[this.state.answerString];
+    const correct = this._answerStringMap[this.state.answerString];
 
     this.setState({answerString: ''});
 
     controller.takeGameAction(
       'answerGuess',
-      [playerId, answerBool]
+      [playerId, correct]
     );
   }
 
   render() {
     const {game, playerId} = this.props;
 
-    const questionText = game.round.guess !== null ?
-          game.round.guess.question.questionText
+    const guessText = game.round.guessAndAnswer !== null ?
+          game.round.guessAndAnswer.guess.guessText
           : 'No guess has been made yet.';
     const enableForm = game.state === model.STATES.ANSWERGUESS;
 
@@ -82,7 +82,7 @@ class AnswerGuessForm extends React.Component {
           { enableForm ?
                 <Grid item xs={12}>
                   <Typography variant='headline'>
-                    {questionText}
+                    {guessText}
                   </Typography>
                 </Grid>
               : <Grid item xs={12}>
