@@ -89,18 +89,49 @@ class WaitingRoom extends React.Component {
         <Grid container>
             <Grid item xs={12}>
               <Typography
-                variant='headline'
+                variant='title'
                 align='center'>
-                Waiting for Players
+                Waiting for Other Player
               </Typography>
               <Typography
-                variant='subheading'
                 align='center'>
                 You're currently waiting for another player to
                 join. Once a Turker takes up one of the other HITs,
                 we'll match them to you and the game will get
                 started.
               </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography
+                variant='headline'>
+                Instructions
+              </Typography>
+              <ol>
+                <li>
+                  <Typography>
+                    The first player chooses a hidden object.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    The second player has to ask 20 yes-no questions
+                    about the object.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    The first player answers the questions truthfully.
+                  </Typography>
+                </li>
+                <li>
+                  <Typography>
+                    <b>
+                      <i>Only</i> after 20 questions have been asked,
+                      the second player guesses what the object is.
+                    </b>
+                  </Typography>
+                </li>
+              </ol>
             </Grid>
             <Grid item align='center' xs={12}>
               <CircularProgress color='primary'/>
