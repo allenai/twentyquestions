@@ -11,7 +11,6 @@ import ExpansionPanel, {
   ExpansionPanelSummary
 } from 'material-ui/ExpansionPanel';
 import Grid from 'material-ui/Grid';
-import Hidden from 'material-ui/Hidden';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/Styles';
 
@@ -22,11 +21,16 @@ const styles = theme => ({
     paddingLeft: `${theme.spacing.unit * 2}px`,
     paddingRight: `${theme.spacing.unit * 2}px`
   },
-  textLeft: {
+  role: {
     textAlign: 'left'
   },
-  textRight: {
+  countInfo: {
     textAlign: 'right'
+  },
+  [`@media (max-width: ${theme.breakpoints.values.sm}px)`]: {
+    countInfo: {
+      textAlign: 'left'
+    }
   }
 });
 
@@ -50,20 +54,18 @@ class PlayerContext extends React.Component {
       <ExpansionPanel defaultExpanded>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <Grid container>
-            <Grid className={classes.textLeft} item xs={6}>
+            <Grid className={classes.role} item xs={6}>
               <Chip
                 avatar={<Avatar><AccountCircleIcon color="primary"/></Avatar>}
                 label={<Typography>Role: <b>{playerRole.label}</b></Typography>} />
             </Grid>
-            <Grid className={classes.textRight} item xs={6}>
-              <Hidden xsDown>
-                <Badge badgeContent={numPlayers} color="primary">
-                  <Typography className={classes.elbowRoom}>Players Present</Typography>
-                </Badge>
-                <Badge badgeContent={numQuestionsLeft} color="primary">
-                  <Typography className={classes.elbowRoom}>Questions Left</Typography>
-                </Badge>
-              </Hidden>
+            <Grid className={classes.countInfo} item xs={12} sm={6}>
+              <Badge badgeContent={numPlayers} color="primary">
+                <Typography className={classes.elbowRoom}>Players Present</Typography>
+              </Badge>
+              <Badge badgeContent={numQuestionsLeft} color="primary">
+                <Typography className={classes.elbowRoom}>Questions Left</Typography>
+              </Badge>
             </Grid>
           </Grid>
         </ExpansionPanelSummary>
