@@ -45,6 +45,21 @@ class Data(object):
         """
         raise NotImplementedError
 
+    def __repr__(self):
+        """Return a string representation of the instance.
+
+        Returns
+        -------
+        str
+            A string representation of the instance.
+        """
+        repr_lines = [f'{self.__class__.__name__}(']
+        for k, v in vars(self).items():
+            indented_v_repr = repr(v).replace('\n', '\n  ')
+            repr_lines.append(f'  {k}={indented_v_repr}')
+        repr_lines.append(')')
+        return '\n'.join(repr_lines)
+
     def __eq__(self, other):
         """Compare two instances for equality.
 
