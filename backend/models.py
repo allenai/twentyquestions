@@ -90,7 +90,7 @@ class Data(object):
         """
         # use ``vars`` and not the ``to_dict`` method, because we only
         # want shallow references.
-        attributes = vars(self)
+        attributes = vars(self).copy()
         attributes.update(kwargs)
 
         return self.__class__(**attributes)
