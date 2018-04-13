@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 def build():
     """Build twentyquestions.
 
-    Build twentyquestions by building the frontend clients and copying them
-    into the proper locations for the backend.
+    Build twentyquestions by building the frontend client and copying it
+    into the proper location for the backend.
     """
-    # build the waiting room client
+    # build the client
     subprocess.run(
         ['npm', 'run', 'build'],
         cwd=settings.FRONTEND_DIR)
