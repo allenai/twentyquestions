@@ -698,7 +698,7 @@ class PlayerRouter(object):
 
     # helper methods
 
-    def match_player_to_game_room(self, player_id):
+    def _match_player_to_game_room(self, player_id):
         """Match the player for ``player_id`` to a game room.
 
         Parameters
@@ -713,7 +713,7 @@ class PlayerRouter(object):
                 'Only "WAITING" players may be matched to game rooms.')
         if self.player_matches[player_id] != None:
             raise ValueError(
-                'Player is already matched to a game.')
+                'Player is already matched to a game room.')
 
         # get the first list of game ids by priority
         for game_room_ids in reversed(self.game_room_priorities):
@@ -797,7 +797,7 @@ class PlayerRouter(object):
         self.player_matches[player_id] = None
 
         # match the player to a game room
-        self.match_player_to_game_room(player_id)
+        self._match_player_to_game_room(player_id)
 
     def delete_player(self, player_id):
         """Remove the player from the server.
@@ -828,6 +828,13 @@ class PlayerRouter(object):
                 self.game_rooms[room_id] = game_room
             elif not game_finished:
                 # the game is incomplete, put it back in the queue
+                self.game_rooms[room_id] = game_room
+                # remove the old game room priority if there is one
+                self.game_room_priorities = [
+                    [a_room_id for a_room_id in room_ids if a_room_id != room_id]
+                    for room_ids in self.game_room_priorities
+                ]
+                # append the game room to its new priority position
                 self.game_room_priorities[num_players].append(room_id)
 
         # delete the player
@@ -883,21 +890,35 @@ class PlayerRouter(object):
         player_id : str
             The ID of the player to set as inactive.
         """
+        # check pre-conditions
+        old_player = self.players[player_id]
+        if old_player.status == 'INACTIVE':
+            raise ValueError(
+                'A player cannot go inactive while already inactive.')
+        if self.player_matches[player_id] == None:
+            raise ValueError(
+                'Player is not currently matched to a game room.')
+
         # set the player's status as inactive
-        player = self.players[player_id].copy(
+        player = old_player.copy(
             status=PLAYERSTATUSES['INACTIVE'])
         self.players[player_id] = player
 
         # remove the player from the game room
         room_id = self.player_matches[player_id]
-        old_game_room = self.game_rooms[room_id]
-        game_room = old_game_room.remove_player(player)
-        num_players = len(game_room.player_ids)
-        self.game_rooms[room_id] = game_room
-        self.game_room_priorities[num_players].append(room_id)
+        self.game_rooms[room_id] = \
+            self.game_rooms[room_id].remove_player(player)
 
-        # match the player to None
+        # update the player's match
         self.player_matches[player_id] = None
+
+        # update the game room's priority
+        num_players = len(self.game_rooms[room_id].player_ids)
+        self.game_room_priorities = [
+            [a_room_id for a_room_id in room_ids if a_room_id != room_id]
+            for room_ids in self.game_room_priorities
+        ]
+        self.game_room_priorities[num_players].append(room_id)
 
     def go_active(self, player_id):
         """Set a player as active.
@@ -915,7 +936,7 @@ class PlayerRouter(object):
         self.players[player_id] = player
 
         # match the player to a game room
-        self.match_player_to_game_room(player_id)
+        self._match_player_to_game_room(player_id)
 
     # update the game state
 
