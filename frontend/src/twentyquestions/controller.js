@@ -198,6 +198,10 @@ class Controller {
       this.player = this.player.copy({
         status: this.model.PLAYERSTATUSES.WAITING
       });
+    } else if (action === this.model.PLAYERACTIONS.FINISHGAME) {
+      this.player = this.player.copy({
+        status: this.model.PLAYERSTATUSES.WAITING
+      });
     }
 
     const message = {
@@ -248,6 +252,10 @@ class Controller {
 
     document.body.appendChild(form);
     form.submit();
+
+    // Let the server know that we've finished the game and can be
+    // deleted.
+    this.takePlayerAction(this.model.PLAYERACTIONS.FINISHGAME);
   }
 }
 
