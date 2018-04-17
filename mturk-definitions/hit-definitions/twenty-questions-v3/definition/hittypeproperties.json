@@ -1,8 +1,8 @@
 {
-  "AutoApprovalDelayInSeconds": 36000,
+  "AutoApprovalDelayInSeconds": 3600,
   "AssignmentDurationInSeconds": 3600,
   "Reward": "1.50",
-  "Title": "Play 20 Questions",
+  "Title": "Play 20 Questions!",
   "Keywords": "20 Questions, Game, Common Sense",
   "Description": "Play a round of 20 Questions with other Turkers."
 }
