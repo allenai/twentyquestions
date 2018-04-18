@@ -47,8 +47,10 @@ def update_client_for_player(player_id):
     player_id : str
         The ID for the player whose client needs its state set.
     """
-    player_data = player_router.players[player_id].to_dict()
     room_id = player_router.player_matches.get(player_id)
+
+    player_data = player_router.players[player_id].to_dict()
+
     if room_id is not None:
         game_room_data = player_router.game_rooms[room_id].to_dict()
     else:
@@ -86,29 +88,53 @@ def game_room():
 
 # Web Socket Endpoints
 
+@socketio.on('connect')
+def connect():
+    """Websocket endpoint for when a player connects."""
+    sid = flask.request.sid
+
+    logger.info(f'New connection (SID {sid}).')
+
+
 @socketio.on('disconnect')
 def disconnect():
     """Websocket endpoint for when a player disconnects."""
     sid = flask.request.sid
-    player_id = player_id_from_sid[sid]
-    most_recent_sid = most_recent_sid_from_player_id[player_id]
 
     logger.info(f'Dropping connection (SID {sid}).')
 
-    # delete the old sid -> player_id mapping
-    del player_id_from_sid[sid]
+    player_id = player_id_from_sid.get(sid)
+    most_recent_sid = most_recent_sid_from_player_id.get(player_id)
+    if player_id is None:
+        logger.info(
+            f'No player corresponding to SID {sid} found on server.')
+    elif sid == most_recent_sid:
+        # the player has dropped the connection represented by SID and
+        # hasn't established a new connection yet, so we'll delete the
+        # player.
+        logger.info(
+            f'Disconnecting player {player_id} from server.')
 
-    # only delete the player if they haven't reconnected
-    if sid == most_recent_sid:
-        logger.info(f'Disconnecting player {player_id} from server.')
+        # fetch the room the player is in
+        room_id = player_router.player_matches[player_id]
 
-        old_room_id = player_router.player_matches[player_id]
-
+        # delete the player
         player_router.delete_player(player_id)
+
+        # delete the player's connection information
         del most_recent_sid_from_player_id[player_id]
 
-        if old_room_id is not None:
+        if room_id is not None:
             update_clients_for_game_room(old_room_id)
+
+    else:
+        logger.info(
+            f'Player {player_id} has previously reconnected.'
+            f' Old connection (SID {sid}) has been dropped.')
+
+    # because we're dropping the connection, we can forget it's mapping
+    # to a player id
+    del player_id_from_sid[sid]
 
 
 @socketio.on('joinServer')
@@ -126,6 +152,8 @@ def join_server(message):
 
     if player_id is None:
         # The client is previewing the HIT, ignore them
+        logger.info(
+            f'SID {sid} is previewing the server.')
         return
 
     if player_id in most_recent_sid_from_player_id:
