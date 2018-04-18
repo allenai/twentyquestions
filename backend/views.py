@@ -20,7 +20,7 @@ twentyquestions = flask.Blueprint(
 
 socketio = flask_socketio.SocketIO(
     ping_timeout=settings.TIME_TO_DISCONNECT,
-    ping_interval=settings.TIME_TO_DISCONNECT // 3)
+    ping_interval=settings.TIME_TO_DISCONNECT // 4)
 
 
 # constants / global state

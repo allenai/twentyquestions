@@ -50,5 +50,5 @@ CERT_SECRET_NAME = 'twentyquestions-cert'
 ###################
 
 # how long a client has to ping the server before being disconnected
-TIME_TO_DISCONNECT = 15
-assert TIME_TO_DISCONNECT >= 9, "Time to disconnect cannot be less than 9."
+TIME_TO_DISCONNECT = 20
+assert TIME_TO_DISCONNECT >= 12, "Time to disconnect cannot be less than 12."
