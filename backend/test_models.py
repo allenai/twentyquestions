@@ -1,5 +1,6 @@
 """Test models."""
 
+import logging
 import unittest
 
 from . import models
@@ -1118,3 +1119,144 @@ class PlayerRouterTestCase(unittest.TestCase):
             player_router.game_rooms[
                 player_router.player_matches['foo']].game,
             new_game)
+
+    def test_go_inactive_twice(self):
+        """Test that ``go_inactive`` is idempotent.
+
+        This is a regression test.
+        """
+
+        # create some players
+
+        player_router = models.PlayerRouter(
+            game_rooms={},
+            players={},
+            game_room_priorities=[],
+            player_matches={})
+        player_router.create_player('foo')
+        player_router.create_player('bar')
+        player_router.create_player('baz')
+
+        player_router.start_playing('foo')
+
+        foo_bar_room_id = player_router.player_matches['foo']
+        baz_room_id = player_router.player_matches['baz']
+
+        # check pre-conditions
+
+        # check that the players all have the correct status
+        self.assertEqual(
+            player_router.players['foo'].status,
+            models.PLAYERSTATUSES['PLAYING'])
+        self.assertEqual(
+            player_router.players['bar'].status,
+            models.PLAYERSTATUSES['READYTOPLAY'])
+        self.assertEqual(
+            player_router.players['baz'].status,
+            models.PLAYERSTATUSES['WAITING'])
+
+        # check the state of the game rooms
+        foo_bar_game_room_before = player_router.game_rooms[
+            foo_bar_room_id]
+        self.assertEqual(
+            foo_bar_game_room_before,
+            models.GameRoom(
+                room_id=foo_bar_room_id,
+                game=models.Game(
+                    state=models.STATES['CHOOSESUBJECT'],
+                    answerer_id='foo',
+                    asker_id='bar',
+                    round_=models.Round(
+                        subject=None,
+                        guess_and_answer=None,
+                        question_and_answers=[])),
+                player_ids=['bar', 'foo']))
+
+        baz_game_room_before = player_router.game_rooms[
+            baz_room_id]
+        self.assertEqual(
+            baz_game_room_before,
+            models.GameRoom(
+                room_id=baz_room_id,
+                game=models.Game(
+                    state=models.STATES['CHOOSESUBJECT'],
+                    answerer_id='baz',
+                    asker_id=None,
+                    round_=models.Round(
+                        subject=None,
+                        guess_and_answer=None,
+                        question_and_answers=[])),
+                player_ids=['baz']))
+
+        # check that game room priorities is correctly set
+        self.assertEqual(
+            player_router.game_room_priorities,
+            [[], [baz_room_id]])
+
+        # test setting a player in the PLAYING state to inactive twice
+
+        player_router.go_inactive('foo')
+        # disable logging to avoid noise in the test output
+        logging.disable(logging.WARNING)
+        player_router.go_inactive('foo')
+        logging.disable(logging.NOTSET)
+
+        foo_bar_game_room_after = player_router.game_rooms[
+            foo_bar_room_id]
+        baz_game_room_after = player_router.game_rooms[
+            baz_room_id]
+
+        # check player statuses and game room matches
+        self.assertEqual(
+            player_router.players['foo'].status,
+            models.PLAYERSTATUSES['INACTIVE'])
+        self.assertEqual(
+            player_router.player_matches['foo'],
+            None)
+        self.assertEqual(
+            player_router.players['bar'].status,
+            models.PLAYERSTATUSES['READYTOPLAY'])
+        self.assertEqual(
+            player_router.player_matches['bar'],
+            foo_bar_room_id)
+        self.assertEqual(
+            player_router.players['baz'].status,
+            models.PLAYERSTATUSES['WAITING'])
+        self.assertEqual(
+            player_router.player_matches['baz'],
+            baz_room_id)
+
+        # check that foo and bar's game room was correctly updated
+        self.assertEqual(
+            foo_bar_game_room_after,
+            models.GameRoom(
+                room_id=foo_bar_room_id,
+                game=models.Game(
+                    state=models.STATES['CHOOSESUBJECT'],
+                    answerer_id=None,
+                    asker_id='bar',
+                    round_=models.Round(
+                        subject=None,
+                        guess_and_answer=None,
+                        question_and_answers=[])),
+                player_ids=['bar']))
+
+        # check that baz's game room was unaffected
+        self.assertEqual(
+            baz_game_room_after,
+            models.GameRoom(
+                room_id=baz_room_id,
+                game=models.Game(
+                    state=models.STATES['CHOOSESUBJECT'],
+                    answerer_id='baz',
+                    asker_id=None,
+                    round_=models.Round(
+                        subject=None,
+                        guess_and_answer=None,
+                        question_and_answers=[])),
+                player_ids=['baz']))
+
+        # check that game room priorities are correctly set
+        self.assertEqual(
+            player_router.game_room_priorities,
+            [[], [baz_room_id, foo_bar_room_id]])

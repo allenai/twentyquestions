@@ -890,14 +890,13 @@ class PlayerRouter(object):
         player_id : str
             The ID of the player to set as inactive.
         """
-        # check pre-conditions
         old_player = self.players[player_id]
         if old_player.status == 'INACTIVE':
-            raise ValueError(
-                'A player cannot go inactive while already inactive.')
-        if self.player_matches[player_id] == None:
-            raise ValueError(
-                'Player is not currently matched to a game room.')
+            logger.warning(
+                f'Player {player_id} going inactive while already'
+                 ' inactive.')
+            # the method should be idempotent in case of refires
+            return
 
         # set the player's status as inactive
         player = old_player.copy(
@@ -906,6 +905,13 @@ class PlayerRouter(object):
 
         # remove the player from the game room
         room_id = self.player_matches[player_id]
+        if room_id == None:
+            logger.warning(
+                f'Player {player_id} going inactive while not currently'
+                 ' matched to a game room.')
+            # nothing to do on the players game room so exit
+            return
+
         self.game_rooms[room_id] = \
             self.game_rooms[room_id].remove_player(player)
 
