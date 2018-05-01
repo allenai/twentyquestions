@@ -35,6 +35,9 @@ def extractgames(xml_dir, output_dir):
     location to which the data will be written as 'fullgames.jsonl' and
     'triples.jsonl'.
     """
+    fullgames_output_path = os.path.join(output_dir, 'fullgames.jsonl')
+    triples_output_path = os.path.join(output_dir, 'triples.jsonl')
+
     triples = set()
     full_games = set()
     for dirpath, dirnames, filenames in os.walk(xml_dir):
@@ -68,10 +71,10 @@ def extractgames(xml_dir, output_dir):
 
     # write out the data to files
 
-    with open('fullgames.jsonl', 'w') as f_out:
+    with open(fullgames_output_path, 'w') as f_out:
         f_out.write('\n'.join(full_games))
 
-    with open('triples.jsonl', 'w') as f_out:
+    with open(triples_output_path, 'w') as f_out:
         f_out.write('\n'.join(triples))
 
 
