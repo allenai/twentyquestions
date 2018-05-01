@@ -868,15 +868,15 @@ class PlayerRouter(object):
     def finish_game(self, player_id):
         """Perform clean up actions for when a player finishes a game.
 
-        Players will be deleted when they disconnect from the
-        server. Currently, ``finish_game`` is a no-op.
+        Most players will leave the server after they finish a game, so
+        when players finish games we'll remove them from the server.
 
         Parameters
         ----------
         player_id : str
             The ID for the player who just finished a game.
         """
-        pass
+        self.delete_player(player_id)
 
     def go_inactive(self, player_id):
         """Set a player as inactive.
