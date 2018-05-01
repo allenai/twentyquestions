@@ -127,7 +127,7 @@ def disconnect():
         del player_id_from_sid[sid]
 
         if room_id is not None:
-            update_clients_for_game_room(old_room_id)
+            update_clients_for_game_room(room_id)
     else:
         logger.info(
             f'Player {player_id} has previously reconnected.'
