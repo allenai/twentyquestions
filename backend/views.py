@@ -106,6 +106,7 @@ def disconnect():
     player_id = player_id_from_sid.get(sid)
     most_recent_sid = most_recent_sid_from_player_id.get(player_id)
     if player_id is None:
+        # the client connected but never started a game
         logger.info(
             f'No player corresponding to SID {sid} found on server.')
     elif sid == most_recent_sid:
@@ -123,18 +124,17 @@ def disconnect():
 
         # delete the player's connection information
         del most_recent_sid_from_player_id[player_id]
+        del player_id_from_sid[sid]
 
         if room_id is not None:
             update_clients_for_game_room(old_room_id)
-
     else:
         logger.info(
             f'Player {player_id} has previously reconnected.'
             f' Old connection (SID {sid}) has been dropped.')
 
-    # because we're dropping the connection, we can forget it's mapping
-    # to a player id
-    del player_id_from_sid[sid]
+        # delete the old / unused connection sid
+        del player_id_from_sid[sid]
 
 
 @socketio.on('joinServer')
