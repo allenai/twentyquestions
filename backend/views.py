@@ -117,6 +117,14 @@ def disconnect():
         # the client connected but never started a game
         logger.info(
             f'No player corresponding to SID {sid} found on server.')
+    elif player_id not in player_router.player_matches:
+        logger.info(
+            f'Player {player_id} is not matched to a game. Most likely'
+            f' the player finished a game and has been deleted.')
+        if player_id in most_recent_sid_from_player_id:
+            del most_recent_sid_from_player_id[player_id]
+        if sid in player_id_from_sid:
+            del player_id_from_sid[sid]
     elif sid == most_recent_sid:
         # the player has dropped the connection represented by SID and
         # hasn't established a new connection yet, so we'll delete the
