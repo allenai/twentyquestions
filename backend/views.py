@@ -267,7 +267,7 @@ def take_player_action(message):
 
     # the logic for updating clients depends on whether or not the
     # player changed rooms.
-    room_id = player_router.player_matches[player_id]
+    room_id = player_router.player_matches.get(player_id)
     if room_id is None and old_room_id is None:
         update_client_for_player(player_id)
     elif room_id is None and old_room_id is not None:
