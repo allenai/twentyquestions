@@ -20,12 +20,9 @@ FRONTEND_BUNDLE = os.path.join(
     FRONTEND_DIR,
     'dist/static/app.bundle.js')
 
-BACKEND_TEMPLATES_DIR = os.path.join(
-    REPO_DIR,
-    'backend/templates')
-BACKEND_STATIC_DIR = os.path.join(
-    REPO_DIR,
-    'backend/static')
+BACKEND_DIR = os.path.join(REPO_DIR, 'backend')
+BACKEND_TEMPLATES_DIR = os.path.join(BACKEND_DIR, 'templates')
+BACKEND_STATIC_DIR = os.path.join(BACKEND_DIR, 'static')
 
 
 # the different environments
@@ -52,3 +49,6 @@ CERT_SECRET_NAME = 'twentyquestions-cert'
 # how long a client has to ping the server before being disconnected
 TIME_TO_DISCONNECT = 20
 assert TIME_TO_DISCONNECT >= 12, "Time to disconnect cannot be less than 12."
+
+# a text file containing the subjects with which to seed games
+SUBJECTS_FILE_PATH = os.path.join(BACKEND_DIR, 'subjects.txt')

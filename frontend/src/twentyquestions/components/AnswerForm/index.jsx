@@ -78,7 +78,7 @@ class AnswerForm extends React.Component {
           </Grid>
           <Grid item xs={12}>
             <Typography>
-              You chose the subject: <em>{game.round.subject}</em>
+              The subject is: <strong>{game.round.subject}</strong>
             </Typography>
           </Grid>
           { enableForm ?
