@@ -292,7 +292,10 @@ def take_player_action(message):
     # the logic for updating clients depends on whether or not the
     # player changed rooms.
     room_id = player_router.player_matches.get(player_id)
-    if room_id is None and old_room_id is None:
+    if player_id not in player_router.players:
+        # the player has been deleted (probably from finishing a game)
+        pass
+    elif room_id is None and old_room_id is None:
         update_client_for_player(player_id)
     elif room_id is None and old_room_id is not None:
         update_client_for_player(player_id)
