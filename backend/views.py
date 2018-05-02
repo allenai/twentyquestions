@@ -142,7 +142,23 @@ def disconnect():
         del most_recent_sid_from_player_id[player_id]
         del player_id_from_sid[sid]
 
-        if room_id is not None:
+        if room_id not in player_router.game_rooms:
+            # Normally, the player and the game are deleted when the
+            # player submits the game to MTurk, in which case this
+            # branch of the if / else block won't be executed. If a
+            # player leaves a game in the FINISHGAME state without
+            # having submitted the game, then the game room will have
+            # been deleted when we deleted the player a few lines up. We
+            # don't want to try and update the other members of the game
+            # room in this case since the room doesn't exist.
+            #
+            # It's strange for a turker to abandon the game in the
+            # FINISHGAME state without submitting, since all they have
+            # to do is click a button to get money, so log a warning.
+            logger.warning(
+                f'Player {player_id} disconnecting from a game that'
+                f' does not exist ({room_id}).')
+        elif room_id is not None:
             update_clients_for_game_room(room_id)
     else:
         logger.info(
