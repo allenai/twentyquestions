@@ -128,6 +128,11 @@ class AnswerForm extends React.Component {
                   value='never'
                   control={<Radio inputProps={ {required: true} }/>}
                   disabled={!enableForm}/>
+                <FormControlLabel
+                  label='Irrelevant'
+                  value='irrelevant'
+                  control={<Radio inputProps={ {required: true} }/>}
+                  disabled={!enableForm}/>
               </RadioGroup>
             </FormControl>
           </Grid>

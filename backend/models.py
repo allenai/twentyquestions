@@ -233,7 +233,7 @@ class Answer(Data):
             The ID of the player who provided this answer.
         answer_value : str
             A string indicating the answer, must be one of 'always',
-            'usually', 'sometimes', 'rarely', 'never'.
+            'usually', 'sometimes', 'rarely', 'never', 'irrelevant'.
 
         Returns
         -------

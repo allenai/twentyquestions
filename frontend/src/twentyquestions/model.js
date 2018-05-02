@@ -154,7 +154,7 @@ class Answer extends Data {
    *   answer.
    * @param {String} answerValue - A string giving the answer to the
    *   question. Must be one of 'always', 'usually', 'sometimes',
-   *   'rarely', 'never'.
+   *   'rarely', 'never', 'irrelevant'.
    *
    * @return {Answer} The new Answer instance.
    */
@@ -169,7 +169,8 @@ class Answer extends Data {
       'usually',
       'sometimes',
       'rarely',
-      'never'
+      'never',
+      'irrelevant'
     ];
     if (!allowedValues.includes(answerValue)) {
       throw new Error(
