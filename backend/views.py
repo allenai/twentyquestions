@@ -48,6 +48,35 @@ player_router = models.PlayerRouter(
 
 # helper functions
 
+def set_player_connection_information(sid, player_id):
+    """Set the connection information for a player.
+
+    Parameters
+    ----------
+    sid : str
+        The player's SID.
+    player_id : str
+        The player's ID.
+    """
+    # log relevant information
+    if player_id in most_recent_sid_from_player_id:
+        old_sid = most_recent_sid_from_player_id[player_id]
+        logger.info(
+            f'Player {player_id} reconnecting to server.'
+            f' Updating SID from {old_sid} to {sid}.')
+    else:
+        logger.info(
+            f'Player {player_id} connecting to server with SID {sid}')
+
+    # record the sid <-> player_id mappings
+    player_id_from_sid[sid] = player_id
+    most_recent_sid_from_player_id[player_id] = sid
+
+    # put the player in a room addressed by player id so that we can
+    # communicate with them later.
+    flask_socketio.join_room(player_id)
+
+
 def update_client_for_player(player_id):
     """Update the client state for a single player.
 
@@ -193,9 +222,31 @@ def disconnect():
         sid)
 
 
+@socketio.on('updatePlayerConnection')
+def update_player_connection(message):
+    """Update the connection information associated with a player.
+
+    Parameters
+    ----------
+    message : dict
+        A dictionary contianing a 'playerId' key mapping to the client's
+        playerId.
+    """
+    player_id = message['playerId']
+    sid = flask.request.sid
+
+    set_player_connection_information(sid=sid, player_id=player_id)
+
+    # update the client
+    if player_id in player_router.players:
+        update_client_for_player(player_id)
+
+
 @socketio.on('joinServer')
 def join_server(message):
     """Websocket endpoint for a player to join the server.
+
+    This endpoint is used to enter games and retrieve initial state.
 
     Parameters
     ----------
@@ -206,28 +257,13 @@ def join_server(message):
     player_id = message['playerId']
     sid = flask.request.sid
 
+    set_player_connection_information(sid=sid, player_id=player_id)
+
     if player_id is None:
         # The client is previewing the HIT, ignore them
         logger.info(
             f'SID {sid} is previewing the server.')
         return
-
-    if player_id in most_recent_sid_from_player_id:
-        old_sid = most_recent_sid_from_player_id[player_id]
-        logger.info(
-            f'Player {player_id} reconnecting to server.'
-            f' Updating SID from {old_sid} to {sid}.')
-    else:
-        logger.info(
-            f'Player {player_id} connecting to server with SID {sid}')
-
-    # record the sid <-> player_id mappings
-    player_id_from_sid[sid] = player_id
-    most_recent_sid_from_player_id[player_id] = sid
-
-    # put the player in a room addressed by player id so that we can
-    # communicate with them later.
-    flask_socketio.join_room(player_id)
 
     if player_id not in player_router.players:
         player_router.create_player(player_id)

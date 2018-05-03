@@ -84,6 +84,13 @@ class Controller {
       (message) => this.setClientState(message)
     );
 
+    // handle reconnects by updating the server with the new connection
+    // information
+    this._socket.on(
+      'reconnect',
+      (message) => this.updatePlayerConnection(playerId)
+    );
+
     // after the connection is successful, join the game room
     this._socket.on(
       'connect',
@@ -91,6 +98,19 @@ class Controller {
     );
 
     this.renderView();
+  }
+
+  /**
+   * Update connection information for the player.
+   *
+   * @param {String} playerId - The ID for the player.
+   */
+  updatePlayerConnection(playerId) {
+    if (settings.shouldLog) {
+      console.log('Reconnecting.');
+    }
+
+    this._socket.emit('updatePlayerConnection', {playerId});
   }
 
   /**
