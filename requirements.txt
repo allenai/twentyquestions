@@ -2,3 +2,4 @@ click
 flask
 flask-socketio
 gevent
+gevent-websocket
