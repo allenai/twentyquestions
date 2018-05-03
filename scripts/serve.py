@@ -6,9 +6,9 @@ See ``python serve.py --help`` for more information.
 import logging
 
 import click
-from gevent.wsgi import WSGIServer
 
 import backend
+from backend import views
 
 
 logger = logging.getLogger(__name__)
@@ -22,8 +22,8 @@ def serve():
     """Serve twentyquestions on port 5000."""
     logger.info('Running prod server on http://127.0.0.1:5000/')
 
-    http_server = WSGIServer(('0.0.0.0', 5000), backend.app)
-    http_server.serve_forever()
+    # flask socketio has it's own functionality for serving the app
+    views.socketio.run(backend.app)
 
 
 if __name__ == '__main__':
