@@ -27,7 +27,6 @@ def serve():
         backend.app,
         host='0.0.0.0',
         port='5000',
-        log_output=True,
         debug=False)
 
 
