@@ -47,8 +47,12 @@ CERT_SECRET_NAME = 'twentyquestions-cert'
 ###################
 
 # how long a client has to ping the server before being disconnected
+# when using polling transport
 TIME_TO_DISCONNECT = 30
 assert TIME_TO_DISCONNECT >= 15, "Time to disconnect cannot be less than 15."
+
+# how long in seconds a client has to reconnect after a disconnect event
+TIME_TO_RECONNECT = 15
 
 # a text file containing the subjects with which to seed games
 SUBJECTS_FILE_PATH = os.path.join(BACKEND_DIR, 'subjects.txt')

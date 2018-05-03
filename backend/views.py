@@ -5,6 +5,7 @@ import random
 
 import flask
 import flask_socketio
+import gevent
 
 from . import models
 from . import settings
@@ -109,64 +110,83 @@ def disconnect():
     """Websocket endpoint for when a player disconnects."""
     sid = flask.request.sid
 
-    logger.info(f'Dropping connection (SID {sid}).')
+    logger.info(f'Disconnecting (SID {sid}).')
 
-    player_id = player_id_from_sid.get(sid)
-    most_recent_sid = most_recent_sid_from_player_id.get(player_id)
-    if player_id is None:
-        # the client connected but never started a game
-        logger.info(
-            f'No player corresponding to SID {sid} found on server.')
-    elif player_id not in player_router.player_matches:
-        logger.info(
-            f'Player {player_id} is not matched to a game. Most likely'
-            f' the player finished a game and has been deleted.')
-        if player_id in most_recent_sid_from_player_id:
+    @flask.copy_current_request_context
+    def handle_disconnect(sid):
+        """Handle ``sid`` disconnecting from the server.
+
+        Rather than handling a disconnection event immediately, we want to
+        wait and give the player a chance to reconnect.
+
+        Parameters
+        ----------
+        sid : str
+            The old session ID for the disconnected player.
+        """
+        player_id = player_id_from_sid.get(sid)
+        most_recent_sid = most_recent_sid_from_player_id.get(player_id)
+        if player_id is None:
+            # the client connected but never started a game
+            logger.info(
+                f'No player corresponding to SID {sid} found on server.')
+        elif player_id not in player_router.player_matches:
+            logger.info(
+                f'Player {player_id} is not matched to a game. Most likely'
+                f' the player finished a game and has been deleted.')
+            if player_id in most_recent_sid_from_player_id:
+                del most_recent_sid_from_player_id[player_id]
+            if sid in player_id_from_sid:
+                del player_id_from_sid[sid]
+        elif sid == most_recent_sid:
+            # the player has dropped the connection represented by SID and
+            # hasn't established a new connection yet, so we'll delete the
+            # player.
+            logger.info(
+                f'Disconnecting player {player_id} from server.')
+
+            # fetch the room the player is in
+            room_id = player_router.player_matches[player_id]
+
+            # delete the player
+            player_router.delete_player(player_id)
+
+            # delete the player's connection information
             del most_recent_sid_from_player_id[player_id]
-        if sid in player_id_from_sid:
             del player_id_from_sid[sid]
-    elif sid == most_recent_sid:
-        # the player has dropped the connection represented by SID and
-        # hasn't established a new connection yet, so we'll delete the
-        # player.
-        logger.info(
-            f'Disconnecting player {player_id} from server.')
 
-        # fetch the room the player is in
-        room_id = player_router.player_matches[player_id]
+            if room_id not in player_router.game_rooms:
+                # Normally, the player and the game are deleted when the
+                # player submits the game to MTurk, in which case this
+                # branch of the if / else block won't be executed. If a
+                # player leaves a game in the FINISHGAME state without
+                # having submitted the game, then the game room will have
+                # been deleted when we deleted the player a few lines up. We
+                # don't want to try and update the other members of the game
+                # room in this case since the room doesn't exist.
+                #
+                # It's strange for a turker to abandon the game in the
+                # FINISHGAME state without submitting, since all they have
+                # to do is click a button to get money, so log a warning.
+                logger.warning(
+                    f'Player {player_id} disconnecting from a game that'
+                    f' does not exist ({room_id}).')
+            elif room_id is not None:
+                update_clients_for_game_room(room_id)
+        else:
+            logger.info(
+                f'Player {player_id} has previously reconnected.'
+                f' Old connection (SID {sid}) has been dropped.')
 
-        # delete the player
-        player_router.delete_player(player_id)
+            # delete the old / unused connection sid
+            del player_id_from_sid[sid]
 
-        # delete the player's connection information
-        del most_recent_sid_from_player_id[player_id]
-        del player_id_from_sid[sid]
-
-        if room_id not in player_router.game_rooms:
-            # Normally, the player and the game are deleted when the
-            # player submits the game to MTurk, in which case this
-            # branch of the if / else block won't be executed. If a
-            # player leaves a game in the FINISHGAME state without
-            # having submitted the game, then the game room will have
-            # been deleted when we deleted the player a few lines up. We
-            # don't want to try and update the other members of the game
-            # room in this case since the room doesn't exist.
-            #
-            # It's strange for a turker to abandon the game in the
-            # FINISHGAME state without submitting, since all they have
-            # to do is click a button to get money, so log a warning.
-            logger.warning(
-                f'Player {player_id} disconnecting from a game that'
-                f' does not exist ({room_id}).')
-        elif room_id is not None:
-            update_clients_for_game_room(room_id)
-    else:
-        logger.info(
-            f'Player {player_id} has previously reconnected.'
-            f' Old connection (SID {sid}) has been dropped.')
-
-        # delete the old / unused connection sid
-        del player_id_from_sid[sid]
+    # we need to wait before handling the disconnection event so that
+    # players have a chance to reconnect before we delete them.
+    gevent.spawn_later(
+        settings.TIME_TO_RECONNECT,
+        handle_disconnect,
+        sid)
 
 
 @socketio.on('joinServer')
