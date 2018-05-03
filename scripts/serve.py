@@ -23,7 +23,12 @@ def serve():
     logger.info('Running prod server on http://127.0.0.1:5000/')
 
     # flask socketio has it's own functionality for serving the app
-    views.socketio.run(backend.app)
+    views.socketio.run(
+        backend.app,
+        host='0.0.0.0',
+        port='5000',
+        log_output=True,
+        debug=False)
 
 
 if __name__ == '__main__':

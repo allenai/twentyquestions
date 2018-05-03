@@ -5,7 +5,7 @@ import random
 
 import flask
 import flask_socketio
-import gevent
+import eventlet
 
 from . import models
 from . import settings
@@ -187,7 +187,7 @@ def disconnect():
 
     # we need to wait before handling the disconnection event so that
     # players have a chance to reconnect before we delete them.
-    gevent.spawn_later(
+    eventlet.spawn_after(
         settings.TIME_TO_RECONNECT,
         handle_disconnect,
         sid)
