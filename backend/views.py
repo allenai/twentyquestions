@@ -102,7 +102,11 @@ def connect():
     """Websocket endpoint for when a player connects."""
     sid = flask.request.sid
 
-    logger.info(f'New connection (SID {sid}).')
+    num_players = len(most_recent_sid_from_player_id)
+
+    logger.info(
+        f'New connection (SID {sid}). {num_players} players currently'
+        f' on the server.')
 
 
 @socketio.on('disconnect')
