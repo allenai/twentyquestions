@@ -46,6 +46,8 @@ def extractgames(xml_dir, output_dir):
             if not '.xml' in filename:
                 continue
 
+            logger.debug(f'Processing {filename}.')
+
             # extract the game encoded by MTurk
             with open(os.path.join(dirpath, filename), 'r') as f_in:
                 results_xml = parseString(f_in.read())
