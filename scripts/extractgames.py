@@ -61,11 +61,11 @@ def extractgames(xml_dir, output_dir):
             # record all the triples generated during the game
             subject = data['game']['round']['subject']
             for questionAndAnswer in data['game']['round']['questionAndAnswers']:
-                triple = (
-                    subject,
-                    questionAndAnswer['question']['questionText'],
-                    questionAndAnswer['answer']['answerValue']
-                )
+                triple = {
+                    'subject': subject,
+                    'question': questionAndAnswer['question']['questionText'],
+                    'answer': questionAndAnswer['answer']['answerValue']
+                }
                 triples.add(json.dumps(triple))
 
             # record the full game data
