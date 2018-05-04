@@ -1,304 +1,260 @@
-account book
-advertising signs
 air ducts
 approach road
-archaeological museum
-army officials
-ash trays
 baggage car
-bank robber
 bankers
-bar stool
-bath tub
-bathroom mirror
-bible schools
 bicycle wheel
-biological station
-blue hills
-body regions
-boilers
 boom box
 business property
-business representatives
 cane chair
-cannon ball
-canyon wall
-car driver
-card catalog
 cargo boats
-catalogue record
 cattle company
-cell lung
 central administration
 chair legs
-charcoal fire
 check register
-chemical engineer
-church steps
 city girl
-cloves
-color slides
-combat unit
-community organizer
-compass needle
-computer game
-computer screens
 computer window
 construction contractors
-control instruments
-control lever
-copper deposits
-cotton factories
 counties
 country wife
-county fairs
 county museum
 county prosecutor
-county town
-cricket ball
-crystal lake
 data mart
-demonstrators
-departure point
-deposit boxes
-detectors
-disc jockey
-discount stores
-dishes
 drug addict
-eastern railway
-energy company
-enforcement agents
-engineering laboratory
-entry book
-equipment items
-errand boy
 examination table
 executives
-family farm
-family letters
 family portraits
 farm homes
-feathers
 fences
-figure painting
-film scripts
 financial institution
 fire arms
-fire station
-fish farm
 fish farms
-fishes
-flower clusters
-food containers
-food supplements
-foot soldier
-football player
-fox terrier
-fresh air
 fruit cake
-fruit cocktail
-fruit juices
 fuel source
-garden path
-gas pipeline
-gas pipelines
-gasoline engine
-general secretary
-gills
-glass ball
-glass funnel
-glass roof
-golf balls
-government inspectors
-government paper
-grand jury
-gravel bed
-gravel walk
-group commander
 guards
 gum tree
-hand grenades
-harbors
-hazardous waste
-health food
-heat rate
-history collection
-hockey stick
-home owners
-hospital grounds
-house cat
 induction coils
-ingredients
-inspector general
-instruction books
-instruction manual
-insulin injection
-international school
 investment firm
-island nation
-jelly roll
-job application
-juvenile offenders
 killer whales
-kitchen fire
-lace cap
 landfill sites
 library door
 library file
 lightning bolts
-line manager
-linen thread
-liquid crystals
-liquor store
-living organisms
-living spaces
 local school
-luxury hotels
 machine tool
-manuals
-master tape
 material property
-material things
-medical systems
 mining corporation
-money bags
 money money
 mother plant
-mouse embryo
 mules
-mustard seeds
-national library
-national monuments
 neighbors
-night bird
 oak bark
-observation tower
-observation wells
-oils
 old city
-old mill
-open road
-oxygen mask
 packets
-paint shop
-paintings
-palms
-pants pocket
-paper copies
-pebble beach
-petroleum refinery
-picture house
-pieces
-plaid shirt
-plantation crops
-platter
 poker games
-police office
-pony tail
-power tool
-production center
-production worker
-program office
-protein sources
-puppet theater
 push button
-quarter moon
-railroad man
 railroad tracks
 railway carriages
-railway department
 rare books
-realty company
 rebel army
 recreation centers
 reference librarian
-republicans
-research paper
 research workers
 reserve army
-resource manager
-rest house
-rifle barrel
 river towns
-river trail
 road vehicle
 root length
-satisfaction survey
-saw blade
-school garden
 school libraries
 school nurses
-school secretary
-school systems
-screen image
-screens
-sculptures
-senate executive
-sewer system
-sewers
-sex worker
-sheds
 shillings
 shirt front
-shoe leather
 side streets
-silk dresses
-silt loam
-skin areas
-slime molds
-small town
-soils
 song birds
-space ship
 sports goods
-spray gun
-sprinkler systems
-staff writers
-stalks
-states flag
 steel cables
-steel shell
-storage cell
 storage tanks
 stove pipe
 streets
-study circles
 sugar mill
-summer cottage
 surface coating
-survey map
-system hardware
-taste bud
 tea room
-telegraph key
-telephone cable
 temple grounds
-test material
-textile fabrics
-transmission mechanism
 tree limbs
-tree oil
-trunk roads
-trunks
-turbine engines
-turtle shell
-universal city
 user documentation
-velvet glove
-village schoolmaster
-virgin islands
 visiting professor
-waste material
-water basin
-wedding gift
-wedding rings
 white eagle
-window boxes
-wine bottle
-wing tip
 wire cage
-witch hazel
 wood shavings
-wrinkles
-young adult
+waiter
+grad
+associate
+horticulturalist
+mattress
+pineapple
+napkin
+gecko
+aggressor
+shaker
+dishware
+swordsman
+joist
+genius
+crib
+tiger
+guestroom
+ringside
+wreck
+nutshell
+slurp
+immigrant
+ancestor
+hexagon
+dam
+boardinghouse
+memoir
+periwinkle
+heap
+leopard
+snowfall
+liar
+boob
+snail
+mender
+pawnbroker
+overlord
+stairwell
+lymph
+sweeper
+padre
+clip
+block
+lunch
+underwriter
+debutante
+pyramid
+conjuror
+embezzler
+technician
+arrestee
+book
+windsurfer
+alpaca
+candleholder
+silver
+bedbug
+gashes
+workbench
+projectionist
+pourer
+riverfront
+cylinder
+pen
+beeper
+oven
+chevron
+beachwear
+shroud
+accomplice
+deed
+artifact
+dramatist
+cord
+scholar
+keg
+committeewoman
+escapist
+guesthouse
+bastard
+trial
+beech
+game
+almanac
+heckler
+woodcutter
+canvas
+ornamentation
+hyacinth
+boiler
+tricycle
+entranceway
+chessboard
+greasiness
+laxative
+sandblaster
+caboose
+sterling
+eyedropper
+embryo
+handiwork
+trainee
+honker
+sod
+boardwalk
+gimp
+avalanche
+godchild
+rider
+housecoat
+torchbearer
+pomegranate
+grindstone
+kwanza
+lid
+sauerkraut
+squaw
+lion
+hubcap
+dockworker
+nerd
+octopi
+juicer
+godparent
+pallet
+insider
+brokerage
+institute
+munchkin
+coach
+intercourse
+elixir
+doggy
+treasury
+lyricist
+fatigue
+bottler
+badlands
+greenroom
+hamstring
+madhouse
+dodger
+detective
+chunk
+academy
+deserter
+hen
+tops
+hives
+royalty
+dandruff
+cub
+nightwear
+motorway
+dowry
+hypnotist
+rapper
+workman
+bacon
+plane
+atmosphere
+microcomputer
+wire
+theologian
+transponder
+clipboard
+dewdrop
+flagstone
+marionette
+grapefruit
+buttonhole
+glassware
+tattletale
+clarinetist
