@@ -1,0 +1,32 @@
+{
+  "AutoApprovalDelayInSeconds": 3600,
+  "AssignmentDurationInSeconds": 3600,
+  "Reward": "1.50",
+  "Title": "Play 20 Questions!",
+  "Keywords": "20 Questions, Game, Common Sense",
+  "Description": "Play a round of 20 Questions with other Turkers. Please only take ONE of these HITs at a time. Feel free to take more of these HITs after you finish the one you're working, thanks!",
+  "QualificationRequirements": [
+    {
+      "QualificationTypeId": "00000000000000000040",
+      "Comparator": "GreaterThanOrEqualTo",
+      "IntegerValues": [
+        100
+      ],
+      "RequiredToPreview": false
+    },
+    {
+      "QualificationTypeId": "00000000000000000071",
+      "Comparator": "EqualTo",
+      "LocaleValues": [{"Country": "US"}],
+      "RequiredToPreview": false
+    },
+    {
+      "QualificationTypeId": "000000000000000000L0",
+      "Comparator": "GreaterThanOrEqualTo",
+      "IntegerValues": [
+        95
+      ],
+      "RequiredToPreview": false
+    }
+  ]
+}

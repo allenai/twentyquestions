@@ -1,0 +1,55 @@
+# kubernetes resources for deploying twentyquestions2
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: twentyquestions2-server
+  labels:
+    app: twentyquestions2
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: twentyquestions2
+    spec:
+      containers:
+      - name: twentyquestions2-server
+        image: gcr.io/ai2-alexandria/twentyquestions-server:dev
+        imagePullPolicy: Always
+        command:
+          - python
+        args:
+          - manage.py
+          - serve
+        ports:
+        - name: http-server
+          containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twentyquestions2-loadbalancer
+  labels:
+    app: twentyquestions2
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: http-server
+  selector:
+    app: twentyquestions2
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: twentyquestions2-ssl
+  labels:
+    app: twentyquestions2
+spec:
+  tls:
+  - secretName: twentyquestions2-cert
+  backend:
+    serviceName: twentyquestions2-loadbalancer
+    servicePort: 80
+---

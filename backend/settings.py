@@ -37,10 +37,10 @@ CONTAINER_REGISTRY = 'gcr.io'
 PROJECT_ID = 'ai2-alexandria'
 SERVER_IMAGE_NAME = 'twentyquestions-server'
 
-KUBERNETES_CONFIG = os.path.join(
-    REPO_DIR, 'ops/twentyquestions.yaml')
+KUBERNETES_CONFIG_TEMPLATE = os.path.join(
+    REPO_DIR, 'ops/twentyquestions{server_number}.yaml')
 
-CERT_SECRET_NAME = 'twentyquestions-cert'
+CERT_SECRET_NAME_TEMPLATE = 'twentyquestions-cert{server_number}'
 
 ###################
 # Server Settings #
