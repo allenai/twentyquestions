@@ -124,6 +124,17 @@ def game_room():
     return flask.render_template('index.html')
 
 
+@twentyquestions.route('/server-info')
+def server_info():
+    """Endpoint for reading information about the server."""
+    return flask.jsonify({
+        'numSessions': len(player_id_from_sid),
+        'numPlayers': len(player_router.players),
+        'numGameRooms': len(player_router.game_rooms),
+        'numSubjectsRemaining': len(subjects)
+    })
+
+
 # Web Socket Endpoints
 
 @socketio.on('connect')
