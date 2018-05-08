@@ -27,15 +27,18 @@ logger = logging.getLogger(__name__)
 @click.argument(
     'key',
     type=click.Path(exists=True, file_okay=True, dir_okay=False))
-@click.argument(
-    'server_number',
-    type=click.INT)
+@click.option(
+    '--server-number',
+    type=click.INT,
+    help="The server number you'd like to deploy to.")
 def deploy(env, cert, key, server_number):
-    """Deploy twentyquestions to ENV on SERVER_NUMBER.
+    """Deploy twentyquestions to ENV.
 
     Deploy the current docker image for ENV to kubernetes using the
     certificate defined by CERT and KEY to provide HTTPS traffic.
     """
+    server_number = str(server_number) if server_number is not None else ''
+
     registry = settings.CONTAINER_REGISTRY
     docker_repo = settings.PROJECT_ID
     image_name = settings.SERVER_IMAGE_NAME
