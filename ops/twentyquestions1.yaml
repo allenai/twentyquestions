@@ -25,6 +25,8 @@ spec:
         ports:
         - name: http-server
           containerPort: 5000
+      nodeSelector:
+        node: "1"
 ---
 apiVersion: v1
 kind: Service
