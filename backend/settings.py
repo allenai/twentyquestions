@@ -40,7 +40,7 @@ SERVER_IMAGE_NAME = 'twentyquestions-server'
 KUBERNETES_CONFIG_TEMPLATE = os.path.join(
     REPO_DIR, 'ops/twentyquestions{server_number}.yaml')
 
-CERT_SECRET_NAME_TEMPLATE = 'twentyquestions-cert{server_number}'
+CERT_SECRET_NAME_TEMPLATE = 'twentyquestions{server_number}-cert'
 
 ###################
 # Server Settings #
