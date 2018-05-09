@@ -109,7 +109,9 @@ class WaitingRoom extends React.Component {
               <ol>
                 <li>
                   <Typography>
-                    The first player will choose a hidden object.
+                    The first player is provided a hidden object. It could
+                    be concrete like "library" or more abstract like
+                    "labor organization".
                   </Typography>
                 </li>
                 <li>
@@ -121,7 +123,8 @@ class WaitingRoom extends React.Component {
                 <li>
                   <Typography>
                     The first player will answer the questions
-                    truthfully.
+                    truthfully, with one of "always", "usually",
+                    "sometimes", "rarely", "never" or "irrelevant".
                   </Typography>
                 </li>
                 <li>
@@ -133,6 +136,14 @@ class WaitingRoom extends React.Component {
                   </Typography>
                 </li>
               </ol>
+              <Typography>
+                Some of the subjects we provide people are tricky to
+                guess. We're looking for people to make a good faith
+                effort to ask relevant questions and provide truthful
+                answers.  Also, please treat your partners respectfully.
+                Abusive language or personal questions are not
+                tolerated.
+              </Typography>
             </Grid>
             <Grid item align='center' xs={12}>
               <CircularProgress color='primary'/>
