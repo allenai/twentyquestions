@@ -10,7 +10,7 @@
       "QualificationTypeId": "00000000000000000040",
       "Comparator": "GreaterThanOrEqualTo",
       "IntegerValues": [
-        100
+        1000
       ],
       "RequiredToPreview": false
     },
@@ -24,7 +24,7 @@
       "QualificationTypeId": "000000000000000000L0",
       "Comparator": "GreaterThanOrEqualTo",
       "IntegerValues": [
-        95
+        98
       ],
       "RequiredToPreview": false
     }
