@@ -60,7 +60,7 @@ class MakeGuessForm extends React.Component {
       <form onSubmit={this.handleSubmit.bind(this)}>
         <Grid container>
           <Grid item xs={12}>
-            <Typography variant='title'>
+            <Typography variant='display2' gutterBottom>
               Make a Guess
             </Typography>
           </Grid>
