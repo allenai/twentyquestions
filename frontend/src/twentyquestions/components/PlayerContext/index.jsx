@@ -117,7 +117,10 @@ class PlayerContext extends React.Component {
                 </li>
               </ol>
               <Typography>
-                Some of the subjects we provide people are tricky to
+                Do <b>not</b> ask questions about the letters in the word.
+              </Typography>
+              <Typography>
+                Some of the subjects we provide are difficult to
                 guess. We're looking for people to make a good faith
                 effort to ask relevant questions and provide truthful
                 answers.  Also, please treat your partners respectfully.
