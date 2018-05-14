@@ -24,7 +24,7 @@
       "QualificationTypeId": "000000000000000000L0",
       "Comparator": "GreaterThanOrEqualTo",
       "IntegerValues": [
-        98
+        99
       ],
       "RequiredToPreview": false
     }
