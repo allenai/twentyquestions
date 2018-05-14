@@ -1,0 +1,243 @@
+<HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
+  <HTMLContent>
+    <![CDATA[
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+          <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+        </head>
+        <body>
+          <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit'>
+            <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+            <h1>Rate the Quality of Questions from 20 Questions</h1>
+            <p>For each question in the table, please check it as either high or low quality according to the guidelines outlined below.</p>
+
+            <h2>Guidelines</h2>
+            <p>High quality questions must satisfy all of the following conditions:</p>
+            <ul>
+              <li>
+                The question should be about the subject.
+              </li>
+              <li>
+                The question should <b>NOT</b> be a personal question
+                about the other player.
+              </li>
+              <li>
+                The question should <b>NOT</b> ask about the letters in
+                the subject or how the word sounds.
+              </li>
+              <li>
+                The <i>subject</i> should <b>NOT</b> be a phrase or sentence. "Is it
+                alive?" is not a good <i>subject</i>, but "stock broker" is a
+                good subject. If the subject is bad, mark the question
+                as bad.
+              </li>
+            </ul>
+
+            <p>Note the following points:</p>
+            <ul>
+              <li>
+                Typos or odd capitalization in questions are ok.
+              </li>
+              <li>
+                Don't worry about duplicates, evaluate duplicate questions as you otherwise would.
+              </li>
+              <li>
+                One word questions are ok <i>if</i> the question still asks
+                a question about the subject.
+              </li>
+              <li>
+                Sometimes people use the word "you" to refer to the
+                subject and not the other player. These questions are
+                good, they are not personal questions.
+              </li>
+            </ul>
+
+            <h2>Examples:</h2>
+            <table class="cf-alternate-rows" style="width: 50%;" border="1" align="center">
+              <tbody>
+                <tr>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Subject</u>
+                    </strong>
+                  </th>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Question</u>
+                    </strong>
+                  </th>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Quality?</u>
+                    </strong>
+                  </th>
+                </tr>
+                <tr>
+                  <td>
+                    peashooter
+                  </td>
+                  <td>
+                    Is it smething Most people own.
+                  </td>
+                  <td>
+                    <b>High</b>. Typos are ok, it's still a question
+                    about the subject.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    conjuctivitis
+                  </td>
+                  <td>
+                    Oh boy, alright, does it have to do with outer space?
+                  </td>
+                  <td>
+                    <b>High</b>. It's fine if people include extra words
+                    (like "Oh boy", etc), it's still a question about
+                    the subject.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    blob
+                  </td>
+                  <td>
+                    do you own one?
+                  </td>
+                  <td>
+                    <b>High</b>. The "you" here refers to a generic
+                    person, not the other player, so this is <b>NOT</b>
+                    a personal question.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    flank
+                  </td>
+                  <td>
+                    Sirloin?
+                  </td>
+                  <td>
+                    <b>High</b>. Even though the question is one word,
+                    we can understand the question it asks (something
+                    like, "is it a sirloin?").
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    survivor
+                  </td>
+                  <td>
+                    is it a 7 letter word
+                  </td>
+                  <td>
+                    <b>Low</b>. The question asks about the letters in
+                    the word or how the word sounds.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    parrot
+                  </td>
+                  <td>
+                    so i got it in 8 questions
+                  </td>
+                  <td>
+                    <b>Low</b>. The question is not about the subject.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    coconut
+                  </td>
+                  <td>
+                    do you like me?
+                  </td>
+                  <td>
+                    <b>Low</b>. The question is personal and is not
+                    about the subject.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+
+            <h2 align="center"><u>The Questions</u></h2>
+
+            <table class="cf-alternate-rows" style="width: 50%;" border="1" align="center">
+              <tbody>
+                <tr>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Subject</u>
+                    </strong>
+                  </th>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Question</u>
+                    </strong>
+                  </th>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Quality?</u>
+                    </strong>
+                  </th>
+                </tr>
+                {% for subject_question_answer in subject_question_answers %}
+                <tr>
+                  <td style="width: 33.3333%; text-align: center;">{{ subject_question_answer['subject'] }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ subject_question_answer['question'] }}</td>
+                  <td style="width: 33.3333%; text-align: center;">
+                    <label for="high-quality-{{ loop.index0 }}">High</label>
+                    <input
+                      id="high-quality-{{ loop.index0 }}"
+                      type="radio"
+                      name="quality-{{ loop.index0 }}"
+                      value="high"
+                      required/>
+                    <label for="low-quality-{{ loop.index0 }}">Low</label>
+                    <input
+                      id="low-quality-{{ loop.index0 }}"
+                      type="radio"
+                      name="quality-{{ loop.index0 }}"
+                      value="low"
+                      required/>
+                    <input
+                      id="subject-{{ loop.index0 }}"
+                      type="hidden"
+                      name="subject-{{ loop.index0 }}"
+                      value="{{ subject_question_answer['subject'] }}" />
+                    <input
+                      id="question-{{ loop.index0 }}"
+                      type="hidden"
+                      name="question-{{ loop.index0 }}"
+                      value="{{ subject_question_answer['question'] }}" />
+                    <input
+                      id="answer-{{ loop.index0 }}"
+                      type="hidden"
+                      name="answer-{{ loop.index0 }}"
+                      value="{{ subject_question_answer['answer'] }}" />
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <p align="center" >
+              <input
+                id='submitButton'
+                type='submit'
+                value='Submit'
+                style="font-size:15pt;color:white;background-color:green;border:1px solid #336600;padding:4px" />
+            </p>
+          </form>
+          <script language='Javascript'>turkSetAssignmentID();</script>
+        </body>
+      </html>
+    ]]>
+  </HTMLContent>
+  <FrameHeight>800</FrameHeight>
+</HTMLQuestion>
