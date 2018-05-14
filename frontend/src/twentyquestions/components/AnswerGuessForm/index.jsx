@@ -95,7 +95,7 @@ class AnswerGuessForm extends React.Component {
           <Grid item xs={12}>
             <FormControl
               component='fieldset'>
-              <FormLabel component='legend'>answer</FormLabel>
+              <FormLabel component='legend'>Is the guess correct? Feel free to use your judgment.</FormLabel>
               <RadioGroup
                 aria-label='answer'
                 name='answer'
