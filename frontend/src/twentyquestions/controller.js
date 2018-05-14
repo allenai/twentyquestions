@@ -36,6 +36,8 @@ class Controller {
      * `'takePlayerAction'`.
      */
     this._socket = null;
+    /** The turker's worker ID. */
+    this.workerId = null;
     /** The player for this client. */
     this.player = null;
     /** The entire state of the game room that the player is in. */
@@ -69,7 +71,7 @@ class Controller {
     // if the turkers view the game in preview mode, then the assignment
     // id is marked as unavailable in which case we'll store it as
     // `null`.
-    const playerId = (
+    const workerId = (
       queryParams.assignmentId === 'ASSIGNMENT_ID_NOT_AVAILABLE' ?
         null
         : queryParams.workerId
@@ -88,38 +90,38 @@ class Controller {
     // information
     this._socket.on(
       'reconnect',
-      (message) => this.updatePlayerConnection(playerId)
+      (message) => this.updatePlayerConnection(workerId)
     );
 
     // after the connection is successful, join the game room
     this._socket.on(
       'connect',
-      (message) => this.joinServer(playerId)
+      (message) => this.joinServer(workerId)
     );
 
     this.renderView();
   }
 
   /**
-   * Update connection information for the player.
+   * Update connection information for the client.
    *
-   * @param {String} playerId - The ID for the player.
+   * @param {String} workerId - The worker ID for the turker.
    */
-  updatePlayerConnection(playerId) {
+  updatePlayerConnection(workerId) {
     if (settings.shouldLog) {
       console.log('Reconnecting.');
     }
 
-    this._socket.emit('updatePlayerConnection', {playerId});
+    this._socket.emit('updatePlayerConnection', {workerId});
   }
 
   /**
    * Join the game room on the server.
    *
-   * @param {String} playerId - The ID for the player.
+   * @param {String} workerId - The worker ID for the turker.
    */
-  joinServer(playerId) {
-    this._socket.emit('joinServer', {playerId});
+  joinServer(workerId) {
+    this._socket.emit('joinServer', {workerId});
   }
 
   /**

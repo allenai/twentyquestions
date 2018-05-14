@@ -2,6 +2,7 @@
 
 import logging
 import random
+import uuid
 
 import flask
 import flask_socketio
@@ -34,10 +35,11 @@ with open(settings.SUBJECTS_FILE_PATH, 'r') as subjects_file:
     ]
 random.shuffle(subjects)
 
-# maps between session IDs and player IDs
+# maps between worker IDs, session IDs, and player IDs
 # these maps are necessary for handling connection events
-player_id_from_sid = {}
-most_recent_sid_from_player_id = {}
+player_id_from_worker_id = {}
+worker_id_from_sid = {}
+most_recent_sid_from_worker_id = {}
 
 player_router = models.PlayerRouter(
     game_rooms={},
@@ -48,29 +50,54 @@ player_router = models.PlayerRouter(
 
 # helper functions
 
-def set_player_connection_information(sid, player_id):
+def set_player_connection_information(sid, worker_id):
     """Set the connection information for a player.
 
     Parameters
     ----------
     sid : str
-        The player's SID.
-    player_id : str
-        The player's ID.
+        The worker's SID.
+    worker_id : str
+        The turker's worker ID.
     """
     # log relevant information
-    if player_id in most_recent_sid_from_player_id:
-        old_sid = most_recent_sid_from_player_id[player_id]
+    if (
+            worker_id not in most_recent_sid_from_worker_id
+            and worker_id not in player_id_from_worker_id
+    ):
+        # initial connection
         logger.info(
-            f'Player {player_id} reconnecting to server.'
+            f'Player {worker_id} connecting to server with SID {sid}.')
+        player_id = str(uuid.uuid4()).replace('-', '')
+        logger.info(
+            f'Assigning {worker_id} player ID {player_id}.')
+        player_id_from_worker_id[worker_id] = player_id
+    elif (
+            worker_id in most_recent_sid_from_worker_id
+            and worker_id in player_id_from_worker_id
+    ):
+        # reconnection
+        old_sid = most_recent_sid_from_worker_id[worker_id]
+        logger.info(
+            f'Turker {worker_id} reconnecting to server.'
             f' Updating SID from {old_sid} to {sid}.')
     else:
+        logger.error(
+            f'{worker_id} has a connection ({sid}) in an unexpected'
+            f' state. Attempting to recover.')
+        # provide the turker a new player id to try and recover
+        player_id = str(uuid.uuid4()).replace('-', '')
         logger.info(
-            f'Player {player_id} connecting to server with SID {sid}')
+            f'Assigning {worker_id} player ID {player_id}.')
+        player_id_from_worker_id[worker_id] = player_id
+
+    # retreive the player id regardless of which branch above executed
+    # since we'll need it.
+    player_id = player_id_from_worker_id[worker_id]
 
     # record the sid <-> player_id mappings
-    player_id_from_sid[sid] = player_id
-    most_recent_sid_from_player_id[player_id] = sid
+    worker_id_from_sid[sid] = worker_id
+    most_recent_sid_from_worker_id[worker_id] = sid
 
     # put the player in a room addressed by player id so that we can
     # communicate with them later.
@@ -128,7 +155,7 @@ def game_room():
 def server_info():
     """Endpoint for reading information about the server."""
     return flask.jsonify({
-        'numSessions': len(player_id_from_sid),
+        'numSessions': len(worker_id_from_sid),
         'numPlayers': len(player_router.players),
         'numGameRooms': len(player_router.game_rooms),
         'numSubjectsRemaining': len(subjects)
@@ -142,11 +169,7 @@ def connect():
     """Websocket endpoint for when a player connects."""
     sid = flask.request.sid
 
-    num_players = len(most_recent_sid_from_player_id)
-
-    logger.info(
-        f'New connection (SID {sid}). {num_players} players currently'
-        f' on the server.')
+    logger.info(f'New connection (SID {sid}).')
 
 
 @socketio.on('disconnect')
@@ -168,20 +191,25 @@ def disconnect():
         sid : str
             The old session ID for the disconnected player.
         """
-        player_id = player_id_from_sid.get(sid)
-        most_recent_sid = most_recent_sid_from_player_id.get(player_id)
-        if player_id is None:
+        worker_id = worker_id_from_sid.get(sid)
+        player_id = player_id_from_worker_id.get(worker_id)
+        most_recent_sid = most_recent_sid_from_worker_id.get(worker_id)
+        if worker_id is None:
             # the client connected but never started a game
             logger.info(
-                f'No player corresponding to SID {sid} found on server.')
+                f'No worker corresponding to SID {sid} found on server.')
         elif player_id not in player_router.player_matches:
             logger.info(
                 f'Player {player_id} is not matched to a game. Most likely'
                 f' the player finished a game and has been deleted.')
-            if player_id in most_recent_sid_from_player_id:
-                del most_recent_sid_from_player_id[player_id]
-            if sid in player_id_from_sid:
-                del player_id_from_sid[sid]
+            # since the player has been deleted, it's safe to remove the
+            # connection information
+            if worker_id in most_recent_sid_from_worker_id:
+                del most_recent_sid_from_worker_id[worker_id]
+            if worker_id in player_id_from_worker_id:
+                del player_id_from_worker_id[worker_id]
+            if sid in worker_id_from_sid:
+                del worker_id_from_sid[sid]
         elif sid == most_recent_sid:
             # the player has dropped the connection represented by SID and
             # hasn't established a new connection yet, so we'll delete the
@@ -196,8 +224,9 @@ def disconnect():
             player_router.delete_player(player_id)
 
             # delete the player's connection information
-            del most_recent_sid_from_player_id[player_id]
-            del player_id_from_sid[sid]
+            del most_recent_sid_from_worker_id[worker_id]
+            del player_id_from_worker_id[worker_id]
+            del worker_id_from_sid[sid]
 
             if room_id not in player_router.game_rooms:
                 # Normally, the player and the game are deleted when the
@@ -223,7 +252,7 @@ def disconnect():
                 f' Old connection (SID {sid}) has been dropped.')
 
             # delete the old / unused connection sid
-            del player_id_from_sid[sid]
+            del worker_id_from_sid[sid]
 
     # we need to wait before handling the disconnection event so that
     # players have a chance to reconnect before we delete them.
@@ -240,14 +269,21 @@ def update_player_connection(message):
     Parameters
     ----------
     message : dict
-        A dictionary contianing a 'playerId' key mapping to the client's
-        playerId.
+        A dictionary contianing a 'workerId' key mapping to the client's
+        AWS MTurk worker ID.
     """
-    player_id = message['playerId']
+    worker_id = message['workerId']
     sid = flask.request.sid
 
-    set_player_connection_information(sid=sid, player_id=player_id)
+    if worker_id is None:
+        # The client is previewing the HIT, ignore them
+        logger.info(
+            f'SID {sid} is previewing the server.')
+        return
 
+    set_player_connection_information(sid=sid, worker_id=worker_id)
+
+    player_id = player_id_from_worker_id[worker_id]
     # update the client
     if player_id in player_router.players:
         update_client_for_player(player_id)
@@ -262,20 +298,21 @@ def join_server(message):
     Parameters
     ----------
     message : dict
-        a dictionary containing a 'playerId' key mapping to the client's
-        playerId.
+        a dictionary containing a 'workerId' key mapping to the client's
+        AWS MTurk worker ID.
     """
-    player_id = message['playerId']
+    worker_id = message['workerId']
     sid = flask.request.sid
 
-    set_player_connection_information(sid=sid, player_id=player_id)
-
-    if player_id is None:
+    if worker_id is None:
         # The client is previewing the HIT, ignore them
         logger.info(
             f'SID {sid} is previewing the server.')
         return
 
+    set_player_connection_information(sid=sid, worker_id=worker_id)
+
+    player_id = player_id_from_worker_id[worker_id]
     if player_id not in player_router.players:
         player_router.create_player(player_id)
 
