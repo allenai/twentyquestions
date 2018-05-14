@@ -20,7 +20,7 @@ const paths = {
 module.exports = {
   entry: paths.app,
   output: {
-    filename: 'static/app.bundle.js',
+    filename: 'static/app-v1.bundle.js',
     path: paths.dist
   },
   module: {
@@ -52,6 +52,6 @@ module.exports = {
       template: paths.index,
       inject: false
     }),
-    new ExtractTextPlugin('style.bundle.css')
+    new ExtractTextPlugin('style-v1.bundle.css')
   ]
 };
