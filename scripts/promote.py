@@ -47,7 +47,7 @@ def promote(source, dest):
 
     logger.info(f'Pushing {dest} to GCR')
     subprocess.run([
-        'gcloud', 'docker', '--', 'push',
+        'docker', 'push',
         f'{registry}/{docker_repo}/{image_name}:{dest}'
     ])
 
