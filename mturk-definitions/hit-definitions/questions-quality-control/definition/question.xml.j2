@@ -234,6 +234,21 @@
                 style="font-size:15pt;color:white;background-color:green;border:1px solid #336600;padding:4px" />
             </p>
           </form>
+          <!-- form validation for safari -->
+          <script type='text/javascript'>
+            var form = document.getElementById('mturk_form');
+            form.noValidate = true;
+            form.addEventListener(
+              'submit',
+              function (e) {
+                if (!e.target.checkValidity()) {
+                  e.preventDefault();
+                  alert('You must rate high or low quality for every question.');
+                }
+              },
+              false
+            );
+          </script>
           <script language='Javascript'>turkSetAssignmentID();</script>
         </body>
       </html>
