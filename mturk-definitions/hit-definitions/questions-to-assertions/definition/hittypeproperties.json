@@ -1,5 +1,5 @@
 {
-  "AutoApprovalDelayInSeconds": 72000,
+  "AutoApprovalDelayInSeconds": 7200,
   "AssignmentDurationInSeconds": 3600,
   "Reward": "0.75",
   "Title": "Translate Questions from 20 Questions into Assertions",
