@@ -1,0 +1,197 @@
+<HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
+  <HTMLContent>
+    <![CDATA[
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+          <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+          <script type="text/javascript">
+            var numQuestions = {{ pk_subject_question_answers|length }};
+            function validate() {
+              for (var i=0; i < numQuestions; i++) {
+                entered_text = document.getElementById("assertion-" + `${i}`).value.toLowerCase();
+                question = document.getElementById("question-" + `${i}`).value.toLowerCase();
+                q_has_negation = question.includes("n't") || question.includes(" not ") || question.includes(" cannot ");
+                a_has_negation = entered_text.includes("n't") || entered_text.includes(" not ") || entered_text.includes(" cannot ");
+
+                num_words = entered_text.split(" ").length
+                if (num_words < 2) {
+                  msg = "The input sentence is too short";
+                  alert(msg);
+                  return false;
+                } else if (num_words > 30) {
+                  msg = "The input sentence is too long";
+                  alert(msg);
+                  return false;
+                } else if (entered_text.length <= 5) {
+                  msg = "The input sentence is too short";
+                  alert(msg);
+                  return false;
+                } else if (!q_has_negation && a_has_negation) {
+                  msg = "There is no negation in the question. Please make sure your assertion does not use negation. Refer to Example 1 in the table above."
+                  alert(msg);
+                  return false;
+                }
+              }
+              return true;
+            }
+          </script>
+        </head>
+        <body>
+          <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit' onsubmit='return validate()'>
+            <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+            <h1>Translate into a simple english assertion</h1>
+
+            <h2>Overview</h2>
+            <p>
+              Translate a question about a common noun into an
+              assertion.
+            </p>
+            <p>
+              The following data was generated when people played games
+              of 20 Questions. Please take the question and the subject
+              of the round of 20 Questions and convert them into an
+              assertion (as described below). <b>If the question is not
+              clear, please use your judgment to interpret what the
+              person meant to ask</b>.
+            </p>
+            <h2>Steps</h2>
+            <ul>
+              <li>
+                <b>Review</b> the common noun and a question about it, given in the table.
+              </li>
+              <li>
+                <b>Translate</b> this information into a simple, <b>grammatical</b> english
+                assertion.
+              </li>
+            </ul>
+
+            <h2>Rules & Tips</h2>
+            Your simple sentence <b>SHOULD</b>:
+            <ul>
+              <li>be <b>simple</b> (understandable by a child).</li>
+              <li>be <b>full</b>, <b>grammatical</b> sentence.</li>
+              <li>use <b>indefinite articles</b> (avoid using "the", and use "a" or "an" instead).</li>
+              <li>be <b>short</b> (fewer than 10 words).</li>
+              <li><b>match</b> the prompt.</li>
+            </ul>
+
+            <p>Your simple sentence <b>CAN SOMETIMES BE</b>:</p>
+
+            <ul>
+              <li><font color="red"><b>factually false</b></font> (e.g. "lamps are a kind of furniture")</li>
+            </ul>
+
+            <span style="color:blue;">** TIP: Think about replacing the words "it", "object" or "item" in the question with the common noun ** </span>
+
+            <h3>Examples:</h3>
+            <table border="1">
+              <tr>
+                <th align="center">Common Noun</th>
+                <th align="center">Question</th>
+                <th align="center">Simple English Assertion</th>
+              </tr>
+              <tr>
+                <td align="center">cat</td>
+                <td align="center">can it bark?</td>
+                <td align="center">A cat can bark.</td>
+              </tr>
+              <tr>
+                <td align="center">lamp</td>
+                <td align="center">is it furniture?</td>
+                <td align="center">Lamps are a kind of furniture.</td>
+              </tr>
+              <tr>
+                <td align="center">bat</td>
+                <td align="center">Metal?</td>
+                <td align="center">A bat is made of metal.</td>
+              </tr>
+              <tr>
+                <td align="center">cat</td>
+                <td align="center">Is the item living?</td>
+                <td align="center">A cat is a living thing.</td>
+              </tr>
+              <tr>
+                <td align="center">Flank</td>
+                <td align="center">Sirloin?</td>
+                <td align="center">A flank is a sirloin steak.</td>
+              </tr>
+              <tr>
+                <td align="center">Fan</td>
+                <td align="center">does food go in it?</td>
+                <td align="center">People put food in fans.</td>
+              </tr>
+            </table>
+            <hr>
+            <h3 align="center"><u>Translate into a simple english assertion</u></h3>
+
+            <table class="cf-alternate-rows" style="width: 50%;" border="1" align="center">
+              <tbody>
+                <tr>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Subject</u>
+                    </strong>
+                  </th>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Question</u>
+                    </strong>
+                  </th>
+                  <th style="width: 33.3333%; text-align: center;">
+                    <strong>
+                      <u>Assertion</u>
+                    </strong>
+                  </th>
+                </tr>
+                {% for pk_subject_question_answer in pk_subject_question_answers %}
+                <tr>
+                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer['subject'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer['question'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">
+                    <input
+                      id="assertion-{{ loop.index0 }}"
+                      type="text"
+                      name="assertion-{{ loop.index0 }}"/>
+                    <input
+                      id="pk-{{ loop.index0 }}"
+                      type="hidden"
+                      name="pk-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer['pk'] | e }}" />
+                    <input
+                      id="subject-{{ loop.index0 }}"
+                      type="hidden"
+                      name="subject-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer['subject'] | e }}"/>
+                    <input
+                      id="question-{{ loop.index0 }}"
+                      type="hidden"
+                      name="question-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer['question'] | e }}"/>
+                    <input
+                      id="answer-{{ loop.index0 }}"
+                      type="hidden"
+                      name="answer-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer['answer'] | e }}"/>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <p align="center" >
+              <input
+                id="submitButton"
+                type="submit"
+                value="Submit"
+                style="font-size:15pt;color:white;background-color:green;border:1px solid #336600;padding:4px" />
+            </p>
+          </form>
+          <script language="Javascript">turkSetAssignmentID();</script>
+        </body>
+      </html>
+    ]]>
+  </HTMLContent>
+  <FrameHeight>800</FrameHeight>
+</HTMLQuestion>

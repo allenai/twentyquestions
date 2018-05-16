@@ -1,0 +1,32 @@
+{
+  "AutoApprovalDelayInSeconds": 3600,
+  "AssignmentDurationInSeconds": 3600,
+  "Reward": "0.50",
+  "Title": "Translate Questions from 20 Questions into Assertions",
+  "Keywords": "20 Questions, Common Sense, Commonsense",
+  "Description": "Translate the subject-question pairs from games of 20 Questions into assertions.",
+  "QualificationRequirements": [
+    {
+      "QualificationTypeId": "00000000000000000040",
+      "Comparator": "GreaterThanOrEqualTo",
+      "IntegerValues": [
+        5000
+      ],
+      "RequiredToPreview": false
+    },
+    {
+      "QualificationTypeId": "00000000000000000071",
+      "Comparator": "EqualTo",
+      "LocaleValues": [{"Country": "US"}],
+      "RequiredToPreview": false
+    },
+    {
+      "QualificationTypeId": "000000000000000000L0",
+      "Comparator": "GreaterThanOrEqualTo",
+      "IntegerValues": [
+        99
+      ],
+      "RequiredToPreview": false
+    }
+  ]
+}
