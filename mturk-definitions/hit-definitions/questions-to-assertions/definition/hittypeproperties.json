@@ -1,10 +1,10 @@
 {
-  "AutoApprovalDelayInSeconds": 3600,
+  "AutoApprovalDelayInSeconds": 72000,
   "AssignmentDurationInSeconds": 3600,
-  "Reward": "0.50",
+  "Reward": "0.8",
   "Title": "Translate Questions from 20 Questions into Assertions",
   "Keywords": "20 Questions, Common Sense, Commonsense",
-  "Description": "Translate the subject-question pairs from games of 20 Questions into assertions.",
+  "Description": "Translate the subject-question pairs from games of 20 Questions into assertions. It should take 3-4 minutes once you've read the instructions.",
   "QualificationRequirements": [
     {
       "QualificationTypeId": "00000000000000000040",
