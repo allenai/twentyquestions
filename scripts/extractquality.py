@@ -16,6 +16,16 @@ import click
 logger = logging.getLogger(__name__)
 
 
+# constants
+
+duplicated_attributes = [
+    'pk',
+    'subject',
+    'question',
+    'answer'
+]
+
+
 # helper functions
 
 def _get_text(node):
@@ -61,11 +71,19 @@ def extractquality(xml_dir, output_dir):
     Extract the quality annotations from a batch of the quality control
     HITs. XML_DIR should be an XML directory extracted with
     AMTI. OUTPUT_DIR is the location to which the data will be written
-    as 'quality.jsonl'.
+    as 'quality-annotations.jsonl' for the quality annotations in a JSON
+    Lines format and 'high-quality-triples.jsonl' for only the high
+    quality questions where high quality means 2 of the 3 workers rated
+    it high quality. Note, this script assumes that all the batches had
+    all 3 assignments completed.
     """
-    quality_output_path = os.path.join(output_dir, 'quality.jsonl')
+    quality_annotations_output_path = os.path.join(
+        output_dir, 'quality-annotations.jsonl')
+    high_quality_triples_output_path = os.path.join(
+        output_dir, 'high-quality-triples.jsonl')
 
     rows = []
+    pks_to_scores = collections.defaultdict(lambda: 0)
     for dirpath, dirnames, filenames in os.walk(xml_dir):
         for filename in filenames:
             # skip non-xml files
@@ -89,14 +107,59 @@ def extractquality(xml_dir, output_dir):
 
                 attribute, idx = question_identifier.split('-')
 
-                data[idx][attribute] = free_text
+                if attribute == 'pk':
+                    data[idx][attribute] = int(free_text)
+                else:
+                    data[idx][attribute] = free_text
 
             for _, row in data.items():
-                rows.append(json.dumps(row))
+                if row['quality'] == 'high':
+                    pks_to_scores[row['pk']] += 1
+                rows.append(row)
+
+    # deduplicate and filter to just the high quality rows
+    high_quality_rows = {}
+    for row in rows:
+        pk = row['pk']
+        if pks_to_scores[pk] >= 2:
+            # if the row scored high enough quality, record it
+            if pk in high_quality_rows:
+                # if the row has already been added, sanity check that all
+                # the attributes are equal to the old row
+                old_row = high_quality_rows[pk]
+                for attribute in duplicated_attributes:
+                    assert row[attribute] == old_row[attribute], (
+                        f'{attribute} was not equal for rows with pk:'
+                        f' {pk}'
+                    )
+            else:
+                # the row has not been added yet, so add it, replacing
+                # the quality annotation with the total quality score
+                data = {
+                    attribute: row[attribute]
+                    for attribute in duplicated_attributes
+                }
+                data['score'] = pks_to_scores[pk]
+                high_quality_rows[pk] = data
 
     # write out the data to files
-    with open(quality_output_path, 'w') as f_out:
-        f_out.write('\n'.join(rows))
+    with open(quality_annotations_output_path, 'w') as f_out:
+        f_out.write(
+            '\n'.join([
+                json.dumps(row)
+                for row in sorted(
+                        rows,
+                        key=lambda r: r['pk'])
+            ]))
+
+    with open(high_quality_triples_output_path, 'w') as f_out:
+        f_out.write(
+            '\n'.join([
+                json.dumps(row)
+                for row in sorted(
+                        high_quality_rows.values(),
+                        key=lambda r: r['pk'])
+            ]))
 
 
 if __name__ == '__main__':
