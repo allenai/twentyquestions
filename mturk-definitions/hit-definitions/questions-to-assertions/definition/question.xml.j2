@@ -7,7 +7,7 @@
           <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
           <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
           <script type="text/javascript">
-            var numQuestions = {{ pk_subject_question_answers|length }};
+            var numQuestions = {{ pk_subject_question_answer_scores|length }};
             function validate() {
               for (var i=0; i < numQuestions; i++) {
                 entered_text = document.getElementById("assertion-" + `${i}`).value.toLowerCase();
@@ -147,10 +147,10 @@
                     </strong>
                   </th>
                 </tr>
-                {% for pk_subject_question_answer in pk_subject_question_answers %}
+                {% for pk_subject_question_answer_score in pk_subject_question_answer_scores %}
                 <tr>
-                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer['subject'] | e }}</td>
-                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer['question'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer_score['subject'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer_score['question'] | e }}</td>
                   <td style="width: 33.3333%; text-align: center;">
                     <input
                       id="assertion-{{ loop.index0 }}"
@@ -161,22 +161,27 @@
                       id="pk-{{ loop.index0 }}"
                       type="hidden"
                       name="pk-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['pk'] | e }}" />
+                      value="{{ pk_subject_question_answer_score['pk'] | e }}" />
                     <input
                       id="subject-{{ loop.index0 }}"
                       type="hidden"
                       name="subject-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['subject'] | e }}"/>
+                      value="{{ pk_subject_question_answer_score['subject'] | e }}"/>
                     <input
                       id="question-{{ loop.index0 }}"
                       type="hidden"
                       name="question-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['question'] | e }}"/>
+                      value="{{ pk_subject_question_answer_score['question'] | e }}"/>
                     <input
                       id="answer-{{ loop.index0 }}"
                       type="hidden"
                       name="answer-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['answer'] | e }}"/>
+                      value="{{ pk_subject_question_answer_score['answer'] | e }}"/>
+                    <input
+                      id="score-{{ loop.index0 }}"
+                      type="hidden"
+                      name="score-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score['score'] | e }}"/>
                   </td>
                 </tr>
                 {% endfor %}
