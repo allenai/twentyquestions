@@ -41,7 +41,7 @@
         <body>
           <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit' onsubmit='return validate()'>
             <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
-            <h1>Translate into a simple english assertion</h1>
+            <h1>Translate Questions from 20 Questions into Assertions</h1>
 
             <h2>Overview</h2>
             <p>
@@ -71,19 +71,21 @@
             Your simple sentence <b>SHOULD</b>:
             <ul>
               <li>be <b>simple</b> (understandable by a child).</li>
-              <li>be <b>full</b>, <b>grammatical</b> sentence.</li>
+              <li>be a <b>full</b>, <b>grammatical</b> sentence.</li>
               <li>use <b>indefinite articles</b> (avoid using "the", and use "a" or "an" instead).</li>
-              <li>be <b>short</b> (fewer than 10 words).</li>
-              <li><b>match</b> the prompt.</li>
+              <li><b>match</b> the original subject and question.</li>
             </ul>
 
-            <p>Your simple sentence <b>CAN SOMETIMES BE</b>:</p>
+            <p>
+              <b>It's OK if the assertion is factually false</b>. For
+              example, the subject "rock" and the question "is it
+              alive?" should convert to "Rocks are alive".
+            </p>
 
-            <ul>
-              <li><font color="red"><b>factually false</b></font> (e.g. "lamps are a kind of furniture")</li>
-            </ul>
-
-            <span style="color:blue;">** TIP: Think about replacing the words "it", "object" or "item" in the question with the common noun ** </span>
+            <span style="color:blue;">
+              ** TIP: Think about replacing the words "it", "object" or
+              "item" in the question with the common noun **
+            </span>
 
             <h3>Examples:</h3>
             <table border="1">
@@ -124,7 +126,7 @@
               </tr>
             </table>
             <hr>
-            <h3 align="center"><u>Translate into a simple english assertion</u></h3>
+            <h3 align="center"><u>Translate into a Simple English Assertion</u></h3>
 
             <table class="cf-alternate-rows" style="width: 50%;" border="1" align="center">
               <tbody>
