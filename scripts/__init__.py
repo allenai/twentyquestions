@@ -8,3 +8,4 @@ from scripts.deploy import deploy
 from scripts.extractassertions import extractassertions
 from scripts.extractgames import extractgames
 from scripts.extractquality import extractquality
+from scripts.extractrelabels import extractrelabels

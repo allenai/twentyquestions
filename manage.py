@@ -50,7 +50,8 @@ subcommands = [
     scripts.deploy,
     scripts.extractassertions,
     scripts.extractgames,
-    scripts.extractquality
+    scripts.extractquality,
+    scripts.extractrelabels
 ]
 
 for subcommand in subcommands:
