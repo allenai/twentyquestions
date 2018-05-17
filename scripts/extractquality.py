@@ -1,4 +1,4 @@
-"""Extract quality annotations from 20 Questions quality control HITs.n
+"""Extract quality annotations from 20 Questions quality control HITs.
 
 See ``python extractquality.py --help`` for more information.
 """
@@ -12,6 +12,8 @@ from xml.dom import minidom
 
 import click
 
+from scripts import _utils
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,33 +26,6 @@ duplicated_attributes = [
     'question',
     'answer'
 ]
-
-
-# helper functions
-
-def _get_text(node):
-    """Return the text from a node that has only text as content.
-
-    Calling this function on a node with multiple children or a non-text
-    node child raises a ``ValueError``.
-
-    Parameters
-    ----------
-    node : xml.dom.minidom.Node
-        The node to extract text from.
-
-    Returns
-    -------
-    str
-        The text from node.
-    """
-    if len(node.childNodes) != 1:
-        raise ValueError(
-            f'node ({node}) has multiple child nodes.')
-    if not isinstance(node.childNodes[0], minidom.Text):
-        raise ValueError(
-            f"node's ({node}) is not a Text node.")
-    return node.childNodes[0].wholeText
 
 
 # main function
@@ -100,10 +75,10 @@ def extractquality(xml_dir, output_dir):
             for answer_tag in results_xml.getElementsByTagName('Answer'):
                 [question_identifier_tag] = answer_tag.getElementsByTagName(
                     'QuestionIdentifier')
-                question_identifier = _get_text(question_identifier_tag)
+                question_identifier = _utils.get_node_text(question_identifier_tag)
                 [free_text_tag] = answer_tag.getElementsByTagName(
                     'FreeText')
-                free_text = html.unescape(_get_text(free_text_tag))
+                free_text = html.unescape(_utils.get_node_text(free_text_tag))
 
                 attribute, idx = question_identifier.split('-')
 
