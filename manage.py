@@ -48,6 +48,7 @@ subcommands = [
     scripts.serve,
     scripts.promote,
     scripts.deploy,
+    scripts.extractassertions,
     scripts.extractgames,
     scripts.extractquality
 ]
