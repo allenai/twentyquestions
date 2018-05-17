@@ -71,6 +71,13 @@ def extractrelabels(xml_dir, output_dir):
                 [question_identifier_tag] = answer_tag.getElementsByTagName(
                     'QuestionIdentifier')
                 question_identifier = _utils.get_node_text(question_identifier_tag)
+
+                if question_identifier == 'doNotRedirect':
+                    # some turkers have modifications to their browser
+                    # that send a "doNotRedirect" field when posting
+                    # results back to mturk.
+                    continue
+
                 [free_text_tag] = answer_tag.getElementsByTagName(
                     'FreeText')
                 free_text = html.unescape(_utils.get_node_text(free_text_tag))
