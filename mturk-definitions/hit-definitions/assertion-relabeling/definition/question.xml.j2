@@ -1,0 +1,245 @@
+<HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
+  <HTMLContent>
+    <![CDATA[
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+          <style>
+            label { padding-right: 1.5em; }
+            td { text-align: center; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+          </style>
+          <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+        </head>
+        <body>
+          <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit'>
+            <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+            <h1>Label Commonsense Assertions Made from 20 Questions</h1>
+            <p>
+              For each assertion in the table, please label how often it
+              is true by selecting one of 'always', 'usually',
+              'sometimes', 'rarely', or 'never'.
+            </p>
+            <p>
+              If the assertion is garbled, missing, or has some other
+              issue that makes it <b>impossible</b> to answer how often
+              it's true, then mark the assertion as 'bad'.
+            </p>
+            <p>
+              If the word has multiple meanings, pick one meaning and
+              consistently use that.
+            </p>
+
+            <h2>Examples:</h2>
+            <table style="width: 90%;" border="1" align="center">
+              <tbody>
+                <tr>
+                  <th>
+                    <strong>
+                      <u>Assertion</u>
+                    </strong>
+                  </th>
+                  <th>
+                    <strong>
+                      <u>Label</u>
+                    </strong>
+                  </th>
+                </tr>
+                <tr>
+                  <td>
+                    An account is not an object, but tangible and edible.
+                  </td>
+                  <td>
+                    <b>never</b>. I (as the worker) picked the meaning
+                    as in an "account" of events. An account of events
+                    is never tangible or edible.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Accordions are used for recreation.
+                  </td>
+                  <td>
+                    <b>usually</b>. Accordions are usually (but not
+                    always) used for recreation.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Th8y?
+                  </td>
+                  <td>
+                    <b>bad</b>. The assertion is garbled and isn't
+                    understandable.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                  </td>
+                  <td>
+                    <b>bad</b>. The assertion is missing.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    A bookmark smells a certain way.
+                  </td>
+                  <td>
+                    <b>rarely</b>. Typically, bookmarks do not have a
+                    smell to them.
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    Buglers are human.
+                  </td>
+                  <td>
+                    <b>always</b>. Buglers are always humans.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+
+            <h2 align="center"><u>Assertions to Label</u></h2>
+
+            <table style="width: 90%;" border="1" align="center">
+              <tbody>
+                <tr>
+                  <th>
+                    <strong>
+                      <u>Assertion</u>
+                    </strong>
+                  </th>
+                  <th>
+                    <strong>
+                      <u>Label</u>
+                    </strong>
+                  </th>
+                </tr>
+                {% for pk_subject_question_answer_score_assertion in pk_subject_question_answer_score_assertions %}
+                <tr>
+                  <td>{{ pk_subject_question_answer_score_assertion['assertion'] | e }}</td>
+                  <td>
+                    <label for="label-always-{{ loop.index0 }}">
+                      <input
+                        id="label-always-{{ loop.index0 }}"
+                        type="radio"
+                        name="label-{{ loop.index0 }}"
+                        value="always"
+                        required/>
+                      always
+                    </label>
+                    <label for="label-usually-{{ loop.index0 }}">
+                      <input
+                        id="label-usually-{{ loop.index0 }}"
+                        type="radio"
+                        name="label-{{ loop.index0 }}"
+                        value="usually"
+                        required/>
+                      usually
+                    </label>
+                    <label for="label-sometimes-{{ loop.index0 }}">
+                      <input
+                        id="label-sometimes-{{ loop.index0 }}"
+                        type="radio"
+                        name="label-{{ loop.index0 }}"
+                        value="sometimes"
+                        required/>
+                      sometimes
+                    </label>
+                    <label for="label-rarely-{{ loop.index0 }}">
+                      <input
+                        id="label-rarely-{{ loop.index0 }}"
+                        type="radio"
+                        name="label-{{ loop.index0 }}"
+                        value="rarely"
+                        required/>
+                      rarely
+                    </label>
+                    <label for="label-never-{{ loop.index0 }}">
+                      <input
+                        id="label-never-{{ loop.index0 }}"
+                        type="radio"
+                        name="label-{{ loop.index0 }}"
+                        value="never"
+                        required/>
+                      never
+                    </label>
+                    <label for="label-bad-{{ loop.index0 }}">
+                      <input
+                        id="label-bad-{{ loop.index0 }}"
+                        type="radio"
+                        name="label-{{ loop.index0 }}"
+                        value="bad"
+                        required/>
+                      bad
+                    </label>
+                    <input
+                      id="pk-{{ loop.index0 }}"
+                      type="hidden"
+                      name="pk-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score_assertion['pk'] | e }}" />
+                    <input
+                      id="assertion-{{ loop.index0 }}"
+                      type="hidden"
+                      name="assertion-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score_assertion['assertion'] | e }}" />
+                    <input
+                      id="subject-{{ loop.index0 }}"
+                      type="hidden"
+                      name="subject-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score_assertion['subject'] | e }}"/>
+                    <input
+                      id="question-{{ loop.index0 }}"
+                      type="hidden"
+                      name="question-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score_assertion['question'] | e }}"/>
+                    <input
+                      id="answer-{{ loop.index0 }}"
+                      type="hidden"
+                      name="answer-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score_assertion['answer'] | e }}"/>
+                    <input
+                      id="score-{{ loop.index0 }}"
+                      type="hidden"
+                      name="score-{{ loop.index0 }}"
+                      value="{{ pk_subject_question_answer_score_assertion['score'] | e }}"/>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <p align="center" >
+              <input
+                id='submitButton'
+                type='submit'
+                value='Submit'
+                style="font-size:15pt;color:white;background-color:green;border:1px solid #336600;padding:4px" />
+            </p>
+          </form>
+          <!-- form validation for safari -->
+          <script type='text/javascript'>
+            var form = document.getElementById('mturk_form');
+            form.noValidate = true;
+            form.addEventListener(
+              'submit',
+              function (e) {
+                if (!e.target.checkValidity()) {
+                  e.preventDefault();
+                  alert('You must provide a label for every assertion.');
+                }
+              },
+              false
+            );
+          </script>
+          <script language='Javascript'>turkSetAssignmentID();</script>
+        </body>
+      </html>
+    ]]>
+  </HTMLContent>
+  <FrameHeight>800</FrameHeight>
+</HTMLQuestion>
