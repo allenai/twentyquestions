@@ -19,6 +19,10 @@ def get_node_text(node):
     str
         The text from node.
     """
+    # handle the empty node case
+    if len(node.childNodes) == 0:
+        return ''
+
     if len(node.childNodes) != 1:
         raise ValueError(
             f'node ({node}) has multiple child nodes.')
