@@ -132,8 +132,11 @@ def extractrelabels(xml_dir, output_dir):
             continue
 
         binarized_labels = [label_to_bit[label] for label in labels]
+        true_votes = sum(binarized_labels)
+        relabeled_assertion['true_votes'] = true_votes
         majority = 1 if sum(binarized_labels) >= 2 else 0
         relabeled_assertion['majority'] = majority
+
         relabeled_assertions.append(relabeled_assertion)
 
     # write out the data to files
