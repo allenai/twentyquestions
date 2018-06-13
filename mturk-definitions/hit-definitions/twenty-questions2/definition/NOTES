@@ -1,6 +1,0 @@
-This batch of HITs comes from the allenai/twentyquestions repo.
-
-In order to run this HIT you must follow these steps:
-
-  1. Deploy the twentyquestions webapp to twentyquestions2.allenai.org.
-  2. Post the HITs.
