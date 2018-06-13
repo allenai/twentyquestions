@@ -1,6 +1,6 @@
-"""Extract relabeling data from the assertion relabeling HITs.
+"""Extract labeling data from the assertion labeling HITs.
 
-See ``python extractrelabels.py --help`` for more information.
+See ``python extractlabels.py --help`` for more information.
 """
 
 import collections
@@ -42,18 +42,18 @@ duplicated_attributes = [
 @click.argument(
     'output_dir',
     type=click.Path(exists=True, file_okay=False, dir_okay=True))
-def extractrelabels(xml_dir, output_dir):
-    """Extract relabeling data from XML_DIR and write to OUTPUT_DIR.
+def extractlabels(xml_dir, output_dir):
+    """Extract labeling data from XML_DIR and write to OUTPUT_DIR.
 
-    Extract the assertion relabeling data from a batch of the assertion
-    relabeling HITs. XML_DIR should be an XML directory extracted with
+    Extract the assertion labeling data from a batch of the assertion
+    labeling HITs. XML_DIR should be an XML directory extracted with
     AMTI. OUTPUT_DIR is the location to which the data will be written
-    as 'relabeled-assertions.jsonl' in a JSON Lines format.
+    as 'labeled-assertions.jsonl' in a JSON Lines format.
     """
-    relabeled_assertions_output_path = os.path.join(
-        output_dir, 'relabeled-assertions.jsonl')
+    labeled_assertions_output_path = os.path.join(
+        output_dir, 'labeled-assertions.jsonl')
 
-    pks_to_relabeled_assertions = {}
+    pks_to_labeled_assertions = {}
     for dirpath, dirnames, filenames in os.walk(xml_dir):
         for filename in filenames:
             # skip non-xml files
@@ -92,8 +92,8 @@ def extractrelabels(xml_dir, output_dir):
 
             for _, row in data.items():
                 pk = row['pk']
-                if pk in pks_to_relabeled_assertions:
-                    old_row = pks_to_relabeled_assertions[pk]
+                if pk in pks_to_labeled_assertions:
+                    old_row = pks_to_labeled_assertions[pk]
                     for attribute in duplicated_attributes:
                         assert row[attribute] == old_row[attribute], (
                             f'{attribute} was not equal for rows with'
@@ -107,9 +107,9 @@ def extractrelabels(xml_dir, output_dir):
                         for attribute in duplicated_attributes
                     }
                     data['labels'] = [row['label']]
-                    pks_to_relabeled_assertions[pk] = data
+                    pks_to_labeled_assertions[pk] = data
 
-    # post process the relabeled assertions, voting for true or false
+    # post process the labeled assertions, voting for true or false
     # and removing bad assertions
     label_to_bit = {
         'always': 1,
@@ -118,10 +118,10 @@ def extractrelabels(xml_dir, output_dir):
         'rarely': 0,
         'never': 0
     }
-    relabeled_assertions = []
-    for relabeled_assertion in pks_to_relabeled_assertions.values():
-        pk = relabeled_assertion['pk']
-        labels = relabeled_assertion['labels']
+    labeled_assertions = []
+    for labeled_assertion in pks_to_labeled_assertions.values():
+        pk = labeled_assertion['pk']
+        labels = labeled_assertion['labels']
 
         assert len(labels) == 3, (
             f'Assertion {pk} should have 3 labels but instead has'
@@ -133,22 +133,22 @@ def extractrelabels(xml_dir, output_dir):
 
         binarized_labels = [label_to_bit[label] for label in labels]
         true_votes = sum(binarized_labels)
-        relabeled_assertion['true_votes'] = true_votes
+        labeled_assertion['true_votes'] = true_votes
         majority = 1 if sum(binarized_labels) >= 2 else 0
-        relabeled_assertion['majority'] = majority
+        labeled_assertion['majority'] = majority
 
-        relabeled_assertions.append(relabeled_assertion)
+        labeled_assertions.append(labeled_assertion)
 
     # write out the data to files
-    with open(relabeled_assertions_output_path, 'w') as f_out:
+    with open(labeled_assertions_output_path, 'w') as f_out:
         f_out.write(
             '\n'.join([
-                json.dumps(relabeled_assertion)
-                for relabeled_assertion in sorted(
-                        relabeled_assertions,
+                json.dumps(labeled_assertion)
+                for labeled_assertion in sorted(
+                        labeled_assertions,
                         key=lambda r: r['pk'])
             ]))
 
 
 if __name__ == '__main__':
-    extractrelabels()
+    extractlabels()

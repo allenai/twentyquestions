@@ -44,14 +44,14 @@ def manage(verbose, log_file):
 
 subcommands = [
     scripts.build,
-    scripts.dockerize,
-    scripts.serve,
-    scripts.promote,
     scripts.deploy,
+    scripts.dockerize,
     scripts.extractassertions,
     scripts.extractgames,
     scripts.extractquality,
-    scripts.extractrelabels
+    scripts.extractlabels,
+    scripts.promote,
+    scripts.serve
 ]
 
 for subcommand in subcommands:
