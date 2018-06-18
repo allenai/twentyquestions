@@ -1,6 +1,13 @@
 twentyquestions
 ===============
-A web application for playing 20 Questions to crowdsource common sense.
+Code for crowdsourcing commonsense with 20 Questions.
+
+This repository includes:
+
+  - A web application for playing 20 Questions on Mechanical Turk.
+  - [amti][amti] [HIT Definitions][hit-definitions] for running tasks on
+    Mechanical Turk.
+  - Scripts for post-processing the data derived from the HITs.
 
 
 Setup
@@ -50,12 +57,17 @@ running:
       -h, --help           Show this message and exit.
 
     Commands:
-      build         Build twentyquestions.
-      deploy        Deploy twentyquestions to ENV.
-      dockerize     Create the docker image for running...
-      extractgames  Extract 20 Questions data from XML_DIR and...
-      promote       Promote the docker image from SOURCE to DEST.
-      serve         Serve twentyquestions on port 5000.
+      build              Build twentyquestions.
+      deploy             Deploy twentyquestions to ENV.
+      dockerize          Create the docker image for running...
+      extractassertions  Extract assertions from XML_DIR and write to...
+      extractgames       Extract games from XML_DIR and write to...
+      extractlabels      Extract labeling data from XML_DIR and write...
+      extractquality     Extract quality labels from XML_DIR and write...
+      extractquestions   Extract questions from XML_DIR and write to...
+      groupbysubject     Group the data in blocks of at most 20 by...
+      promote            Promote the docker image from SOURCE to DEST.
+      serve              Serve twentyquestions on port 5000.
 
 The `--help` option also works on the subcommands:
 
@@ -69,6 +81,13 @@ The `--help` option also works on the subcommands:
 
     Options:
       -h, --help  Show this message and exit.
+
+### Using Your Own List of Seed Entities
+
+To encourage diversity in the data, we provide the subject of each game
+of 20 Questions from a list we compiled. The default list is in this
+repository at [backend/subjects.txt][subjects-list]. You can replace it
+with your own seed list if desired.
 
 ### Serving for Development
 
@@ -107,6 +126,10 @@ domain you'll run at, and execute the following commands:
     # deploy the docker image and certificates to the kubernetes cluster
     python manage.py deploy dev cert.pem privkey.pem
 
+You'll also want to point a domain to whatever IP address the Kubernetes
+cluster gives your web application, since the crowdworkers will need to
+connect to that IP address over HTTPS.
+
 ### Running Tests
 
 Tests are written using the built-in `unittest` module. To run the
@@ -117,13 +140,200 @@ tests:
 Currently, only the backend has tests. The frontend is tested manually.
 
 
+Running HITs on Mechanical Turk
+-------------------------------
+To reproduce our crowdsourcing pipeline for building the dataset,
+you'll have to run the HITs on Mechanical Turk. Make sure you have
+followed the instructions in [Setup](#setup).
+
+Note that if you run the HITs on MTurk -- especially the games -- you'll
+be managing a community of workers completing the tasks. That means
+you'll most likely have to correspond with some of them if they
+encounter issues or want to report problems with other players.
+
+All the HITs are written as [amti][amti] HIT definitions, and each HIT
+produces output that is fed into the next HIT. The crowdsourcing
+pipeline as a whole looks like:
+
+
+    +---------------------------+
+    |      twentyquestions      |
+    +---------------------------+
+                  |
+                  v
+    +---------------------------+
+    | questions-quality-control |
+    +---------------------------+
+                  |
+                  v
+    +---------------------------+
+    |  questions-to-assertions  |
+    +---------------------------+
+                  |
+                  v
+    +---------------------------+
+    |    assertion-labeling     |
+    +---------------------------+
+
+### Running `twentyquestions`
+
+Make sure you've deployed the web application, as described in
+[Development](#development), then create a file similar to
+[`mturk-definitions/twentyquestions/data.jsonl`](./mturk-definitions/twentyquestions/data.jsonl)
+except pointing to the domain at which the web application is running
+instead of `https://twentyquestions.allenai.org/`. Then, run `amti` to
+create the batch:
+
+    amti create_batch \
+      --live \
+      mturk-definitions/twentyquestions/definition \
+      data.jsonl \
+      .
+
+Once the games have run, collect the results, extract the XML
+responses from MTurk, and run `python manage.py extractquestions` to
+extract out the subject-question-answer triples. For example:
+
+    amti review_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      # review the batch
+    amti save_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    amti extract_xml \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+      .
+    python manage.py extractquestions \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
+      questions.jsonl
+
+### Running `questions-quality-control`
+
+Once you've run the games and extracted the questions, first group the
+data by subject to prepare it for labeling:
+
+    python manage.py groupbysubject \
+      questions.jsonl \
+      quality-control-input.jsonl
+
+Then, use the grouped questions as input to the
+`questions-quality-control` task:
+
+    amti create_batch \
+      --live \
+      mturk-definitions/questions-quality-control/definition \
+      quality-control-input.jsonl \
+      .
+
+Once all the questions have been labeled as high quality, you can
+collect the results, extract the XML responses from MTurk, and run
+`python manage.py extractquality` to extract out the data:
+
+    amti review_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      # review batch
+    amti save_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    amti extract_xml \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+      .
+    python manage.py extractquality \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
+      quality.jsonl
+
+### Running `questions-to-assertions`
+
+Once you have the quality labels, group them by subject and prepare it
+for the next HIT:
+
+    python manage.py groupbysubject \
+      quality.jsonl \
+      questions-to-assertion-input.jsonl
+
+You may want to filter the rows that have `"high_quality"` set to
+`false`. Then, use the grouped questions as input to the
+`questions-to-assertions` task:
+
+    amti create_batch \
+      --live \
+      mturk-definitions/questions-to-assertions/definition \
+      questions-to-assertions-input.jsonl
+
+Once all the questions have been converted into assertions, you can
+collect the results, extract the XML responses from MTurk, and run
+`python manage.py extractassertions` to extract out the data:
+
+    amti review_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      # review batch
+    amti save_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    amti extract_xml \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+      .
+    python manage.py extractassertions \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
+      assertions.jsonl
+
+
+### Running `assertion-labeling`
+
+Once you have the assertions, the last step is to label them as `true`
+or `false`. Group them by subject and prepare it for the next HIT:
+
+    python manage.py groupbysubject \
+      assertions.jsonl \
+      assertion-labeling-input.jsonl
+
+Use the grouped questions as input to the `assertion-labeling` task:
+
+    amti create_batch \
+      --live \
+      mturk-definitions/assertion-labeling/definition \
+      assertion-labeling-input.jsonl
+
+Once all the assertions have been labeled, you can collect the results,
+extract the XML responses from MTurk, and run `python manage.py
+extractlabels` to extract out the data:
+
+    amti review_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      # review batch
+    amti save_batch \
+      --live \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    amti extract_xml \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
+      .
+    python manage.py extractlabels \
+      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
+      labeled-assertions.jsonl
+
+### Post-Processing
+
+After running the `assertion-labeling` HIT, the process is complete. For
+the ATOMIC dataset, we also post-processed this data by making sure the
+class distribution is balanced for each key word and removing all
+assertions which weren't voted true or false unanimously (have a score
+of 3).
+
+
 Contact
 -------
-This code was authored by Nick Lourie for Alexandria, reach out to him
-with any questions.
+This code was authored by Nick Lourie for [Alexandria][alexandria],
+reach out to him with any questions.
 
 
+[alexandria]: https://allenai.org/alexandria/
 [amti]: https://github.com/allenai/amti
 [direnv]: https://direnv.net/
+[hit-definitions]: ./mturk-definitions/
+[subjects-list]: ./backend/subjects.txt
 [pyenv]: https://github.com/pyenv/pyenv
 [pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
