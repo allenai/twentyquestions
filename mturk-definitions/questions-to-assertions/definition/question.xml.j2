@@ -147,10 +147,10 @@
                     </strong>
                   </th>
                 </tr>
-                {% for pk_subject_question_answer_score in pk_subject_question_answer_scores %}
+                {% for row in rows %}
                 <tr>
-                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer_score['subject'] | e }}</td>
-                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer_score['question'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ row['subject'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ row['question'] | e }}</td>
                   <td style="width: 33.3333%; text-align: center;">
                     <input
                       id="assertion-{{ loop.index0 }}"
@@ -158,30 +158,30 @@
                       name="assertion-{{ loop.index0 }}"
                       style="width: 90%"/>
                     <input
-                      id="pk-{{ loop.index0 }}"
-                      type="hidden"
-                      name="pk-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer_score['pk'] | e }}" />
-                    <input
                       id="subject-{{ loop.index0 }}"
                       type="hidden"
                       name="subject-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer_score['subject'] | e }}"/>
+                      value="{{ row['subject'] | e }}"/>
                     <input
                       id="question-{{ loop.index0 }}"
                       type="hidden"
                       name="question-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer_score['question'] | e }}"/>
+                      value="{{ row['question'] | e }}"/>
                     <input
                       id="answer-{{ loop.index0 }}"
                       type="hidden"
                       name="answer-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer_score['answer'] | e }}"/>
+                      value="{{ row['answer'] | e }}"/>
                     <input
                       id="score-{{ loop.index0 }}"
                       type="hidden"
                       name="score-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer_score['score'] | e }}"/>
+                      value="{{ row['score'] | e }}"/>
+                    <input
+                      id="high_quality-{{ loop.index0 }}"
+                      type="hidden"
+                      name="high_quality-{{ loop.index0 }}"
+                      value="{{ row['high_quality'] | e }}"/>
                   </td>
                 </tr>
                 {% endfor %}

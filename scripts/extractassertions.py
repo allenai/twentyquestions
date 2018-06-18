@@ -4,11 +4,8 @@ See ``python extractassertions.py --help`` for more information.
 """
 
 import collections
-import html
 import json
 import logging
-import os
-from xml.dom import minidom
 
 import click
 
@@ -16,6 +13,17 @@ from scripts import _utils
 
 
 logger = logging.getLogger(__name__)
+
+
+# constants
+
+KEY_SCHEMA = {
+    'subject': str,
+    'question': str,
+    'answer': str,
+    'score': int,
+    'high_quality': bool
+}
 
 
 # main function
@@ -28,61 +36,58 @@ logger = logging.getLogger(__name__)
     'xml_dir',
     type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.argument(
-    'output_dir',
-    type=click.Path(exists=True, file_okay=False, dir_okay=True))
-def extractassertions(xml_dir, output_dir):
-    """Extract assertions data from XML_DIR and write to OUTPUT_DIR.
+    'output_path',
+    type=click.Path(exists=False, file_okay=True, dir_okay=False))
+def extractassertions(xml_dir, output_path):
+    """Extract assertions from XML_DIR and write to OUTPUT_PATH.
 
-    Extract the assertions data from a batch of the question to assertion
-    HITs. XML_DIR should be an XML directory extracted with
-    AMTI. OUTPUT_DIR is the location to which the data will be written
-    as 'assertions.jsonl' in a JSON Lines format.
+    Extract the assertions from a batch of the question to assertion
+    HITs. XML_DIR should be an XML directory extracted with AMTI.
+    OUTPUT_PATH is the location to which the data will be written in
+    JSON Lines format.
     """
-    assertions_output_path = os.path.join(
-        output_dir, 'assertions.jsonl')
+    # submissions : the form data submitted from the
+    # question-to-assertion HITs as a list of dictionaries mapping the
+    # question identifiers to the free text, i.e.:
+    #
+    #     [
+    #       {
+    #         'attribute-idx': attribute_value,
+    #         ...
+    #       },
+    #       ...
+    #     ]
+    #
+    # See the data for individual attributes and values. The index (idx)
+    # is used because each HIT had the worker label multiple instances
+    # for efficiency purposes.
+    submissions = _utils.extract_xml_dir(xml_dir)
 
-    rows = []
-    for dirpath, dirnames, filenames in os.walk(xml_dir):
-        for filename in filenames:
-            # skip non-xml files
-            if not '.xml' in filename:
-                continue
+    # decode the data from the ``"attribute-idx": value`` style to the
+    # individual rows.
+    rows = _utils.decode_attribute_idx_data(submissions)
 
-            logger.debug(f'Processing {filename}.')
+    # coerce the data types correctly and add in the new attribute.
+    new_row_strs = []
+    for row in rows:
+        # create the new row
 
-            # extract the annotations to jsonl
-            with open(os.path.join(dirpath, filename), 'r') as f_in:
-                results_xml = minidom.parseString(f_in.read())
+        # use an OrderedDict so that the keys appear in the right order
+        # in the JSON.
+        new_row = collections.OrderedDict([
+            (attribute, as_type(row[attribute]))
+            for attribute, as_type
+            in KEY_SCHEMA.items()
+        ])
 
-            data = collections.defaultdict(dict)
-            for answer_tag in results_xml.getElementsByTagName('Answer'):
-                [question_identifier_tag] = answer_tag.getElementsByTagName(
-                    'QuestionIdentifier')
-                question_identifier = _utils.get_node_text(question_identifier_tag)
-                [free_text_tag] = answer_tag.getElementsByTagName(
-                    'FreeText')
-                free_text = html.unescape(_utils.get_node_text(free_text_tag))
+        # add the new attribute
+        new_row['assertion'] = row['assertion']
 
-                attribute, idx = question_identifier.split('-')
+        new_row_strs.append(json.dumps(new_row))
 
-                # coerce the data types correctly
-                if attribute in ['pk', 'score']:
-                    data[idx][attribute] = int(free_text)
-                else:
-                    data[idx][attribute] = free_text
-
-            for _, row in data.items():
-                rows.append(row)
-
-    # write out the data to files
-    with open(assertions_output_path, 'w') as f_out:
-        f_out.write(
-            '\n'.join([
-                json.dumps(row)
-                for row in sorted(
-                        rows,
-                        key=lambda r: r['pk'])
-            ]))
+    # write out the data
+    with click.open_file(output_path, 'w') as output_file:
+        output_file.write('\n'.join(sorted(new_row_strs)))
 
 
 if __name__ == '__main__':

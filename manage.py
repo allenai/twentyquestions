@@ -48,8 +48,10 @@ subcommands = [
     scripts.dockerize,
     scripts.extractassertions,
     scripts.extractgames,
-    scripts.extractquality,
     scripts.extractlabels,
+    scripts.extractquality,
+    scripts.extractquestions,
+    scripts.groupbysubject,
     scripts.promote,
     scripts.serve
 ]

@@ -4,11 +4,8 @@ See ``python extractquality.py --help`` for more information.
 """
 
 import collections
-import html
 import json
 import logging
-import os
-from xml.dom import minidom
 
 import click
 
@@ -20,12 +17,19 @@ logger = logging.getLogger(__name__)
 
 # constants
 
-duplicated_attributes = [
-    'pk',
-    'subject',
-    'question',
-    'answer'
-]
+MIN_SCORE = 2
+EXPECTED_NUM_QUALITIES = 3
+
+KEY_SCHEMA = {
+    'subject': str,
+    'question': str,
+    'answer': str
+}
+
+QUALITY_TO_BIT = {
+    'high': 1,
+    'low': 0
+}
 
 
 # main function
@@ -38,103 +42,78 @@ duplicated_attributes = [
     'xml_dir',
     type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.argument(
-    'output_dir',
-    type=click.Path(exists=True, file_okay=False, dir_okay=True))
-def extractquality(xml_dir, output_dir):
-    """Extract quality annotations from XML_DIR and write to OUTPUT_DIR.
+    'output_path',
+    type=click.Path(exists=False, file_okay=True, dir_okay=False))
+def extractquality(xml_dir, output_path):
+    """Extract quality labels from XML_DIR and write to OUTPUT_PATH.
 
     Extract the quality annotations from a batch of the quality control
-    HITs. XML_DIR should be an XML directory extracted with
-    AMTI. OUTPUT_DIR is the location to which the data will be written
-    as 'quality-annotations.jsonl' for the quality annotations in a JSON
-    Lines format and 'high-quality-triples.jsonl' for only the high
-    quality questions where high quality means 2 of the 3 workers rated
-    it high quality. Note, this script assumes that all the batches had
-    all 3 assignments completed.
+    HITs. XML_DIR should be an XML directory extracted with AMTI.
+    OUTPUT_PATH is the location to which the data will be written in
+    JSON Lines format. High quality questions will be marked with the
+    "high_quality" attribute as True, where high quality means 2 of the
+    3 workers rated it high quality. Note, this script assumes that all
+    the batches had all 3 assignments completed.
     """
-    quality_annotations_output_path = os.path.join(
-        output_dir, 'quality-annotations.jsonl')
-    high_quality_triples_output_path = os.path.join(
-        output_dir, 'high-quality-triples.jsonl')
+    # submissions : the form data submitted from the quality control
+    # HITs as a list of dictionaries mapping the question identifiers to
+    # the free text, i.e.:
+    #
+    #     [
+    #       {
+    #         'attribute-idx': attribute_value,
+    #         ...
+    #       },
+    #       ...
+    #     ]
+    #
+    # See the data for individual attributes and values. The index (idx)
+    # is used because each HIT had the worker label multiple instances
+    # for efficiency purposes.
+    submissions = _utils.extract_xml_dir(xml_dir)
 
-    rows = []
-    pks_to_scores = collections.defaultdict(lambda: 0)
-    for dirpath, dirnames, filenames in os.walk(xml_dir):
-        for filename in filenames:
-            # skip non-xml files
-            if not '.xml' in filename:
-                continue
+    # decode the data from the ``"attribute-idx": value`` style to the
+    # individual rows.
+    rows = _utils.decode_attribute_idx_data(submissions)
 
-            logger.debug(f'Processing {filename}.')
-
-            # extract the annotations to jsonl
-            with open(os.path.join(dirpath, filename), 'r') as f_in:
-                results_xml = minidom.parseString(f_in.read())
-
-            data = collections.defaultdict(dict)
-            for answer_tag in results_xml.getElementsByTagName('Answer'):
-                [question_identifier_tag] = answer_tag.getElementsByTagName(
-                    'QuestionIdentifier')
-                question_identifier = _utils.get_node_text(question_identifier_tag)
-                [free_text_tag] = answer_tag.getElementsByTagName(
-                    'FreeText')
-                free_text = html.unescape(_utils.get_node_text(free_text_tag))
-
-                attribute, idx = question_identifier.split('-')
-
-                if attribute == 'pk':
-                    data[idx][attribute] = int(free_text)
-                else:
-                    data[idx][attribute] = free_text
-
-            for _, row in data.items():
-                if row['quality'] == 'high':
-                    pks_to_scores[row['pk']] += 1
-                rows.append(row)
-
-    # deduplicate and filter to just the high quality rows
-    high_quality_rows = {}
+    # aggregate all the quality labels for each instance, since we had
+    # multiple assignments / workers per instance.
+    key_to_qualities = collections.defaultdict(list)
     for row in rows:
-        pk = row['pk']
-        if pks_to_scores[pk] >= 2:
-            # if the row scored high enough quality, record it
-            if pk in high_quality_rows:
-                # if the row has already been added, sanity check that all
-                # the attributes are equal to the old row
-                old_row = high_quality_rows[pk]
-                for attribute in duplicated_attributes:
-                    assert row[attribute] == old_row[attribute], (
-                        f'{attribute} was not equal for rows with pk:'
-                        f' {pk}'
-                    )
-            else:
-                # the row has not been added yet, so add it, replacing
-                # the quality annotation with the total quality score
-                data = {
-                    attribute: row[attribute]
-                    for attribute in duplicated_attributes
-                }
-                data['score'] = pks_to_scores[pk]
-                high_quality_rows[pk] = data
+        key = _utils.key(row, KEY_SCHEMA.keys())
+        key_to_qualities[key].append(row['quality'])
 
-    # write out the data to files
-    with open(quality_annotations_output_path, 'w') as f_out:
-        f_out.write(
-            '\n'.join([
-                json.dumps(row)
-                for row in sorted(
-                        rows,
-                        key=lambda r: r['pk'])
-            ]))
+    # create the new rows by processing the aggregated quality labels
+    new_row_strs = []
+    for key, qualities in key_to_qualities.items():
+        assert len(qualities) == EXPECTED_NUM_QUALITIES, (
+            f'{key} only has {len(qualities)} quality labels.'
+            f' It should have exactly {EXPECTED_NUM_QUALITIES}'
+        )
 
-    with open(high_quality_triples_output_path, 'w') as f_out:
-        f_out.write(
-            '\n'.join([
-                json.dumps(row)
-                for row in sorted(
-                        high_quality_rows.values(),
-                        key=lambda r: r['pk'])
-            ]))
+        # create the new row
+
+        # use an OrderedDict so that the keys appear in the right order
+        # in the JSON.
+        new_row = collections.OrderedDict([
+            (attribute, as_type(value))
+            for (attribute, as_type), value
+            in zip(KEY_SCHEMA.items(), key)
+        ])
+
+        # compute new attributes to add
+        score = sum([QUALITY_TO_BIT[quality] for quality in qualities])
+        high_quality = score >= MIN_SCORE
+
+        # add the new attributes
+        new_row['score'] = score
+        new_row['high_quality'] = high_quality
+
+        new_row_strs.append(json.dumps(new_row))
+
+    # write out the data
+    with click.open_file(output_path, 'w') as output_file:
+        output_file.write('\n'.join(sorted(new_row_strs)))
 
 
 if __name__ == '__main__':

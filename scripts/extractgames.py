@@ -1,19 +1,20 @@
-"""Extract triples from 20 Questions results.
+"""Extract games from 20 Questions game HITs.
 
 See ``python extractgames.py --help`` for more information.
 """
 
-import html
 import json
 import logging
-import os
-from xml.dom.minidom import parseString
 
 import click
+
+from scripts import _utils
 
 
 logger = logging.getLogger(__name__)
 
+
+# main function
 
 @click.command(
     context_settings={
@@ -23,61 +24,34 @@ logger = logging.getLogger(__name__)
     'xml_dir',
     type=click.Path(exists=True, file_okay=False, dir_okay=True))
 @click.argument(
-    'output_dir',
-    type=click.Path(exists=True, file_okay=False, dir_okay=True))
-def extractgames(xml_dir, output_dir):
-    """Extract 20 Questions data from XML_DIR and write to OUTPUT_DIR.
+    'output_path',
+    type=click.Path(exists=False, file_okay=True, dir_okay=False))
+def extractgames(xml_dir, output_path):
+    """Extract games from XML_DIR and write to OUTPUT_PATH.
 
-    Extract the 20 Questions data (all unique [subject, question,
-    answer] triples as well as the game data) from a batch of 20
-    Questions HITs. XML_DIR should be an XML directory extracted with
-    AMTI of one of the 20 Questions HIT batches. OUTPUT_DIR is the
-    location to which the data will be written as 'fullgames.jsonl' and
-    'triples.jsonl'.
+    Extract the 20 Questions game data from a batch of 20 Questions
+    HITs. XML_DIR should be the XML directory of one of the 20 Questions
+    HIT batches, extracted with AMTI. OUTPUT_PATH is the location to
+    which the data will be written.
     """
-    fullgames_output_path = os.path.join(output_dir, 'fullgames.jsonl')
-    triples_output_path = os.path.join(output_dir, 'triples.jsonl')
+    # submissions : the form data submitted from the twentyquestions
+    # HITs as a list of dictionaries mapping the question identifiers to
+    # the free text, i.e.:
+    #
+    #     [{'gameRoomJson': game_room_json_string}, ...]
+    #
+    submissions = _utils.extract_xml_dir(xml_dir)
 
-    triples = set()
-    full_games = set()
-    for dirpath, dirnames, filenames in os.walk(xml_dir):
-        for filename in filenames:
-            # skip non-xml files
-            if not '.xml' in filename:
-                continue
+    # deduplicate the games because each crowdworker who participates in
+    # the game submits a copy of the game data.
+    game_jsons = set([
+        submission['gameRoomJson']
+        for submission in submissions
+    ])
 
-            logger.debug(f'Processing {filename}.')
-
-            # extract the game encoded by MTurk
-            with open(os.path.join(dirpath, filename), 'r') as f_in:
-                results_xml = parseString(f_in.read())
-            [free_text] = results_xml.getElementsByTagName('FreeText')
-            [text_node] = free_text.childNodes
-
-            # unescape and read in the JSON data
-            data_str = html.unescape(text_node.nodeValue)
-            data = json.loads(data_str)
-
-            # record all the triples generated during the game
-            subject = data['game']['round']['subject']
-            for questionAndAnswer in data['game']['round']['questionAndAnswers']:
-                triple = {
-                    'subject': subject,
-                    'question': questionAndAnswer['question']['questionText'],
-                    'answer': questionAndAnswer['answer']['answerValue']
-                }
-                triples.add(json.dumps(triple))
-
-            # record the full game data
-            full_games.add(data_str)
-
-    # write out the data to files
-
-    with open(fullgames_output_path, 'w') as f_out:
-        f_out.write('\n'.join(full_games))
-
-    with open(triples_output_path, 'w') as f_out:
-        f_out.write('\n'.join(triples))
+    # write out the data
+    with click.open_file(output_path, 'w') as output_file:
+        output_file.write('\n'.join(game_jsons))
 
 
 if __name__ == '__main__':

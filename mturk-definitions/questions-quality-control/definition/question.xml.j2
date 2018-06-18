@@ -187,10 +187,10 @@
                     </strong>
                   </th>
                 </tr>
-                {% for pk_subject_question_answer in pk_subject_question_answers %}
+                {% for row in rows %}
                 <tr>
-                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer['subject'] | e }}</td>
-                  <td style="width: 33.3333%; text-align: center;">{{ pk_subject_question_answer['question'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ row['subject'] | e }}</td>
+                  <td style="width: 33.3333%; text-align: center;">{{ row['question'] | e }}</td>
                   <td style="width: 33.3333%; text-align: center;">
                     <label for="high-quality-{{ loop.index0 }}">High</label>
                     <input
@@ -207,25 +207,20 @@
                       value="low"
                       required/>
                     <input
-                      id="pk-{{ loop.index0 }}"
-                      type="hidden"
-                      name="pk-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['pk'] | e }}" />
-                    <input
                       id="subject-{{ loop.index0 }}"
                       type="hidden"
                       name="subject-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['subject'] | e }}" />
+                      value="{{ row['subject'] | e }}" />
                     <input
                       id="question-{{ loop.index0 }}"
                       type="hidden"
                       name="question-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['question'] | e }}" />
+                      value="{{ row['question'] | e }}" />
                     <input
                       id="answer-{{ loop.index0 }}"
                       type="hidden"
                       name="answer-{{ loop.index0 }}"
-                      value="{{ pk_subject_question_answer['answer'] | e }}" />
+                      value="{{ row['answer'] | e }}" />
                   </td>
                 </tr>
                 {% endfor %}
