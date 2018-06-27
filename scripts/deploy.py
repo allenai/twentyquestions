@@ -27,26 +27,18 @@ logger = logging.getLogger(__name__)
 @click.argument(
     'key',
     type=click.Path(exists=True, file_okay=True, dir_okay=False))
-@click.option(
-    '--server-number',
-    type=click.INT,
-    help="The server number you'd like to deploy to.")
-def deploy(env, cert, key, server_number):
+def deploy(env, cert, key):
     """Deploy twentyquestions to ENV.
 
     Deploy the current docker image for ENV to kubernetes using the
     certificate defined by CERT and KEY to provide HTTPS traffic.
     """
-    server_number = str(server_number) if server_number is not None else ''
+    registry = settings.CONTAINER_REGISTRY_URL
+    docker_repo = settings.CONTAINER_REGISTRY_USER
+    image_name = settings.CONTAINER_REGISTRY_IMAGE_NAME
 
-    registry = settings.CONTAINER_REGISTRY
-    docker_repo = settings.PROJECT_ID
-    image_name = settings.SERVER_IMAGE_NAME
-
-    kubernetes_config = settings.KUBERNETES_CONFIG_TEMPLATE.format(
-        server_number=server_number)
-    cert_secret_name = settings.CERT_SECRET_NAME_TEMPLATE.format(
-        server_number=server_number)
+    kubernetes_config = settings.KUBERNETES_CONFIG
+    cert_secret_name = settings.CERT_SECRET_NAME
 
     logger.info('Deleting any previous secret for certificate.')
     process = subprocess.run(

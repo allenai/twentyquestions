@@ -12,8 +12,23 @@ This repository includes:
 
 Setup
 -----
-Make sure you're setup with Google Cloud, in particular you need to be
-able to push images to GCR and jobs to GKE using kubectl.
+You'll need to be setup with a docker container registry and a
+kubernetes cluster for deployment. The code was originally developed
+with Google Cloud (GCR and GKE), but should work with any container
+registry and kubernetes cluster.
+
+Fill out the following settings to point to your container registry:
+
+    # URL for the container registry
+    CONTAINER_REGISTRY_URL = 'gcr.io'
+    # The user part of the image location, i.e. 'library' in
+    # library/ubuntu:latest
+    CONTAINER_REGISTRY_USER = 'ai2-alexandria'
+    # A name for the docker image for the backend server
+    CONTAINER_REGISTRY_IMAGE_NAME = 'twentyquestions-server'
+
+Then make sure that you have kubectl configured with a kubernetes
+cluster that can pull images from the registry.
 
 For the python environment, install using pip. [pyenv][pyenv] and
 [pyenv-virtualenv][pyenv-virtualenv] can be helpful for managing your

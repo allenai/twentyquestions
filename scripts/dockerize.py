@@ -26,9 +26,9 @@ def dockerize():
     """
     local_env = settings.ENVS['local']
 
-    registry = settings.CONTAINER_REGISTRY
-    docker_repo = settings.PROJECT_ID
-    image_name = settings.SERVER_IMAGE_NAME
+    registry = settings.CONTAINER_REGISTRY_URL
+    docker_repo = settings.CONTAINER_REGISTRY_USER
+    image_name = settings.CONTAINER_REGISTRY_IMAGE_NAME
 
     # build the docker image
     subprocess.run([

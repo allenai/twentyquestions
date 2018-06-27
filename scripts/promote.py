@@ -34,9 +34,9 @@ def promote(source, dest):
 
     SOURCE and DEST must be valid environments for twentyquestions.
     """
-    registry = settings.CONTAINER_REGISTRY
-    docker_repo = settings.PROJECT_ID
-    image_name = settings.SERVER_IMAGE_NAME
+    registry = settings.CONTAINER_REGISTRY_URL
+    docker_repo = settings.CONTAINER_REGISTRY_USER
+    image_name = settings.CONTAINER_REGISTRY_IMAGE_NAME
 
     logger.info(f'Promoting {source} to {dest}')
     subprocess.run([

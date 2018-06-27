@@ -26,21 +26,28 @@ BACKEND_STATIC_DIR = os.path.join(BACKEND_DIR, 'static')
 
 
 # the different environments
+
 ENVS = {
     'local': 'local',
     'dev': 'dev',
     'prod': 'prod'
 }
 
+
 # docker images
-CONTAINER_REGISTRY = 'gcr.io'
-PROJECT_ID = 'ai2-alexandria'
-SERVER_IMAGE_NAME = 'twentyquestions-server'
 
-KUBERNETES_CONFIG_TEMPLATE = os.path.join(
-    REPO_DIR, 'ops/twentyquestions{server_number}.yaml')
+# The URL for the container registry
+CONTAINER_REGISTRY_URL = 'gcr.io'
+# The user part of the image location, i.e. 'library' in
+# library/ubuntu:latest
+CONTAINER_REGISTRY_USER = 'ai2-alexandria'
+# A name for the docker image for the backend server
+CONTAINER_REGISTRY_IMAGE_NAME = 'twentyquestions-server'
 
-CERT_SECRET_NAME_TEMPLATE = 'twentyquestions{server_number}-cert'
+KUBERNETES_CONFIG = os.path.join(
+    REPO_DIR, 'ops/twentyquestions.yaml')
+
+CERT_SECRET_NAME = 'twentyquestions-cert'
 
 ###################
 # Server Settings #
