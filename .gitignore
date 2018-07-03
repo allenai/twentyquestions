@@ -27,5 +27,6 @@ dist
 backend/static/app-v1.bundle.js
 backend/templates/index.html
 
-# data
+# data and exploratory notebooks
 data/
+notebooks/
