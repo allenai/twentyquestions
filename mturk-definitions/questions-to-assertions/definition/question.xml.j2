@@ -7,28 +7,28 @@
           <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
           <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
           <script type="text/javascript">
-            var numQuestions = {{ pk_subject_question_answer_scores|length }};
+            var numQuestions = {{ rows|length }};
             function validate() {
               for (var i=0; i < numQuestions; i++) {
-                entered_text = document.getElementById("assertion-" + `${i}`).value.toLowerCase();
+                enteredText = document.getElementById("assertion-" + `${i}`).value.toLowerCase();
                 question = document.getElementById("question-" + `${i}`).value.toLowerCase();
-                q_has_negation = question.includes("n't") || question.includes(" not ") || question.includes(" cannot ");
-                a_has_negation = entered_text.includes("n't") || entered_text.includes(" not ") || entered_text.includes(" cannot ");
+                qHasNegation = question.includes("n't") || question.includes(" not ") || question.includes(" cannot ");
+                aHasNegation = enteredText.includes("n't") || enteredText.includes(" not ") || enteredText.includes(" cannot ");
 
-                num_words = entered_text.split(" ").length
-                if (num_words < 2) {
+                numWords = enteredText.split(" ").length;
+                if (numWords < 2) {
                   msg = "The input sentence is too short";
                   alert(msg);
                   return false;
-                } else if (num_words > 30) {
+                } else if (numWords > 30) {
                   msg = "The input sentence is too long";
                   alert(msg);
                   return false;
-                } else if (entered_text.length <= 5) {
+                } else if (enteredText.length <= 5) {
                   msg = "The input sentence is too short";
                   alert(msg);
                   return false;
-                } else if (!q_has_negation && a_has_negation) {
+                } else if (!qHasNegation && aHasNegation) {
                   msg = "There is no negation in the question. Please make sure your assertion does not use negation. Refer to Example 1 in the table above."
                   alert(msg);
                   return false;
