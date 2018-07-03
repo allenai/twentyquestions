@@ -1,0 +1,32 @@
+{
+  "AutoApprovalDelayInSeconds": 7200,
+  "AssignmentDurationInSeconds": 3600,
+  "Reward": "1.20",
+  "Title": "Change the subject from a round of 20 Questions",
+  "Keywords": "20 Questions, Common Sense, Commonsense",
+  "Description": "Take subject-question pairs from games of 20 Questions and flip the subject.",
+  "QualificationRequirements": [
+    {
+      "QualificationTypeId": "00000000000000000040",
+      "Comparator": "GreaterThanOrEqualTo",
+      "IntegerValues": [
+        5000
+      ],
+      "RequiredToPreview": false
+    },
+    {
+      "QualificationTypeId": "00000000000000000071",
+      "Comparator": "EqualTo",
+      "LocaleValues": [{"Country": "US"}],
+      "RequiredToPreview": false
+    },
+    {
+      "QualificationTypeId": "000000000000000000L0",
+      "Comparator": "GreaterThanOrEqualTo",
+      "IntegerValues": [
+        99
+      ],
+      "RequiredToPreview": false
+    }
+  ]
+}
