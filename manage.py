@@ -49,6 +49,7 @@ subcommands = [
     scripts.extractassertions,
     scripts.extractgames,
     scripts.extractlabels,
+    scripts.extractmirrorsubjects,
     scripts.extractquality,
     scripts.extractquestions,
     scripts.groupbysubject,

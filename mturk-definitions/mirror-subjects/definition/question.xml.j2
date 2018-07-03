@@ -140,9 +140,9 @@
                   </td>
                   <td style="width: 25%; text-align: center;">
                     <input
-                      id="new-subject-{{ loop.index0 }}"
+                      id="new_subject-{{ loop.index0 }}"
                       type="text"
-                      name="new-subject-{{ loop.index0 }}"
+                      name="new_subject-{{ loop.index0 }}"
                       style="width: 90%"/>
                     <input
                       id="subject-{{ loop.index0 }}"
@@ -169,6 +169,26 @@
                       type="hidden"
                       name="high_quality-{{ loop.index0 }}"
                       value="{{ row['high_quality'] | e }}"/>
+                    <input
+                      id="assertion-{{ loop.index0 }}"
+                      type="hidden"
+                      name="assertion-{{ loop.index0 }}"
+                      value="{{ row['assertion'] | e }}"/>
+                    <input
+                      id="labels-{{ loop.index0 }}"
+                      type="hidden"
+                      name="labels-{{ loop.index0 }}"
+                      value="{{ row['labels'] | e }}"/>
+                    <input
+                      id="is_bad-{{ loop.index0 }}"
+                      type="hidden"
+                      name="is_bad-{{ loop.index0 }}"
+                      value="{{ row['is_bad'] | e }}"/>
+                    <input
+                      id="true_votes-{{ loop.index0 }}"
+                      type="hidden"
+                      name="true_votes-{{ loop.index0 }}"
+                      value="{{ row['true_votes'] | e }}"/>
                     <input
                       id="majority-{{ loop.index0 }}"
                       type="hidden"

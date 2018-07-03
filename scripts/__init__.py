@@ -6,6 +6,7 @@ from scripts.dockerize import dockerize
 from scripts.extractassertions import extractassertions
 from scripts.extractgames import extractgames
 from scripts.extractlabels import extractlabels
+from scripts.extractmirrorsubjects import extractmirrorsubjects
 from scripts.extractquality import extractquality
 from scripts.extractquestions import extractquestions
 from scripts.groupbysubject import groupbysubject
