@@ -5,7 +5,38 @@
       <html>
         <head>
           <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+          <style>
+            td { text-align: center; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+          </style>
           <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+          <script type="text/javascript">
+            var numQuestions = {{ rows|length }};
+            function validate() {
+              var seenSubjects = [];
+              for (var i=0; i < numQuestions; i++) {
+                var newSubject = document.getElementById("new_subject-" + `${i}`).value.toLowerCase();
+
+                var emptySubject = newSubject.length == 0;
+                var moreThanOneWord = newSubject.split(' ').length > 1;
+                var wordRepeated = seenSubjects.includes(newSubject);
+
+                seenSubjects.push(newSubject);
+
+                if (emptySubject) {
+                  alert('You cannot leave a new subject empty.');
+                  return false;
+                } else if (moreThanOneWord) {
+                  alert(`Error with ${newSubject}: each new subject must be only one word.`);
+                  return false;
+                } else if (wordRepeated) {
+                  alert(`Error with ${newSubject}: new subjects must be unique.`);
+                  return false;
+                }
+              }
+              return true;
+            }
+          </script>
         </head>
         <body>
           <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit' onsubmit='return validate()'>
@@ -52,6 +83,7 @@
                 opposite</b>, so true should become false and false
                 should become true.
               </li>
+              <li><b>not</b> be repeated.</li>
             </ul>
 
             <h3>Examples:</h3>
@@ -62,83 +94,95 @@
                 <th align="center">Question</th>
                 <th align="center">Answer</th>
                 <th align="center">New Subject</th>
+                <th align="center">New Answer</th>
               </tr>
               <tr>
                 <td align="center">cat</td>
                 <td align="center">can it bark?</td>
                 <td align="center">FALSE</td>
                 <td align="center">dog</td>
+                <td align="center">TRUE</td>
               </tr>
               <tr>
                 <td align="center">lamp</td>
                 <td align="center">is it furniture?</td>
                 <td align="center">TRUE</td>
                 <td align="center">lightbulb</td>
+                <td align="center">FALSE</td>
               </tr>
               <tr>
                 <td align="center">bat</td>
                 <td align="center">Metal?</td>
                 <td align="center">TRUE</td>
                 <td align="center">baseball</td>
+                <td align="center">FALSE</td>
               </tr>
               <tr>
                 <td align="center">cat</td>
                 <td align="center">Is the item living?</td>
                 <td align="center">TRUE</td>
                 <td align="center">litterbox</td>
+                <td align="center">FALSE</td>
               </tr>
               <tr>
                 <td align="center">flank</td>
                 <td align="center">Sirloin?</td>
                 <td align="center">FALSE</td>
                 <td align="center">steak</td>
+                <td align="center">TRUE</td>
               </tr>
               <tr>
                 <td align="center">fan</td>
                 <td align="center">does food go in it?</td>
                 <td align="center">FALSE</td>
                 <td align="center">fridge</td>
+                <td align="center">TRUE</td>
               </tr>
             </table>
             <hr>
             <h3 align="center"><u>Change the Subject from a Round of 20 Questions</u></h3>
 
-            <table class="cf-alternate-rows" style="width: 75%;" border="1" align="center">
+            <table style="width: 90%;" border="1" align="center">
               <tbody>
                 <tr>
-                  <th style="width: 25%; text-align: center;">
+                  <th style="width: 20%; text-align: center;">
                     <strong>
                       <u>Old Subject</u>
                     </strong>
                   </th>
-                  <th style="width: 25%; text-align: center;">
+                  <th style="width: 20%; text-align: center;">
                     <strong>
                       <u>Question</u>
                     </strong>
                   </th>
-                  <th style="width: 25%; text-align: center;">
+                  <th style="width: 20%; text-align: center;">
                     <strong>
                       <u>Answer</u>
                     </strong>
                   </th>
-                  <th style="width: 25%; text-align: center;">
+                  <th style="width: 20%; text-align: center;">
                     <strong>
                       <u>New Subject</u>
+                    </strong>
+                  </th>
+                  <th style="width: 20%; text-align: center;">
+                    <strong>
+                      <u>New Answer</u>
                     </strong>
                   </th>
                 </tr>
                 {% for row in rows %}
                 <tr>
-                  <td style="width: 25%; text-align: center;">{{ row['subject'] | e }}</td>
-                  <td style="width: 25%; text-align: center;">{{ row['question'] | e }}</td>
-                  <td style="width: 25%; text-align: center;">
+                  <td style="width: 20%; text-align: center;">{{ row['subject'] | e }}</td>
+                  <td style="width: 20%; text-align: center;">{{ row['question'] | e }}</td>
+                  <td style="width: 20%; text-align: center;">
                     {% if row['majority'] == 1 %}
                     TRUE
                     {% else %}
                     FALSE
                     {% endif %}
                   </td>
-                  <td style="width: 25%; text-align: center;">
+                  <td style="width: 20%; text-align: center;">
                     <input
                       id="new_subject-{{ loop.index0 }}"
                       type="text"
@@ -194,6 +238,13 @@
                       type="hidden"
                       name="majority-{{ loop.index0 }}"
                       value="{{ row['majority'] | e }}"/>
+                  </td>
+                  <td style="width: 20%; text-align: center;">
+                    {% if row['majority'] == 1 %}
+                    FALSE
+                    {% else %}
+                    TRUE
+                    {% endif %}
                   </td>
                 </tr>
                 {% endfor %}
