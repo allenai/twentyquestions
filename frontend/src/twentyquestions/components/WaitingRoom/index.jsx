@@ -119,7 +119,7 @@ class WaitingRoom extends React.Component {
                     The second player will ask 20 yes-no questions
                     about the object. <b>Questions should be as unique
                       as possible</b>. In particular, questions should
-                    <i>ask about many different kinds of things</i> and avoid
+                    <i> ask about many different kinds of things</i> and avoid
                     re-using the same key words.
                   </Typography>
                 </li>
