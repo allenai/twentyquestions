@@ -53,6 +53,7 @@ subcommands = [
     scripts.extractquality,
     scripts.extractquestions,
     scripts.groupbysubject,
+    scripts.preparemirrorsubjects,
     scripts.promote,
     scripts.serve
 ]
