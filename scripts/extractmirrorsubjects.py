@@ -3,6 +3,7 @@
 See ``python extractmirrorsubjects.py --help`` for more information.
 """
 
+import ast
 import collections
 import json
 import logging
@@ -24,7 +25,7 @@ KEY_SCHEMA = {
     'score': int,
     'high_quality': bool,
     'assertion': str,
-    'labels': json.loads,
+    'labels': ast.literal_eval,  # List[str]
     'is_bad': bool,
     'true_votes': int,
     'majority': bool
