@@ -87,7 +87,7 @@ def extractmirrorsubjects(xml_dir, output_path):
         ])
 
         # add the new attribute
-        new_row['new_subect'] = row['new_subject']
+        new_row['new_subject'] = row['new_subject']
 
         new_row_strs.append(json.dumps(new_row))
 
