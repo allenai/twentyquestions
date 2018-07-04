@@ -54,4 +54,4 @@ def groupbysubject(data_path, output_path):
 
 
 if __name__ == '__main__':
-    groupassertions()
+    groupbysubject()
