@@ -33,7 +33,8 @@ LABEL_TO_BIT = {
     'usually': 1,
     'sometimes': 1,
     'rarely': 0,
-    'never': 0
+    'never': 0,
+    'bad': 0
 }
 
 
