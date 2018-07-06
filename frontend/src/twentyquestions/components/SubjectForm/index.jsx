@@ -1,11 +1,11 @@
 /** Components for setting the subject of the round */
 
 import React from 'react';
-import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
-import TextField from 'material-ui/TextField';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/styles';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
 
 import settings from '../../settings';
 

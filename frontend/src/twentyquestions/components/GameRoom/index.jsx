@@ -1,9 +1,9 @@
 /** A component representing the 20 Questions game. */
 
 import React from 'react';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 import model from '../../model';
 import InactivityWarning from '../InactivityWarning';

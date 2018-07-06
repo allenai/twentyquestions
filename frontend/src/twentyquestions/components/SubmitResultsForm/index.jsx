@@ -1,13 +1,13 @@
 /** A form for submitting results to MTurk. */
 
 import React from 'react';
-import AppBar from 'material-ui/AppBar';
-import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 
 /**

@@ -1,18 +1,17 @@
 /** A component for representing a list of questions and answer. */
 
 import React from 'react';
-import Avatar from 'material-ui/Avatar';
-import Divider from 'material-ui/Divider';
-import Hidden from 'material-ui/Hidden';
-import List, {
-  ListItem,
-  ListItemText,
-  ListSubheader
-} from 'material-ui/List';
-import Paper from 'material-ui/Paper';
-import Tooltip from 'material-ui/Tooltip';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import Avatar from '@material-ui/core/Avatar';
+import Divider from '@material-ui/core/Divider';
+import Hidden from '@material-ui/core/Hidden';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 
 /** Style rules to apply to the QnABoard component. */

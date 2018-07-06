@@ -1,12 +1,12 @@
 /** Components for asking questions */
 
 import React from 'react';
-import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
-import { LinearProgress } from 'material-ui/Progress';
-import TextField from 'material-ui/TextField';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/styles';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
 
 import model from '../../model';
 

@@ -1,12 +1,12 @@
 /** A component for setting players to inactive. */
 
 import React from 'react';
-import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
-import Modal from 'material-ui/Modal';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Modal from '@material-ui/core/Modal';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 import model from '../../model';
 import settings from '../../settings';

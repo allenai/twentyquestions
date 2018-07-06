@@ -1,12 +1,17 @@
 /** A component for allowing players to enter a game room. */
 
 import React from 'react';
-import Button from 'material-ui/Button';
-import { CircularProgress } from 'material-ui/Progress';
-import Grid from 'material-ui/Grid';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 import InactiveModal from '../InactiveModal';
 import model from '../../model';

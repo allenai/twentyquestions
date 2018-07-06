@@ -1,18 +1,22 @@
 /** A component for display game context to the player. */
 
 import React from 'react';
-import AccountCircleIcon from 'material-ui-icons/AccountCircle';
-import Avatar from 'material-ui/Avatar';
-import Badge from 'material-ui/Badge';
-import Chip from 'material-ui/Chip';
-import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
-import ExpansionPanel, {
-  ExpansionPanelDetails,
-  ExpansionPanelSummary
-} from 'material-ui/ExpansionPanel';
-import Grid from 'material-ui/Grid';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Avatar from '@material-ui/core/Avatar';
+import Badge from '@material-ui/core/Badge';
+import Chip from '@material-ui/core/Chip';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 
 /** Style rules to apply to the component. */

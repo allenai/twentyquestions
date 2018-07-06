@@ -1,11 +1,11 @@
 /** A view for rendering the data. */
 
 import React from 'react';
-import AppBar from 'material-ui/AppBar';
-import CssBaseline from 'material-ui/CssBaseline';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/Styles';
+import AppBar from '@material-ui/core/AppBar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/Styles';
 
 import WaitingRoom from './components/WaitingRoom';
 import GameRoom from './components/GameRoom';
