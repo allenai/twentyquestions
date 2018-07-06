@@ -25,7 +25,11 @@ logger = logging.getLogger(__name__)
 @click.argument(
     'output_path',
     type=click.Path(exists=False, file_okay=True, dir_okay=False))
-def groupbysubject(data_path, output_path):
+@click.option(
+    '--ignore-subject',
+    is_flag=True,
+    help='Ignore the subject and just put rows in groups of 20.')
+def groupbysubject(data_path, output_path, ignore_subject):
     """Group the data in blocks of at most 20 by subject.
 
     Group the data in blocks of at most 20 by subject. This script is
@@ -35,22 +39,33 @@ def groupbysubject(data_path, output_path):
     DATA_PATH and written to OUTPUT_PATH. DATA_PATH should be JSON
     Lines formated data with each object having a 'subject' attribute.
     """
-    subjects_to_rows = collections.defaultdict(list)
-    with click.open_file(data_path, 'r') as data_file:
-        for ln in data_file:
-            row = json.loads(ln)
-            subjects_to_rows[row['subject']].append(row)
+    if ignore_subject:
+        rows = []
+        with click.open_file(data_path, 'r') as data_file:
+            for ln in data_file:
+                rows.append(json.loads(ln))
 
-    with click.open_file(output_path, 'w') as output_file:
-        for subject, rows in subjects_to_rows.items():
-            if len(rows) < 20:
-                logger.info(f'{subject} only has {len(rows)} assertions.')
-
-            if len(rows) > 20:
-                logger.info(f'{subject} has more than 20 assertions.')
-
+        with click.open_file(output_path, 'w') as output_file:
             for i in range(0, len(rows), 20):
                 output_file.write(json.dumps({'rows': rows[i:i+20]}) + '\n')
+
+    else:
+        subjects_to_rows = collections.defaultdict(list)
+        with click.open_file(data_path, 'r') as data_file:
+            for ln in data_file:
+                row = json.loads(ln)
+                subjects_to_rows[row['subject']].append(row)
+
+        with click.open_file(output_path, 'w') as output_file:
+            for subject, rows in subjects_to_rows.items():
+                if len(rows) < 20:
+                    logger.info(f'{subject} only has {len(rows)} assertions.')
+
+                if len(rows) > 20:
+                    logger.info(f'{subject} has more than 20 assertions.')
+
+                for i in range(0, len(rows), 20):
+                    output_file.write(json.dumps({'rows': rows[i:i+20]}) + '\n')
 
 
 if __name__ == '__main__':
