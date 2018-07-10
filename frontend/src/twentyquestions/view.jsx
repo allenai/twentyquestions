@@ -32,6 +32,7 @@ class View extends React.Component {
     let room = null;
     if (
       player === null
+        || player.status === controller.model.PLAYERSTATUSES.READINGINSTRUCTIONS
         || player.status === controller.model.PLAYERSTATUSES.WAITING
         || player.status === controller.model.PLAYERSTATUSES.READYTOPLAY
         || player.status === controller.model.PLAYERSTATUSES.INACTIVE

@@ -207,8 +207,14 @@ class Controller {
    * @param {String} action - The name of the action to take.
    */
   takePlayerAction(action) {
+    const oldPlayer = this.player;
+
     // update the local state of the player for certain states
-    if (action === this.model.PLAYERACTIONS.STARTPLAYING) {
+    if (action === this.model.PLAYERACTIONS.FINISHREADINGINSTRUCTIONS) {
+      this.player = this.player.copy({
+        status: this.model.PLAYERSTATUSES.WAITING
+      });
+    } else if (action === this.model.PLAYERACTIONS.STARTPLAYING) {
       this.player = this.player.copy({
         status: this.model.PLAYERSTATUSES.PLAYING
       });
@@ -227,7 +233,7 @@ class Controller {
     }
 
     const message = {
-      player: this.player.toObject(),
+      player: oldPlayer.toObject(),
       action: action
     };
 

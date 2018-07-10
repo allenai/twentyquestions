@@ -315,6 +315,31 @@ class PlayerRouterTestCase(unittest.TestCase):
             player_matches={})
         player_router.create_player('foo')
 
+        # check that the player is in the players list
+        self.assertEqual(
+            player_router.players['foo'],
+            models.Player(
+                player_id='foo',
+                status=models.PLAYERSTATUSES['READINGINSTRUCTIONS']))
+
+        # check that the player's match is None
+        self.assertEqual(
+            player_router.player_matches['foo'],
+            None)
+
+    def test_finish_reading_instructions(self):
+        """Test ``PlayerRouter.finish_reading_instructions``."""
+
+        # create the first player and finish reading instructions
+
+        player_router =  models.PlayerRouter(
+            game_rooms={},
+            players={},
+            game_room_priorities=[],
+            player_matches={})
+        player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
+
         # check that the game room was created correctly
         self.assertEqual(len(player_router.game_rooms), 1)
         game_room = list(player_router.game_rooms.values())[0]
@@ -322,11 +347,11 @@ class PlayerRouterTestCase(unittest.TestCase):
         self.assertEqual(
             game_room.game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id='foo',
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=game_room.game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -350,6 +375,7 @@ class PlayerRouterTestCase(unittest.TestCase):
         # create a player with one person on the server
 
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
 
         # check that the game room was updated correctly
         self.assertEqual(len(player_router.game_rooms), 1)
@@ -358,11 +384,11 @@ class PlayerRouterTestCase(unittest.TestCase):
         self.assertEqual(
             game_room.game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id='foo',
                 asker_id='bar',
                 round_=models.Round(
-                    subject=None,
+                    subject=game_room.game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -395,6 +421,7 @@ class PlayerRouterTestCase(unittest.TestCase):
         # create a player with one full game on the server
 
         player_router.create_player('baz')
+        player_router.finish_reading_instructions('baz')
 
         # check that the players are in the players list
         self.assertEqual(
@@ -432,11 +459,11 @@ class PlayerRouterTestCase(unittest.TestCase):
         self.assertEqual(
             new_game_room.game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id='baz',
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=new_game_room.game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -448,6 +475,7 @@ class PlayerRouterTestCase(unittest.TestCase):
         # create a player with a full game and a half full game
 
         player_router.create_player('bop')
+        player_router.finish_reading_instructions('bop')
 
         # check that the game room was updated correctly
         self.assertEqual(len(player_router.game_rooms), 2)
@@ -457,11 +485,11 @@ class PlayerRouterTestCase(unittest.TestCase):
         self.assertEqual(
             new_game_room.game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id='baz',
                 asker_id='bop',
                 round_=models.Round(
-                    subject=None,
+                    subject=new_game_room.game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -517,8 +545,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             game_room_priorities=[],
             player_matches={})
         player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
         player_router.create_player('baz')
+        player_router.finish_reading_instructions('baz')
 
         # check preconditions
         self.assertTrue('foo' in player_router.players)
@@ -555,11 +586,11 @@ class PlayerRouterTestCase(unittest.TestCase):
         self.assertEqual(
             new_baz_game_room.game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id=None,
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=new_baz_game_room.game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
         self.assertEqual(new_baz_game_room.player_ids, [])
@@ -594,11 +625,11 @@ class PlayerRouterTestCase(unittest.TestCase):
         self.assertEqual(
             game_room.game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id='foo',
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=game_room.game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
         self.assertEqual(game_room.player_ids, ['foo'])
@@ -619,8 +650,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             game_room_priorities=[],
             player_matches={})
         player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
         player_router.create_player('baz')
+        player_router.finish_reading_instructions('baz')
 
         # start foo playing
         player_router.start_playing('foo')
@@ -645,8 +679,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             game_room_priorities=[],
             player_matches={})
         player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
         player_router.create_player('baz')
+        player_router.finish_reading_instructions('baz')
 
         player_router.start_playing('foo')
 
@@ -706,14 +743,15 @@ class PlayerRouterTestCase(unittest.TestCase):
             foo_bar_game_room_after)
 
         # check that baz's game is correctly updated
+        baz_game = player_router.game_rooms[baz_room_id].game
         self.assertEqual(
-            player_router.game_rooms[baz_room_id].game,
+            baz_game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id=None,
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=baz_game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -770,24 +808,25 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_game_room_before.room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='foo',
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['foo']))
 
         # check that baz's game was unaffected
+        baz_game = player_router.game_rooms[baz_room_id].game
         self.assertEqual(
-            player_router.game_rooms[baz_room_id].game,
+            baz_game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id=None,
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=baz_game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -843,24 +882,25 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_game_room_before.room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id=None,
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=[]))
 
         # check that baz's game room was unaffected
+        baz_game = player_router.game_rooms[baz_room_id].game
         self.assertEqual(
-            player_router.game_rooms[baz_room_id].game,
+            baz_game,
             models.Game(
-                state=models.STATES['CHOOSESUBJECT'],
+                state=models.STATES['ASKQUESTION'],
                 answerer_id=None,
                 asker_id=None,
                 round_=models.Round(
-                    subject=None,
+                    subject=baz_game.round_.subject,
                     guess_and_answer=None,
                     question_and_answers=[])))
 
@@ -880,8 +920,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             game_room_priorities=[],
             player_matches={})
         player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
         player_router.create_player('baz')
+        player_router.finish_reading_instructions('baz')
 
         foo_bar_game_room_id = player_router.player_matches['foo']
         baz_game_room_id = player_router.player_matches['baz']
@@ -923,11 +966,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_game_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='foo',
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_before.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['foo']))
@@ -940,11 +983,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=baz_game_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id=None,
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=baz_game_room_before.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=[]))
@@ -987,11 +1030,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_game_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='foo',
                     asker_id='baz',
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['baz', 'foo']))
@@ -1004,11 +1047,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=baz_game_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id=None,
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=baz_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=[]))
@@ -1051,11 +1094,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_game_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='foo',
                     asker_id='baz',
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['baz', 'foo']))
@@ -1068,11 +1111,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=baz_game_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='bar',
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=baz_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['bar']))
@@ -1093,7 +1136,9 @@ class PlayerRouterTestCase(unittest.TestCase):
             game_room_priorities=[],
             player_matches={})
         player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
 
         # try updating the game
 
@@ -1134,8 +1179,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             game_room_priorities=[],
             player_matches={})
         player_router.create_player('foo')
+        player_router.finish_reading_instructions('foo')
         player_router.create_player('bar')
+        player_router.finish_reading_instructions('bar')
         player_router.create_player('baz')
+        player_router.finish_reading_instructions('baz')
 
         player_router.start_playing('foo')
 
@@ -1163,11 +1211,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='foo',
                     asker_id='bar',
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_before.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['bar', 'foo']))
@@ -1179,11 +1227,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=baz_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='baz',
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=baz_game_room_before.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['baz']))
@@ -1232,11 +1280,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=foo_bar_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id=None,
                     asker_id='bar',
                     round_=models.Round(
-                        subject=None,
+                        subject=foo_bar_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['bar']))
@@ -1247,11 +1295,11 @@ class PlayerRouterTestCase(unittest.TestCase):
             models.GameRoom(
                 room_id=baz_room_id,
                 game=models.Game(
-                    state=models.STATES['CHOOSESUBJECT'],
+                    state=models.STATES['ASKQUESTION'],
                     answerer_id='baz',
                     asker_id=None,
                     round_=models.Round(
-                        subject=None,
+                        subject=baz_game_room_after.game.round_.subject,
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=['baz']))

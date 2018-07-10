@@ -3,10 +3,24 @@
 import copy
 import json
 import logging
+import random
 import uuid
+
+from . import settings
 
 
 logger = logging.getLogger(__name__)
+
+
+# constants
+
+# the seed subjects
+subject = None
+with open(settings.SUBJECTS_FILE_PATH, 'r') as subjects_file:
+    subjects = [
+        ln.strip().lower() for ln in subjects_file
+    ]
+random.shuffle(subjects)
 
 
 # helper classes and functions
@@ -119,6 +133,7 @@ STATES = {
 
 # statuses that a player may occupy
 PLAYERSTATUSES = {
+    'READINGINSTRUCTIONS': 'READINGINSTRUCTIONS',
     'WAITING': 'WAITING',
     'READYTOPLAY': 'READYTOPLAY',
     'PLAYING': 'PLAYING',
@@ -131,6 +146,7 @@ REQUIREDPLAYERS = 2
 
 # the status transitions a player can initiate on themselves
 PLAYERACTIONS = {
+    'FINISHREADINGINSTRUCTIONS': 'FINISHREADINGINSTRUCTIONS',
     'STARTPLAYING': 'STARTPLAYING',
     'FINISHGAME': 'FINISHGAME',
     'GOINACTIVE': 'GOINACTIVE',
@@ -728,11 +744,11 @@ class PlayerRouter(object):
             game_room = GameRoom(
                 room_id=room_id,
                 game=Game(
-                    state=STATES['CHOOSESUBJECT'],
+                    state=STATES['ASKQUESTION'],
                     answerer_id=None,
                     asker_id=None,
                     round_=Round(
-                        subject=None,
+                        subject=subjects.pop(),
                         guess_and_answer=None,
                         question_and_answers=[])),
                 player_ids=[]
@@ -790,14 +806,11 @@ class PlayerRouter(object):
         # create the player
         player = Player(
             player_id=player_id,
-            status=PLAYERSTATUSES['WAITING'])
+            status=PLAYERSTATUSES['READINGINSTRUCTIONS'])
         self.players[player_id] = player
 
         # set the player's match to the None game room
         self.player_matches[player_id] = None
-
-        # match the player to a game room
-        self._match_player_to_game_room(player_id)
 
     def delete_player(self, player_id):
         """Remove the player from the server.
@@ -842,6 +855,31 @@ class PlayerRouter(object):
         del self.player_matches[player_id]
 
     # player actions
+
+    def finish_reading_instructions(self, player_id):
+        """Move a player out of the READINGINSTRUCTIONS state.
+
+        Move a player from the READINGINSTRUCTIONS state to the WAITING
+        state.
+
+        Parameters
+        ----------
+        player_id : str
+            The ID for the player to be moved from the
+            READINGINSTRUCTIONS state.
+        """
+        player = self.players[player_id]
+
+        if player.status != PLAYERSTATUSES['READINGINSTRUCTIONS']:
+            raise ValueError(
+                f'Player {player_id} cannot finish reading instructions'
+                f' while in the {player.status} state.')
+
+        self.players[player_id] = player.copy(
+            status=PLAYERSTATUSES['WAITING'])
+
+        # match the player to a game room
+        self._match_player_to_game_room(player_id)
 
     def start_playing(self, player_id):
         """Transition ``player_id`` from 'READYTOPLAY' to 'PLAYING'.

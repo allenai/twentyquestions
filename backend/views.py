@@ -1,7 +1,6 @@
 """Views for the backend."""
 
 import logging
-import random
 import uuid
 
 import flask
@@ -27,13 +26,6 @@ socketio = flask_socketio.SocketIO(
 
 
 # constants / global state
-
-# the subjects to start games with
-with open(settings.SUBJECTS_FILE_PATH, 'r') as subjects_file:
-    subjects = [
-        ln.strip().lower() for ln in subjects_file
-    ]
-random.shuffle(subjects)
 
 # maps between worker IDs, session IDs, and player IDs
 # these maps are necessary for handling connection events
@@ -158,7 +150,7 @@ def server_info():
         'numSessions': len(worker_id_from_sid),
         'numPlayers': len(player_router.players),
         'numGameRooms': len(player_router.game_rooms),
-        'numSubjectsRemaining': len(subjects)
+        'numSubjectsRemaining': len(models.subjects)
     })
 
 
@@ -316,20 +308,6 @@ def join_server(message):
     if player_id not in player_router.players:
         player_router.create_player(player_id)
 
-        # we want to set the subject for the games currently, so
-        # update the game state with the new subject.
-        room_id = player_router.player_matches[player_id]
-        game = player_router.game_rooms[room_id].game
-        if (
-                game.state == models.STATES['CHOOSESUBJECT']
-                and len(subjects) > 0
-        ):
-            player_router.update_game(
-                player_id=player_id,
-                game=game.copy(
-                    state=models.STATES['ASKQUESTION'],
-                    round_=game.round_.copy(subject=subjects.pop())))
-
     # update the clients
     room_id = player_router.player_matches[player_id]
     if room_id is None:
@@ -384,7 +362,9 @@ def take_player_action(message):
 
     logger.info(f'Player {player_id} taking action {action}')
 
-    if action == models.PLAYERACTIONS['STARTPLAYING']:
+    if action == models.PLAYERACTIONS['FINISHREADINGINSTRUCTIONS']:
+        player_router.finish_reading_instructions(player_id)
+    elif action == models.PLAYERACTIONS['STARTPLAYING']:
         player_router.start_playing(player_id)
     elif action == models.PLAYERACTIONS['FINISHGAME']:
         player_router.finish_game(player_id)
