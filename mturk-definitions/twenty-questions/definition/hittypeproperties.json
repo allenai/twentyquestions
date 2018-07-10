@@ -10,7 +10,7 @@
       "QualificationTypeId": "00000000000000000040",
       "Comparator": "GreaterThanOrEqualTo",
       "IntegerValues": [
-        1000
+        5000
       ],
       "RequiredToPreview": false
     },
