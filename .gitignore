@@ -24,7 +24,7 @@ node_modules
 dist
 
 # frontend assets
-backend/static/app-v3.bundle.js
+backend/static/app-v4.bundle.js
 backend/templates/index.html
 
 # data and exploratory notebooks
