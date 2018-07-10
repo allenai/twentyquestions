@@ -79,8 +79,7 @@ class Instructions extends React.Component {
             <li>
               <Typography>
                 The second player will ask 20 yes-no questions
-                about the object. See "How to Ask Good Questions"
-                for instructions on asking great questions.
+                about the object.
               </Typography>
             </li>
             <li>
@@ -184,7 +183,7 @@ class Instructions extends React.Component {
                   </TableCell>
                   <TableCell>
                     People's feelings and reactions towards the the
-                    object?
+                    object.
                   </TableCell>
                   <TableCell>
                     Would someone be happy to own it? Would it surprise
@@ -196,7 +195,7 @@ class Instructions extends React.Component {
                     Locations
                   </TableCell>
                   <TableCell>
-                    Where is the object found? When is the object found?
+                    Where or when the object is found.
                   </TableCell>
                   <TableCell>
                     Does it only come out at night? Would you find it in

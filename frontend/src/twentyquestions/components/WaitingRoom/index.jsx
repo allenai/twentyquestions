@@ -154,14 +154,6 @@ class WaitingRoom extends React.Component {
             alignContent='center'
             alignItems='center'
             justify='center'>
-            <CircularProgress color='primary'/>
-          </Grid>
-          <Grid
-            container
-            className={classes.padded}
-            alignContent='center'
-            alignItems='center'
-            justify='center'>
             <Button
               variant='raised'
               color='primary'
@@ -169,6 +161,14 @@ class WaitingRoom extends React.Component {
               disabled>
               Play
             </Button>
+          </Grid>
+          <Grid
+            container
+            className={classes.padded}
+            alignContent='center'
+            alignItems='center'
+            justify='center'>
+            <CircularProgress color='primary'/>
           </Grid>
         </Grid>
       );
