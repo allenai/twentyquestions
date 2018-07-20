@@ -18,7 +18,7 @@ FRONTEND_INDEX = os.path.join(
     FRONTEND_DIR, 'dist/index.html')
 FRONTEND_BUNDLE = os.path.join(
     FRONTEND_DIR,
-    'dist/static/app-v5.bundle.js')
+    'dist/static/app-v4.bundle.js')
 
 BACKEND_DIR = os.path.join(REPO_DIR, 'backend')
 BACKEND_TEMPLATES_DIR = os.path.join(BACKEND_DIR, 'templates')
