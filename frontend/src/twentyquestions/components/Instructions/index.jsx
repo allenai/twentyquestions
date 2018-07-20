@@ -71,15 +71,15 @@ class Instructions extends React.Component {
           <ol>
             <li>
               <Typography>
-                The first player is provided a hidden concept. It
-                could be a concrete noun like "library", a more abstract
-                noun like "account", or a verb like "warn".
+                The first player is provided a hidden object. It
+                could be concrete like "library" or more abstract
+                like "account".
               </Typography>
             </li>
             <li>
               <Typography>
                 The second player will ask 20 yes-no questions
-                about the concept.
+                about the object.
               </Typography>
             </li>
             <li>
@@ -93,7 +93,7 @@ class Instructions extends React.Component {
               <Typography>
                 <b>
                   <i>Only</i> after 20 questions have been asked,
-                  the second player will guess what the concept is.
+                  the second player will guess what the object is.
                 </b>
               </Typography>
             </li>
@@ -147,12 +147,10 @@ class Instructions extends React.Component {
                     Purpose
                   </TableCell>
                   <TableCell>
-                    Things a person would use the object or take the
-                    action for
+                    Things a person would use the object for
                   </TableCell>
                   <TableCell>
-                    Can you cut something with it? Would you do it to
-                    prepare a meal?
+                    Can you cut something with it? Could you use it to cook?
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -172,11 +170,11 @@ class Instructions extends React.Component {
                   </TableCell>
                   <TableCell>
                     Things the object is capable of, or things people
-                    <i> could</i> accomplish with the action
+                    <i> could</i> do with the object.
                   </TableCell>
                   <TableCell>
                     Could it support your weight if you stood on it?
-                    Could you do it to cheer someone up?
+                    Would it fit inside a car?
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -185,7 +183,7 @@ class Instructions extends React.Component {
                   </TableCell>
                   <TableCell>
                     People's feelings and reactions towards the the
-                    object or action.
+                    object.
                   </TableCell>
                   <TableCell>
                     Would someone be happy to own it? Would it surprise
@@ -197,11 +195,11 @@ class Instructions extends React.Component {
                     Locations
                   </TableCell>
                   <TableCell>
-                    Where or when the object is found or the action occurs.
+                    Where or when the object is found.
                   </TableCell>
                   <TableCell>
-                    Does it only come out at night? Would you do it at
-                    the beach?
+                    Does it only come out at night? Would you find it in
+                    a tree?
                   </TableCell>
                 </TableRow>
                 <TableRow>
@@ -210,12 +208,12 @@ class Instructions extends React.Component {
                   </TableCell>
                   <TableCell>
                     Situations the object would typically be in, or
-                    situations where a person would find the object or
-                    take the action.
+                    situations where a person would find or need the
+                    object
                   </TableCell>
                   <TableCell>
                     Would you use the object when it's cold outside? Is
-                    it often seen at concerts?
+                    it often found at concerts?
                   </TableCell>
                 </TableRow>
               </TableBody>
