@@ -5,38 +5,53 @@
       <html>
         <head>
           <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+          <style>
+            label { padding-right: 1.5em; }
+            td { text-align: center; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+          </style>
           <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
         </head>
         <body>
           <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit'>
             <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
             <h1>Rate the Quality of Questions from 20 Questions</h1>
-            <p>For each question in the table, please check it as either high or low quality according to the guidelines outlined below.</p>
+            <p>
+              We've collected questions people asked while playing 20
+              Questions. Please label these questions into one of
+              several categories to help us filter out questions we
+              don't want.
+            </p>
 
             <h2>Guidelines</h2>
-            <p>High quality questions must satisfy all of the following conditions:</p>
+            <p>
+              We're looking for the kinds of questions that a person
+              would ask while playing 20 Questions.
+            </p>
+
+            <p><b>Good</b> questions <i>SHOULD</i>:</p>
             <ul>
               <li>
-                The question should be the kind of question someone
-                would ask while playing 20 Questions. In other words,
-                the question should ask <i>something</i> about the
-                subject.
+                <b>BE</b> a <b>yes-no</b> question.
               </li>
               <li>
-                The question should <b>NOT</b> be a personal question
-                about the other player.
+                <b>NOT BE</b> a guess at what the subject is.
               </li>
               <li>
-                The question should <b>NOT</b> ask about the letters in
-                the subject or how the word sounds.
+                <b>NOT BE</b> a personal question about the other
+                player.
               </li>
               <li>
-                The <b>SUBJECT</b> should be a noun (an object, a
-                concept, or a thing).
+                <b>NOT</b> ask about the letters in the subject or how
+                the word sounds.
+              </li>
+              <li>
+                <b>NOT</b> make statements about the game or that are
+                clearly not part of the game.
               </li>
             </ul>
 
-            <p>Note the following points:</p>
+            <p>Note that:</p>
             <ul>
               <li>
                 Typos or odd capitalization in questions are ok.
@@ -49,14 +64,80 @@
                 something about the subject.
               </li>
               <li>
-                Sometimes people use the word "you" to refer to the
-                subject and not the other player. These questions are
-                good, they are not personal questions.
+                Sometimes people use the word "you" to refer to the subject and
+                not the other player. These questions are good, they are
+                not personal questions.
               </li>
             </ul>
 
+            <p>
+              Please label each question with one of the following categories:
+            </p>
+
+            <table style="width: 90%;" border="1" align="center">
+              <thead>
+                <tr>
+                  <th>label</th>
+                  <th>description</th>
+                  <th>example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>guess</td>
+                  <td>
+                    The question is a guess at what the hidden
+                    subject is, <b>NOT</b> a question about its
+                    properties.
+                  </td>
+                  <td>
+                    Is it an apple?
+                  </td>
+                </tr>
+                <tr>
+                  <td>not yes-no</td>
+                  <td>The question is <b>NOT</b> a yes-no question.</td>
+                  <td>Is it large or small?</td>
+                </tr>
+                <tr>
+                  <td>about the word</td>
+                  <td>
+                    The question asks about something like the letters
+                    in the word or the number of words.
+                  </td>
+                  <td>Does it begin with a letter in A-L?</td>
+                </tr>
+                <tr>
+                  <td>not playing</td>
+                  <td>
+                    The question is not playing the game, such as a personal
+                    question about the other player or a statement about
+                    the game itself.
+                  </td>
+                  <td>
+                    So... I'm almost out of questions here...
+                  </td>
+                </tr>
+                <tr>
+                  <td>other</td>
+                  <td>
+                    There's an issue with the question that doesn't fall
+                    into the other categories.
+                  </td>
+                  <td>
+                    is a no yet
+                  </td>
+                </tr>
+                <tr>
+                  <td>good</td>
+                  <td>The question has no issues</td>
+                  <td>is it alive?</td>
+                </tr>
+              </tbody>
+            </table>
+
             <h2>Examples:</h2>
-            <table class="cf-alternate-rows" style="width: 50%;" border="1" align="center">
+            <table style="width: 95%;" border="1" align="center">
               <tbody>
                 <tr>
                   <th style="width: 33.3333%; text-align: center;">
@@ -83,8 +164,7 @@
                     Is it smething Most people own.
                   </td>
                   <td>
-                    <b>High</b>. Typos are ok, it's still a question
-                    about the subject.
+                    <b>good</b>. Typos are ok.
                   </td>
                 </tr>
                 <tr>
@@ -95,9 +175,9 @@
                     Oh boy, alright, does it have to do with outer space?
                   </td>
                   <td>
-                    <b>High</b>. It's fine if people include extra words
-                    (like "Oh boy", etc), it's still a question about
-                    the subject.
+                    <b>good</b>. It's fine if people include extra words
+                    (like "Oh boy", etc) as long as the question is
+                    still playing the game.
                   </td>
                 </tr>
                 <tr>
@@ -108,7 +188,7 @@
                     do you own one?
                   </td>
                   <td>
-                    <b>High</b>. The "you" here refers to a generic
+                    <b>good</b>. The "you" here refers to a generic
                     person, not the other player, so this is <b>NOT</b>
                     a personal question.
                   </td>
@@ -121,9 +201,8 @@
                     Sirloin?
                   </td>
                   <td>
-                    <b>High</b>. Even though the question is one word,
-                    we can understand the question it asks (something
-                    like, "is it a sirloin?").
+                    <b>guess</b>. The question is a guess at what the
+                    subject is.
                   </td>
                 </tr>
                 <tr>
@@ -134,7 +213,7 @@
                     is it a 7 letter word
                   </td>
                   <td>
-                    <b>Low</b>. The question asks about the letters in
+                    <b>about the word</b>. The question asks about the letters in
                     the word or how the word sounds.
                   </td>
                 </tr>
@@ -146,7 +225,8 @@
                     so i got it in 8 questions
                   </td>
                   <td>
-                    <b>Low</b>. The question is not about the subject.
+                    <b>not playing</b>. The question is not playing the
+                    game, just commenting on it.
                   </td>
                 </tr>
                 <tr>
@@ -157,8 +237,8 @@
                     do you like me?
                   </td>
                   <td>
-                    <b>Low</b>. The question is personal and is not
-                    about the subject.
+                    <b>not playing</b>. The question is not playing the
+                    game, it's just asking a personal question.
                   </td>
                 </tr>
               </tbody>
@@ -168,7 +248,7 @@
 
             <h2 align="center"><u>The Questions</u></h2>
 
-            <table class="cf-alternate-rows" style="width: 50%;" border="1" align="center">
+            <table style="width: 95%;" border="1" align="center">
               <tbody>
                 <tr>
                   <th style="width: 33.3333%; text-align: center;">
@@ -192,20 +272,60 @@
                   <td style="width: 33.3333%; text-align: center;">{{ row['subject'] | e }}</td>
                   <td style="width: 33.3333%; text-align: center;">{{ row['question'] | e }}</td>
                   <td style="width: 33.3333%; text-align: center;">
-                    <label for="high-quality-{{ loop.index0 }}">High</label>
-                    <input
-                      id="high-quality-{{ loop.index0 }}"
-                      type="radio"
-                      name="quality-{{ loop.index0 }}"
-                      value="high"
-                      required/>
-                    <label for="low-quality-{{ loop.index0 }}">Low</label>
-                    <input
-                      id="low-quality-{{ loop.index0 }}"
-                      type="radio"
-                      name="quality-{{ loop.index0 }}"
-                      value="low"
-                      required/>
+                    <label for="guess-quality-{{ loop.index0 }}">
+                      <input
+                        id="guess-quality-{{ loop.index0 }}"
+                        type="radio"
+                        name="quality-{{ loop.index0 }}"
+                        value="guess"
+                        required/>
+                      guess
+                    </label>
+                    <label for="not-yes-no-quality-{{ loop.index0 }}">
+                      <input
+                        id="not-yes-no-quality-{{ loop.index0 }}"
+                        type="radio"
+                        name="quality-{{ loop.index0 }}"
+                        value="not-yes-no"
+                        required/>
+                      not yes-no
+                    </label>
+                    <label for="about-word-quality-{{ loop.index0 }}">
+                      <input
+                        id="about-word-quality-{{ loop.index0 }}"
+                        type="radio"
+                        name="quality-{{ loop.index0 }}"
+                        value="about-word"
+                        required/>
+                      about the word
+                    </label>
+                    <label for="not-playing-quality-{{ loop.index0 }}">
+                      <input
+                        id="not-playing-quality-{{ loop.index0 }}"
+                        type="radio"
+                        name="quality-{{ loop.index0 }}"
+                        value="not-playing"
+                        required/>
+                      not playing
+                    </label>
+                    <label for="other-quality-{{ loop.index0 }}">
+                      <input
+                        id="other-quality-{{ loop.index0 }}"
+                        type="radio"
+                        name="quality-{{ loop.index0 }}"
+                        value="other"
+                        required/>
+                      other
+                    </label>
+                    <label for="good-quality-{{ loop.index0 }}">
+                      <input
+                        id="good-quality-{{ loop.index0 }}"
+                        type="radio"
+                        name="quality-{{ loop.index0 }}"
+                        value="good"
+                        required/>
+                      good
+                    </label>
                     <input
                       id="subject-{{ loop.index0 }}"
                       type="hidden"
