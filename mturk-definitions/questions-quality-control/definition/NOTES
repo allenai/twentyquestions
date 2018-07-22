@@ -1,3 +1,5 @@
 This HIT comes from the allenai/twentyquestions repo.
 
-This HIT asks turkers to label questions as high quality or not.
+This HIT asks turkers to label questions into one of several
+quality-related classes, like whether the question is actually a guess
+or if it's not a yes-no type question.

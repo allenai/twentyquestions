@@ -193,6 +193,11 @@
                       name="answer-{{ loop.index0 }}"
                       value="{{ row['answer'] | e }}"/>
                     <input
+                      id="quality_labels-{{ loop.index0 }}"
+                      type="hidden"
+                      name="quality_labels-{{ loop.index0 }}"
+                      value="{{ row['quality_labels'] | e }}"/>
+                    <input
                       id="score-{{ loop.index0 }}"
                       type="hidden"
                       name="score-{{ loop.index0 }}"

@@ -22,6 +22,7 @@ KEY_SCHEMA = {
     'subject': str,
     'question': str,
     'answer': str,
+    'quality_labels': ast.literal_eval,  # List[str]
     'score': int,
     'high_quality': bool,
     'assertion': str,

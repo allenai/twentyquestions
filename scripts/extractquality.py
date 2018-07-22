@@ -27,8 +27,12 @@ KEY_SCHEMA = {
 }
 
 QUALITY_TO_BIT = {
-    'high': 1,
-    'low': 0
+    'guess': 0,
+    'not-yes-no': 0,
+    'about-word': 0,
+    'not-playing': 0,
+    'other': 0,
+    'good': 1
 }
 
 
@@ -52,8 +56,9 @@ def extractquality(xml_dir, output_path):
     OUTPUT_PATH is the location to which the data will be written in
     JSON Lines format. High quality questions will be marked with the
     "high_quality" attribute as True, where high quality means 2 of the
-    3 workers rated it high quality. Note, this script assumes that all
-    the batches had all 3 assignments completed.
+    3 workers rated it 'good'. Note, this script assumes that all
+    the batches had all 3 assignments completed. If there are not 3
+    completed assignments for each HIT, the script will throw an error.
     """
     # submissions : the form data submitted from the quality control
     # HITs as a list of dictionaries mapping the question identifiers to
@@ -106,6 +111,7 @@ def extractquality(xml_dir, output_path):
         high_quality = score >= MIN_SCORE
 
         # add the new attributes
+        new_row['quality_labels'] = qualities
         new_row['score'] = score
         new_row['high_quality'] = high_quality
 
