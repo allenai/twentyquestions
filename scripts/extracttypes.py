@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # constants
 
-EXPECTED_NUM_TYPES = 5
+EXPECTED_NUM_VOTES = 5
 
 KEY_SCHEMA = {
     'subject': str,
@@ -49,9 +49,10 @@ def extracttypes(xml_dir, output_path):
     batch of the commonsense type HITs. XML_DIR should be an XML
     directory extracted with AMTI. OUTPUT_PATH is the location to which
     the data will be written in a JSON Lines format. Each instance will
-    have a "types" attribute giving all the original labels and a "type"
-    attribute giving the best type, i.e. the plurality vote with ties
-    broken by the labels' priors.
+    have a "types" attribute that is a dictionary mapping each type to a
+    true or false label. Additionally, each instance will also have a
+    "type_scores" attribute which gives the raw count of votes for each
+    type.
     """
     # submissions : the form data submitted from the commonsense type
     # HITs as a list of dictionaries mapping the question identifiers to
@@ -76,21 +77,35 @@ def extracttypes(xml_dir, output_path):
 
     # aggregate all the type labels for each instance, since we had
     # multiple assignments / workers per instance.
-    key_to_types = collections.defaultdict(list)
-    # type priors are unnormalized because we only need greater than /
-    # less than information
-    type_priors = collections.defaultdict(int)
+    key_to_type_scores = collections.defaultdict(
+        lambda: {
+            'total_votes': 0,
+            'ontological': 0,
+            'capability': 0,
+            'location': 0,
+            'physical': 0,
+            'non-physical': 0,
+            'meronymy': 0,
+            'association': 0
+        })
     for row in rows:
         key = _utils.key(row, KEY_SCHEMA.keys())
-        key_to_types[key].append(row['type'])
-        type_priors[row['type']] += 1
+        key_to_type_scores[key]['total_votes'] += 1
+        key_to_type_scores[key]['ontological'] += int(row.get('ontological', 0))
+        key_to_type_scores[key]['capability'] += int(row.get('capability', 0))
+        key_to_type_scores[key]['location'] += int(row.get('location', 0))
+        key_to_type_scores[key]['physical'] += int(row.get('physical', 0))
+        key_to_type_scores[key]['non-physical'] += int(row.get('non-physical', 0))
+        key_to_type_scores[key]['meronymy'] += int(row.get('meronymy', 0))
+        key_to_type_scores[key]['association'] += int(row.get('association', 0))
 
     # create the new rows by processing the aggregated types
     new_row_strs = []
-    for key, types in key_to_types.items():
-        assert len(types) == EXPECTED_NUM_TYPES, (
-            f'{key} only has {len(types)} type labels.'
-            f' It should have exactly {EXPECTED_NUM_TYPES}.'
+    for key, type_scores in key_to_type_scores.items():
+        total_votes = type_scores.pop('total_votes')
+        assert total_votes == EXPECTED_NUM_VOTES, (
+            f'{key} only has {total_votes} annotations.'
+            f' It should have exactly {EXPECTED_NUM_VOTES}.'
         )
 
         # create the new row
@@ -104,29 +119,14 @@ def extracttypes(xml_dir, output_path):
         ])
 
         # compute new attributes to add
-
-        plurality_types = []
-        # count up the number of labels for each type
-        type_counts = collections.defaultdict(int)
-        for type_ in types:
-            type_counts[type_] += 1
-        # compute the maximum count
-        max_count = max(type_counts.values())
-        # find types with the maximum count
-        for type_, count in type_counts.items():
-            if count == max_count:
-                plurality_types.append(type_)
-        # break ties using the class priors
-        best_type, best_count = None, -1
-        for type_ in plurality_types:
-            type_prior = type_priors[type_]
-            if type_prior > best_count:
-                best_type = type_
-                best_count = type_prior
+        types = {
+            type_: score > (EXPECTED_NUM_VOTES / 2.0)
+            for type_, score in type_scores.items()
+        }
 
         # add the new attributes
         new_row['types'] = types
-        new_row['type'] = best_type
+        new_row['type_scores'] = type_scores
 
         new_row_strs.append(json.dumps(new_row))
 

@@ -17,15 +17,15 @@
             <h1>Label Types for Questions Asked During 20 Questions</h1>
             <p>
               We've collected questions people asked while playing 20
-              Questions. Please label these questions into types
-              describing the kind of information the questions ask
+              Questions. For each question, please check all labels
+              which apply to the type of information the question asks
               about.
             </p>
 
             <h2>Guidelines</h2>
 
             <p>
-              Please label each question as one of the following:
+              Please label each question with as many of the following as apply:
             </p>
 
             <table style="width: 90%;" border="1" align="center">
@@ -111,11 +111,6 @@
                     Is it related to medicine? Does it involve the weather?
                   </td>
                 </tr>
-                <tr>
-                  <td>other</td>
-                  <td>Anything not covered by the other categories.</td>
-                  <td>Is it talked about in the news?</td>
-                </tr>
               </tbody>
             </table>
 
@@ -129,91 +124,73 @@
                 <p><b>{{ row['question'] | e }}</b></p>
                 <ul>
                   <li>
-                    <label for="ontological-type-{{ loop.index0 }}">
+                    <label for="ontological-{{ loop.index0 }}">
                       <input
-                        id="ontological-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="ontological"
-                        required/>
+                        id="ontological-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="ontological-{{ loop.index0 }}"
+                        value="1"/>
                       category
                     </label>
                   </li>
                   <li>
-                    <label for="meronymy-type-{{ loop.index0 }}">
+                    <label for="meronymy-{{ loop.index0 }}">
                       <input
-                        id="meronymy-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="meronymy"
-                        required/>
+                        id="meronymy-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="meronymy-{{ loop.index0 }}"
+                        value="1"/>
                       part-whole
                     </label>
                   </li>
                   <li>
-                    <label for="capability-type-{{ loop.index0 }}">
+                    <label for="capability-{{ loop.index0 }}">
                       <input
-                        id="capability-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="capability"
-                        required/>
+                        id="capability-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="capability-{{ loop.index0 }}"
+                        value="1"/>
                       purpose or capabilities
                     </label>
                   </li>
                   <li>
-                    <label for="location-type-{{ loop.index0 }}">
+                    <label for="location-{{ loop.index0 }}">
                       <input
-                        id="location-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="location"
-                        required/>
+                        id="location-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="location-{{ loop.index0 }}"
+                        value="1"/>
                       location
                     </label>
                   </li>
                   <li>
-                    <label for="physical-type-{{ loop.index0 }}">
+                    <label for="physical-{{ loop.index0 }}">
                       <input
-                        id="physical-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="physical"
-                        required/>
+                        id="physical-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="physical-{{ loop.index0 }}"
+                        value="1"/>
                       physical property
                     </label>
                   </li>
                   <li>
-                    <label for="non-physical-type-{{ loop.index0 }}">
+                    <label for="non-physical-{{ loop.index0 }}">
                       <input
-                        id="non-physical-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="non-physical"
-                        required/>
+                        id="non-physical-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="non-physical-{{ loop.index0 }}"
+                        value="1"/>
                       non-physical property
                     </label>
                   </li>
                   <li>
-                    <label for="association-type-{{ loop.index0 }}">
+                    <label for="association-{{ loop.index0 }}">
                       <input
-                        id="association-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="association"
-                        required/>
+                        id="association-{{ loop.index0 }}"
+                        type="checkbox"
+                        name="association-{{ loop.index0 }}"
+                        value="1"/>
                       association
-                    </label>
-                  </li>
-                  <li>
-                    <label for="other-type-{{ loop.index0 }}">
-                      <input
-                        id="other-type-{{ loop.index0 }}"
-                        type="radio"
-                        name="type-{{ loop.index0 }}"
-                        value="other"
-                        required/>
-                      other
                     </label>
                   </li>
                   <input
@@ -259,21 +236,6 @@
                 style="font-size:15pt;color:white;background-color:green;border:1px solid #336600;padding:4px" />
             </p>
           </form>
-          <!-- form validation for safari -->
-          <script type='text/javascript'>
-            var form = document.getElementById('mturk_form');
-            form.noValidate = true;
-            form.addEventListener(
-              'submit',
-              function (e) {
-                if (!e.target.checkValidity()) {
-                  e.preventDefault();
-                  alert('You must label every question.');
-                }
-              },
-              false
-            );
-          </script>
           <script language='Javascript'>turkSetAssignmentID();</script>
         </body>
       </html>

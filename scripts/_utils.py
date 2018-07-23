@@ -123,7 +123,7 @@ def decode_attribute_idx_data(submissions):
     for submission in submissions:
         idx_to_row = collections.defaultdict(dict)
         for k, v in submission.items():
-            attribute, idx = k.split('-')
+            attribute, idx = k.rsplit('-', 1)
             idx_to_row[idx][attribute] = v
 
         rows.extend(idx_to_row.values())
