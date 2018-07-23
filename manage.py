@@ -51,6 +51,7 @@ subcommands = [
     scripts.extractmirrorsubjects,
     scripts.extractquality,
     scripts.extractquestions,
+    scripts.extracttypes,
     scripts.groupbysubject,
     scripts.preparemirrorsubjects,
     scripts.promote,

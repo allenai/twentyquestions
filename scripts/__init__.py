@@ -8,6 +8,7 @@ from scripts.extractlabels import extractlabels
 from scripts.extractmirrorsubjects import extractmirrorsubjects
 from scripts.extractquality import extractquality
 from scripts.extractquestions import extractquestions
+from scripts.extracttypes import extracttypes
 from scripts.groupbysubject import groupbysubject
 from scripts.preparemirrorsubjects import preparemirrorsubjects
 from scripts.promote import promote
