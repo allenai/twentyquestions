@@ -1,0 +1,4 @@
+This HIT comes from the allenai/twentyquestions repo.
+
+This HIT asks turkers to label subject question pairs as true "always",
+"usually", "sometimes", "rarely", and "never", or "bad".

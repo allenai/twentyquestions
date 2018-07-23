@@ -46,7 +46,6 @@ subcommands = [
     scripts.build,
     scripts.deploy,
     scripts.dockerize,
-    scripts.extractassertions,
     scripts.extractgames,
     scripts.extractlabels,
     scripts.extractmirrorsubjects,

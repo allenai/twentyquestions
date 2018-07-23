@@ -1,4 +1,4 @@
-"""Extract labeling data from the assertion labeling HITs.
+"""Extract labeling data from the question labeling HITs.
 
 See ``python extractlabels.py --help`` for more information.
 """
@@ -26,8 +26,7 @@ KEY_SCHEMA = {
     'answer': str,
     'quality_labels': ast.literal_eval,  # List[str]
     'score': int,
-    'high_quality': bool,
-    'assertion': str
+    'high_quality': bool
 }
 
 LABEL_TO_BIT = {
@@ -55,16 +54,16 @@ LABEL_TO_BIT = {
 def extractlabels(xml_dir, output_path):
     """Extract labeling data from XML_DIR and write to OUTPUT_PATH.
 
-    Extract the assertion labeling data from a batch of the assertion
-    labeling HITs. XML_DIR should be an XML directory extracted with
-    AMTI. OUTPUT_PATH is the location to which the data will be written
-    in a JSON Lines format. Each instance will have a "labels"
+    Extract the subject-question pair labeling data from a batch of the
+    question labeling HITs. XML_DIR should be an XML directory extracted
+    with AMTI. OUTPUT_PATH is the location to which the data will be
+    written in a JSON Lines format. Each instance will have a "labels"
     attribute, which is a list of the labels, and a "majority" attribute
     giving the majority (true / false) vote, a "true_votes" attribute
     giving the number of votes for "true", and an "is_bad" attribute
     giving whether or not any annotators labeled the assertion as "bad".
     """
-    # submissions : the form data submitted from the assertion labeling
+    # submissions : the form data submitted from the question labeling
     # HITs as a list of dictionaries mapping the question identifiers to
     # the free text, i.e.:
     #
