@@ -1,0 +1,283 @@
+<HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
+  <HTMLContent>
+    <![CDATA[
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/>
+          <style>
+            td { text-align: center; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+          </style>
+          <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+        </head>
+        <body>
+          <form name='mturk_form' method='post' id='mturk_form' action='/mturk/externalSubmit'>
+            <input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+            <h1>Label Types for Questions Asked During 20 Questions</h1>
+            <p>
+              We've collected questions people asked while playing 20
+              Questions. Please label these questions into types
+              describing the kind of information the questions ask
+              about.
+            </p>
+
+            <h2>Guidelines</h2>
+
+            <p>
+              Please label each question as one of the following:
+            </p>
+
+            <table style="width: 90%;" border="1" align="center">
+              <thead>
+                <tr>
+                  <th>label</th>
+                  <th>description</th>
+                  <th>examples</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>category</td>
+                  <td>
+                    Categories or the type of the object.
+                  </td>
+                  <td>
+                    Is it a fruit? Is it a building? Is it a physical object?
+                  </td>
+                </tr>
+                <tr>
+                  <td>part-whole</td>
+                  <td>
+                    Part-whole and membership relationships or what the
+                    object is made out of.
+                  </td>
+                  <td>
+                    Is it made of wood? Does it have two legs? Do
+                    they work for a hospital?
+                  </td>
+                </tr>
+                <tr>
+                  <td>purpose or capabilities</td>
+                  <td>
+                    Things the object can do or that the object is
+                    used for.
+                  </td>
+                  <td>
+                    Does it track your location? Is it a food source? Is
+                    it for the house?
+                  </td>
+                </tr>
+                <tr>
+                  <td>location</td>
+                  <td>
+                    Places, times, seasons or situations where you'd
+                    find the object.
+                  </td>
+                  <td>
+                    Is it at the beach? Would you see it at a concert?
+                    Does it come out at night?
+                  </td>
+                </tr>
+                <tr>
+                  <td>physical property</td>
+                  <td>
+                    Physical properties of the object like size, weight,
+                    color, consistency, etc.
+                  </td>
+                  <td>
+                    Is it a powder? Is it a specific color? Is it larger
+                    than a car?
+                  </td>
+                </tr>
+                <tr>
+                  <td>non-physical property</td>
+                  <td>
+                    Non-physical properties of the object like being
+                    scary, man-made, living, rare, etc.
+                  </td>
+                  <td>
+                    Is it alive? Do people like it? Does everyone
+                    have one?
+                  </td>
+                </tr>
+                <tr>
+                  <td>association</td>
+                  <td>
+                    Relatedness or what people might associate the
+                    object with.
+                  </td>
+                  <td>
+                    Is it related to medicine? Does it involve the weather?
+                  </td>
+                </tr>
+                <tr>
+                  <td>other</td>
+                  <td>Anything not covered by the other categories.</td>
+                  <td>Is it talked about in the news?</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+
+            <h2 align="center"><u>The Questions</u></h2>
+
+            <ul>
+              {% for row in rows %}
+              <li>
+                <p><b>{{ row['question'] | e }}</b></p>
+                <ul>
+                  <li>
+                    <label for="ontological-type-{{ loop.index0 }}">
+                      <input
+                        id="ontological-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="ontological"
+                        required/>
+                      category
+                    </label>
+                  </li>
+                  <li>
+                    <label for="meronymy-type-{{ loop.index0 }}">
+                      <input
+                        id="meronymy-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="meronymy"
+                        required/>
+                      part-whole
+                    </label>
+                  </li>
+                  <li>
+                    <label for="capability-type-{{ loop.index0 }}">
+                      <input
+                        id="capability-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="capability"
+                        required/>
+                      purpose or capabilities
+                    </label>
+                  </li>
+                  <li>
+                    <label for="location-type-{{ loop.index0 }}">
+                      <input
+                        id="location-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="location"
+                        required/>
+                      location
+                    </label>
+                  </li>
+                  <li>
+                    <label for="physical-type-{{ loop.index0 }}">
+                      <input
+                        id="physical-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="physical"
+                        required/>
+                      physical property
+                    </label>
+                  </li>
+                  <li>
+                    <label for="non-physical-type-{{ loop.index0 }}">
+                      <input
+                        id="non-physical-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="non-physical"
+                        required/>
+                      non-physical property
+                    </label>
+                  </li>
+                  <li>
+                    <label for="association-type-{{ loop.index0 }}">
+                      <input
+                        id="association-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="association"
+                        required/>
+                      association
+                    </label>
+                  </li>
+                  <li>
+                    <label for="other-type-{{ loop.index0 }}">
+                      <input
+                        id="other-type-{{ loop.index0 }}"
+                        type="radio"
+                        name="type-{{ loop.index0 }}"
+                        value="other"
+                        required/>
+                      other
+                    </label>
+                  </li>
+                  <input
+                    id="subject-{{ loop.index0 }}"
+                    type="hidden"
+                    name="subject-{{ loop.index0 }}"
+                    value="{{ row['subject'] | e }}" />
+                  <input
+                    id="question-{{ loop.index0 }}"
+                    type="hidden"
+                    name="question-{{ loop.index0 }}"
+                    value="{{ row['question'] | e }}" />
+                  <input
+                    id="answer-{{ loop.index0 }}"
+                    type="hidden"
+                    name="answer-{{ loop.index0 }}"
+                    value="{{ row['answer'] | e }}" />
+                    <input
+                      id="quality_labels-{{ loop.index0 }}"
+                      type="hidden"
+                      name="quality_labels-{{ loop.index0 }}"
+                      value="{{ row['quality_labels'] | e }}"/>
+                    <input
+                      id="score-{{ loop.index0 }}"
+                      type="hidden"
+                      name="score-{{ loop.index0 }}"
+                      value="{{ row['score'] | e }}"/>
+                    <input
+                      id="high_quality-{{ loop.index0 }}"
+                      type="hidden"
+                      name="high_quality-{{ loop.index0 }}"
+                      value="{{ row['high_quality'] | e }}"/>
+                </ul>
+              </li>
+              {% endfor %}
+            </ul>
+
+            <p align="center" >
+              <input
+                id='submitButton'
+                type='submit'
+                value='Submit'
+                style="font-size:15pt;color:white;background-color:green;border:1px solid #336600;padding:4px" />
+            </p>
+          </form>
+          <!-- form validation for safari -->
+          <script type='text/javascript'>
+            var form = document.getElementById('mturk_form');
+            form.noValidate = true;
+            form.addEventListener(
+              'submit',
+              function (e) {
+                if (!e.target.checkValidity()) {
+                  e.preventDefault();
+                  alert('You must label every question.');
+                }
+              },
+              false
+            );
+          </script>
+          <script language='Javascript'>turkSetAssignmentID();</script>
+        </body>
+      </html>
+    ]]>
+  </HTMLContent>
+  <FrameHeight>800</FrameHeight>
+</HTMLQuestion>
