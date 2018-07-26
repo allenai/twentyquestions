@@ -7,6 +7,7 @@ import ast
 import collections
 import json
 import logging
+import re
 
 import click
 
@@ -25,11 +26,10 @@ KEY_SCHEMA = {
     'quality_labels': ast.literal_eval,  # List[str]
     'score': int,
     'high_quality': bool,
-    'assertion': str,
     'labels': ast.literal_eval,  # List[str]
     'is_bad': bool,
     'true_votes': int,
-    'majority': bool
+    'majority': ast.literal_eval
 }
 
 
@@ -75,6 +75,7 @@ def extractmirrorsubjects(xml_dir, output_path):
     rows = _utils.decode_attribute_idx_data(submissions)
 
     # coerce the data types correctly and add in the new attribute.
+    new_subjects_skipped = 0
     new_row_strs = []
     for row in rows:
         # create the new row
@@ -87,10 +88,47 @@ def extractmirrorsubjects(xml_dir, output_path):
             in KEY_SCHEMA.items()
         ])
 
-        # add the new attribute
-        new_row['new_subject'] = row['new_subject']
+        # clean up the raw text of the new subject
+        # strip whitespace and lowercase
+        new_subject = row['new_subject']\
+            .strip()\
+            .lower()
+        # remove beginning and ending punctuation
+        normalized_new_subject = re.sub(
+            r'(^[^a-z0-9]|[^a-z0-9]$)',
+            '',
+            new_subject)
+
+        # filter out bad examples using a few rules
+        unexpected_format = not re.match(
+            r'^[a-z0-9-]+$', normalized_new_subject)
+        too_long = len(normalized_new_subject) > 20
+        if unexpected_format or too_long:
+            logger.warning(
+                f'Skipping new subject "{normalized_new_subject}".')
+            new_subjects_skipped += 1
+            continue
+
+        if normalized_new_subject != new_subject:
+            logger.warning(
+                f'New subject {new_subject} was modified to'
+                f' {normalized_new_subject}.')
+
+        new_row['subject'] = normalized_new_subject
+        new_row['answer'] = None
+
+        # delete the irrelevant label attributes since they don't apply
+        # to the new subject
+        del new_row['labels']
+        del new_row['is_bad']
+        del new_row['true_votes']
+        del new_row['majority']
 
         new_row_strs.append(json.dumps(new_row))
+
+    if new_subjects_skipped > 0:
+        logger.warning(
+            f'{new_subjects_skipped} new subjects were skipped.')
 
     # write out the data
     with click.open_file(output_path, 'w') as output_file:
