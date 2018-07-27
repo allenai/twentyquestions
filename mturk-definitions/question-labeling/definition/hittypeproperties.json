@@ -1,8 +1,8 @@
 {
   "AutoApprovalDelayInSeconds": 3600,
   "AssignmentDurationInSeconds": 3600,
-  "Reward": "0.30",
-  "Title": "Label Commonsense Questions Made from 20 Questions. It should take about a minute and a half once you've read the instructions.",
+  "Reward": "0.40",
+  "Title": "Label Commonsense Questions Made from 20 Questions. It should take about a 2-3 minutes once you've read the instructions.",
   "Keywords": "20 Questions, Common Sense, Commonsense",
   "Description": "Label the subject-question pairs as true 'always', 'usually', 'sometimes', 'rarely', or 'never'.",
   "QualificationRequirements": [
