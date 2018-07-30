@@ -23,7 +23,7 @@ EXPECTED_NUM_LABELS = 3
 KEY_SCHEMA = {
     'subject': str,
     'question': str,
-    'answer': str,
+    'answer': lambda x: None if x == 'None' else str(x),
     'quality_labels': ast.literal_eval,  # List[str]
     'score': int,
     'high_quality': bool
