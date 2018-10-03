@@ -44,6 +44,7 @@ def manage(verbose, log_file):
 
 subcommands = [
     scripts.build,
+    scripts.create_splits,
     scripts.deploy,
     scripts.dockerize,
     scripts.extractgames,
