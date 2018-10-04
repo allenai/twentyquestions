@@ -38,26 +38,24 @@ def create_splits(data_path, output_dir):
     """Write splits for the 20Qs data at DATA_PATH to OUTPUT_DIR.
 
     Write splits for the 20 Questions data at DATA_PATH to OUTPUT_DIR,
-    splitting the data into 3 parts: train, dev, and test. Additionally,
-    train, dev, and test have two additional attributes: seen_subject
-    and seen_question. seen_subject and seen_question are true if the
-    subject or the question, respectively, is seen in the training data
-    (after lowercasing, stripping punctuation, and stripping any leading
-    or trailing whitespace).
+    splitting the data into 3 parts: train, dev, and test.
+    Additionally, train, dev, and test have two additional attributes:
+    subject_split_index and question_split_index. subject_split_index
+    and question_split_index are the lowest index (train 0, dev 1, test
+    2) of the splits that the subject or the question appears in (after
+    lowercasing, stripping punctuation, and stripping any leading or
+    trailing whitespace). Thus, a subject_split_index of 1 means that
+    the subject appears in dev (and potentially in test) but not
+    train.
     """
-    # The structure of the splits is a bit complicated. We want a train,
-    # dev, and test set where the dev and test set have a good number of
-    # subjects and questions which do not appear in the training set. To
-    # accomplish this distribution, first we'll randomly choose which
-    # subjects and questions appear in train, then we'll put each
-    # instance into the four {seen, unseen} x {subject, question}
-    # buckets, lastly we'll split the seen-seen bucket into train, dev,
-    # and test and the other buckets into just dev and test.
-    #
-    # Because it's possible that some subjects and questions might not
-    # appear in train even when being originally intended for it, we'll
-    # compute the "seen_subject" and "seen_question" attributes only
-    # after the splits are complete.
+    # The structure of the splits is a bit complicated. We want a
+    # train, dev, and test set where the dev and test set have a good
+    # number of subjects and questions which do not appear in the
+    # training set or each other. To accomplish this distribution,
+    # first we'll randomly choose which subjects and questions appear
+    # in train, dev, and test, then we'll put each instance into the
+    # nine {subject, question} -> {train, dev, test} buckets, lastly
+    # we'll split the buckets into actual train, dev, and test sets.
 
     logger.info(f'Reading {data_path}.')
 
@@ -68,66 +66,93 @@ def create_splits(data_path, output_dir):
 
     logger.info('Bucketing instances by subjects and questions.')
 
-    subjects = set([_normalize(row['subject']) for row in rows])
-    questions = set([_normalize(row['question']) for row in rows])
+    subjects = list(set([_normalize(row['subject']) for row in rows]))
+    random.shuffle(subjects)
+    questions = list(set([_normalize(row['question']) for row in rows]))
+    random.shuffle(questions)
 
-    proposed_train_subjects = random.sample(
-        subjects, int(len(subjects) * 0.8))
-    proposed_train_questions = random.sample(
-        questions, int(len(questions) * 0.8))
+    subject_to_split_index = {}
+    start = 0
+    for split_index, portion in enumerate([0.8, 0.9, 1.0]):
+        end = int(len(subjects) * portion)
+        for subject in subjects[start:end]:
+            subject_to_split_index[subject] = split_index
+        start = end
+
+    question_to_split_index = {}
+    start = 0
+    for split_index, portion in enumerate([0.8, 0.9, 1.0]):
+        end = int(len(questions) * portion)
+        for question in questions[start:end]:
+            question_to_split_index[question] = split_index
+        start = end
 
     # subject_question_instances:
-    #   first index: 0 for unseen and 1 for seen subjects
-    #   second index: 0 for unseen and 1 for seen questions
+    #   first index: the split index of the subject
+    #   second index: the split index of the question
     subject_question_instances = [
-        [[], []],
-        [[], []]
+        [[], [], []],
+        [[], [], []],
+        [[], [], []]
     ]
     for row in rows:
         subject_question_instances\
-            [_normalize(row['subject']) in proposed_train_subjects]\
-            [_normalize(row['question']) in proposed_train_questions]\
+            [subject_to_split_index[_normalize(row['subject'])]]\
+            [question_to_split_index[_normalize(row['question'])]]\
             .append(row)
 
     logger.info('Splitting instances into train, dev, and test.')
 
-    train, dev, test = [], [], []
+    # first list is train, second is dev, third is test
+    splits = [[], [], []]
+    # subjects and questions from train can go in dev or test, and ones
+    # from dev can go in test, so map each bucket to the split index
+    # that is the max of the row and column indices.
+    for i, row in enumerate(subject_question_instances):
+        for j, col in enumerate(row):
+            splits[max(i, j)].extend(col)
 
-    # handle buckets that get split between dev and test
-    dev_and_test_buckets = [
-        subject_question_instances[0][0],
-        subject_question_instances[1][0],
-        subject_question_instances[0][1]
-    ]
-    for bucket in dev_and_test_buckets:
-        random.shuffle(bucket)
-        dev.extend(bucket[:len(bucket) // 2])
-        test.extend(bucket[len(bucket) // 2:])
+    # distribute some of the training data into dev and test so that we
+    # have a point of comparison for subjects and questions that have
+    # both been seen at train time.
+    train, dev, test = splits
+    train_end = int(len(train) * 0.9)
+    dev_end = int(len(train) * 0.95)
+    random.shuffle(train)
+    test.extend(train[dev_end:])
+    dev.extend(train[train_end:dev_end])
+    train = train[:train_end]
+    splits = [train, dev, test]
 
-    # split the seen-seen bucket between train, dev, and test
-    seen_seen_bucket = subject_question_instances[1][1]
-    random.shuffle(seen_seen_bucket)
-    train_end = int(len(seen_seen_bucket) * 0.9)
-    dev_end = int(len(seen_seen_bucket) * 0.95)
-    train.extend(seen_seen_bucket[:train_end])
-    dev.extend(seen_seen_bucket[train_end:dev_end])
-    test.extend(seen_seen_bucket[dev_end:])
+    # shuffle all the splits
+    for split in splits:
+        random.shuffle(split)
 
-    # determine if each instance has a seen subject and question against
-    # the finalized training set, and save the splits to disk
+    # determine the finalized split indices for each subject / question,
+    # then write to disk
     logger.info('Writing splits to disk.')
+    subject_to_final_split_index = {}
+    question_to_final_split_index = {}
+    for final_split_index, split in enumerate(splits):
+        for row in split:
+            normalized_subject = _normalize(row['subject'])
+            if normalized_subject not in subject_to_final_split_index:
+                subject_to_final_split_index[normalized_subject] = \
+                    final_split_index
+            normalized_question = _normalize(row['question'])
+            if normalized_question not in question_to_final_split_index:
+                question_to_final_split_index[normalized_question] = \
+                    final_split_index
 
-    train_subjects = set([_normalize(row['subject']) for row in train])
-    train_questions = set([_normalize(row['question']) for row in train])
-    splits = [('train', train), ('dev', dev), ('test', test)]
-    for split_name, split_data in splits:
+    for split_name, split in zip(['train', 'dev', 'test'], splits):
         split_path = os.path.join(
-            output_dir,
-            f'twentyquestions-{split_name}.jsonl')
+            output_dir, f'twentyquestions-{split_name}.jsonl')
         with click.open_file(split_path, 'w') as split_file:
-            for row in split_data:
-                row['seen_subject'] = _normalize(row['subject']) in train_subjects
-                row['seen_question'] = _normalize(row['question']) in train_questions
+            for row in split:
+                row['subject_split_index'] = subject_to_final_split_index[
+                    _normalize(row['subject'])]
+                row['question_split_index'] = question_to_final_split_index[
+                    _normalize(row['question'])]
                 split_file.write(json.dumps(row) + '\n')
 
 
