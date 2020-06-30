@@ -333,11 +333,11 @@ extractlabels` to extract out the data:
 
 Contact
 -------
-This code was authored by Nick Lourie for [Alexandria][alexandria],
-reach out to him with any questions.
+This code was authored by Nick Lourie for [Mosaic][mosaic], reach out to him
+with any questions.
 
 
-[alexandria]: https://allenai.org/alexandria/
+[mosaic]: https://mosaic.allenai.org/
 [amti]: https://github.com/allenai/amti
 [direnv]: https://direnv.net/
 [hit-definitions]: ./mturk-definitions/
