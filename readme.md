@@ -330,14 +330,6 @@ extractlabels` to extract out the data:
       batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
       labeled-assertions.jsonl
 
-### Post-Processing
-
-After running the `assertion-labeling` HIT, the process is complete. For
-the ATOMIC dataset, we also post-processed this data by making sure the
-class distribution is balanced for each key word and removing all
-assertions which weren't voted true or false unanimously (have a score
-of 3).
-
 
 Contact
 -------
