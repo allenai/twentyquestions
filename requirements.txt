@@ -1,4 +1,4 @@
-click
-flask
-flask-socketio
-eventlet
+Flask-SocketIO==2.9.6
+Flask==0.12.2
+click==6.7
+eventlet==0.22.1
