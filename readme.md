@@ -5,61 +5,38 @@ Code for crowdsourcing commonsense with 20 Questions.
 This repository includes:
 
   - A web application for playing 20 Questions on Mechanical Turk.
-  - [amti][amti] [HIT Definitions][hit-definitions] for running tasks on
+  - [amti][amti] [HIT Definitions](./mturk-definitions/) for running tasks on
     Mechanical Turk.
   - Scripts for post-processing the data derived from the HITs.
 
 
-Setup
------
-You'll need to be setup with a docker container registry and a
-kubernetes cluster for deployment. The code was originally developed
-with Google Cloud (GCR and GKE), but should work with any container
-registry and kubernetes cluster.
+Documentation
+-------------
+To get a quick overview of the repository, jump to [Quickstart](#quickstart).
+Otherwise, you can find topic specific documentation below:
 
-Fill out the following settings to point to your container registry:
-
-    # URL for the container registry
-    CONTAINER_REGISTRY_URL = 'gcr.io'
-    # The user part of the image location, i.e. 'library' in
-    # library/ubuntu:latest
-    CONTAINER_REGISTRY_USER = 'ai2-alexandria'
-    # A name for the docker image for the backend server
-    CONTAINER_REGISTRY_IMAGE_NAME = 'twentyquestions-server'
-
-Then make sure that you have kubectl configured with a kubernetes
-cluster that can pull images from the registry.
-
-For the python environment, install using pip. [pyenv][pyenv] and
-[pyenv-virtualenv][pyenv-virtualenv] can be helpful for managing your
-python environments:
-
-    pyenv virtualenv 3.6.4 twentyquestions
-    echo 'twentyquestions' > .python-version
-    pip install -r requirements.txt
-
-And lastly, to run the experiments you'll need to be setup with
-[amti][amti]:
-
-    pip install -e git+https://github.com/allenai/amti#egg=amti
-
-Make sure you have AWS credentials for mturk in your environment
-variables. [direnv][direnv] can help manage your environment
-variables. Make sure you have:
-
-    AWS_ACCESS_KEY_ID
-    AWS_SECRET_KEY
-    AWS_SECRET_ACCESS_KEY
-    AWS_DEFAULT_REGION
-
-Set whenever you run amti to create batches of HITs.
+  - [Setup](./docs/setup.md): How to fully set up the repository for deploying
+    the 20 Questions app to cloud infrastructure and running HITs on Mechanical
+    Turk.
+  - [Development](./docs/development.md): In-depth development documentation,
+    including serving the app in development and production, as well as
+    deploying to Kubernetes.
+  - [Running HITs](./docs/running-hits.md): How to run the HITs on Mechanical
+    Turk using [amti][amti].
 
 
-Development
------------
-The main interface for working with `twentyquestions` is the `manage.py`
-script in the root of the repository. You can find helpful commands by
-running:
+Quickstart
+----------
+To quickly get things up and running, first install the dependencies:
+
+    $ pip install -r requirements.txt
+
+Then, run the unittests:
+
+    $ python -m unittest
+
+Assuming everything checks out, you can now execute the `manage.py` script, the
+main interface for working with this repository:
 
     $ python manage.py --help
     Usage: manage.py [OPTIONS] COMMAND [ARGS]...
@@ -72,19 +49,23 @@ running:
       -h, --help           Show this message and exit.
 
     Commands:
-      build              Build twentyquestions.
-      deploy             Deploy twentyquestions to ENV.
-      dockerize          Create the docker image for running...
-      extractassertions  Extract assertions from XML_DIR and write to...
-      extractgames       Extract games from XML_DIR and write to...
-      extractlabels      Extract labeling data from XML_DIR and write...
-      extractquality     Extract quality labels from XML_DIR and write...
-      extractquestions   Extract questions from XML_DIR and write to...
-      groupbysubject     Group the data in blocks of at most 20 by...
-      promote            Promote the docker image from SOURCE to DEST.
-      serve              Serve twentyquestions on port 5000.
+      build                  Build twentyquestions.
+      create_splits          Write splits for the 20Qs data at DATA_PATH...
+      deploy                 Deploy twentyquestions to ENV.
+      dockerize              Create the docker image for running...
+      extractgames           Extract games from XML_DIR and write to...
+      extractlabels          Extract labeling data from XML_DIR and write...
+      extractmirrorsubjects  Extract mirror subjects from XML_DIR and...
+      extractquality         Extract quality labels from XML_DIR and write...
+      extractquestions       Extract questions from XML_DIR and write to...
+      extracttypes           Extract commonsense types from XML_DIR and...
+      groupbysubject         Group the data in blocks of at most 20 by...
+      promote                Promote the docker image from SOURCE to DEST.
+      serve                  Serve twentyquestions on port 5000.
 
-The `--help` option also works on the subcommands:
+The `manage.py` script is self-documenting, and lists out all the actions you
+might want to perform using the code base. Use the `--help` option to view
+additional documentation. For example:
 
     $ python manage.py build --help
     Usage: manage.py build [OPTIONS]
@@ -97,238 +78,19 @@ The `--help` option also works on the subcommands:
     Options:
       -h, --help  Show this message and exit.
 
-### Using Your Own List of Seed Entities
-
-To encourage diversity in the data, we provide the subject of each game
-of 20 Questions from a list we compiled. The default list is in this
-repository at [backend/subjects.txt][subjects-list]. You can replace it
-with your own seed list if desired.
-
-### Serving for Development
-
-To serve `twentyquestions` for development, perform the following steps:
-
-  1. Change `const env` from `'live'` to `'local'` in
-     `frontend/src/twentyquestions/settings.js`.
-  2. Run `npm run dev` from the `frontend` directory to run the
-     hot-reloading webpack dev server for the frontend.
-  3. Run `python manage.py serve` from the root of the repo to run the
-     backend on localhost.
-
-### Serving for Production
-
-To serve `twentyquestions` in a production context:
-
-  1. Make sure that `const env` is set to `'live'` in
-     `frontend/src/twentyquestions/settings.js`.
-  2. Make sure the frontend is built and up-to-date by running
-     `python manage.py build`.
-  3. Run `python manage.py serve` on the production machine.
-
-### Deploying to Kubernetes
-
-The `twentyquestions` application is setup to deploy to a kubernetes
-cluster using the `ops/twentyquestions.yaml` template. To deploy to
-kubernetes, make sure you have a certificate to serve https on whatever
-domain you'll run at, and execute the following commands:
-
-    # build the frontend so the backend can serve it
-    python manage.py build
-    # pack the entire application into a docker image
-    python manage.py dockerize
-    # push the new version to GCR
-    python manage.py promote local dev
-    # deploy the docker image and certificates to the kubernetes cluster
-    python manage.py deploy dev cert.pem privkey.pem
-
-You'll also want to point a domain to whatever IP address the Kubernetes
-cluster gives your web application, since the crowdworkers will need to
-connect to that IP address over HTTPS.
-
-### Running Tests
-
-Tests are written using the built-in `unittest` module. To run the
-tests:
-
-    python -m unittest
-
-Currently, only the backend has tests. The frontend is tested manually.
+To deploy the `twentyquestions` application to infrastructure, or to run the
+HITs on Mechanical Turk, you'll need to follow the in-depth
+[setup documentation](./docs/setup.md). If you want to run or extend the code,
+checkout the [development](./docs/development.md) documentation; or, if you
+want to run the HITs on Mechanical Turk see
+[Running HITs](./docs/running-hits.md).
 
 
-Running HITs on Mechanical Turk
--------------------------------
-To reproduce our crowdsourcing pipeline for building the dataset,
-you'll have to run the HITs on Mechanical Turk. Make sure you have
-followed the instructions in [Setup](#setup).
-
-Note that if you run the HITs on MTurk -- especially the games -- you'll
-be managing a community of workers completing the tasks. That means
-you'll most likely have to correspond with some of them if they
-encounter issues or want to report problems with other players.
-
-All the HITs are written as [amti][amti] HIT definitions, and each HIT
-produces output that is fed into the next HIT. The crowdsourcing
-pipeline as a whole looks like:
-
-
-    +---------------------------+
-    |      twentyquestions      |
-    +---------------------------+
-                  |
-                  v
-    +---------------------------+
-    | questions-quality-control |
-    +---------------------------+
-                  |
-                  v
-    +---------------------------+
-    |  questions-to-assertions  |
-    +---------------------------+
-                  |
-                  v
-    +---------------------------+
-    |    assertion-labeling     |
-    +---------------------------+
-
-### Running `twentyquestions`
-
-Make sure you've deployed the web application, as described in
-[Development](#development), then create a file similar to
-[`mturk-definitions/twentyquestions/data.jsonl`](./mturk-definitions/twentyquestions/data.jsonl)
-except pointing to the domain at which the web application is running
-instead of `https://twentyquestions.allenai.org/`. Then, run `amti` to
-create the batch:
-
-    amti create_batch \
-      --live \
-      mturk-definitions/twentyquestions/definition \
-      data.jsonl \
-      .
-
-Once the games have run, collect the results, extract the XML
-responses from MTurk, and run `python manage.py extractquestions` to
-extract out the subject-question-answer triples. For example:
-
-    amti review_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      # review the batch
-    amti save_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    amti extract_xml \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-      .
-    python manage.py extractquestions \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
-      questions.jsonl
-
-### Running `questions-quality-control`
-
-Once you've run the games and extracted the questions, first group the
-data by subject to prepare it for labeling:
-
-    python manage.py groupbysubject \
-      questions.jsonl \
-      quality-control-input.jsonl
-
-Then, use the grouped questions as input to the
-`questions-quality-control` task:
-
-    amti create_batch \
-      --live \
-      mturk-definitions/questions-quality-control/definition \
-      quality-control-input.jsonl \
-      .
-
-Once all the questions have been labeled as high quality, you can
-collect the results, extract the XML responses from MTurk, and run
-`python manage.py extractquality` to extract out the data:
-
-    amti review_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      # review batch
-    amti save_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    amti extract_xml \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-      .
-    python manage.py extractquality \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
-      quality.jsonl
-
-### Running `questions-to-assertions`
-
-Once you have the quality labels, group them by subject and prepare it
-for the next HIT:
-
-    python manage.py groupbysubject \
-      quality.jsonl \
-      questions-to-assertion-input.jsonl
-
-You may want to filter the rows that have `"high_quality"` set to
-`false`. Then, use the grouped questions as input to the
-`questions-to-assertions` task:
-
-    amti create_batch \
-      --live \
-      mturk-definitions/questions-to-assertions/definition \
-      questions-to-assertions-input.jsonl
-
-Once all the questions have been converted into assertions, you can
-collect the results, extract the XML responses from MTurk, and run
-`python manage.py extractassertions` to extract out the data:
-
-    amti review_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      # review batch
-    amti save_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    amti extract_xml \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-      .
-    python manage.py extractassertions \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
-      assertions.jsonl
-
-
-### Running `assertion-labeling`
-
-Once you have the assertions, the last step is to label them as `true`
-or `false`. Group them by subject and prepare it for the next HIT:
-
-    python manage.py groupbysubject \
-      assertions.jsonl \
-      assertion-labeling-input.jsonl
-
-Use the grouped questions as input to the `assertion-labeling` task:
-
-    amti create_batch \
-      --live \
-      mturk-definitions/assertion-labeling/definition \
-      assertion-labeling-input.jsonl
-
-Once all the assertions have been labeled, you can collect the results,
-extract the XML responses from MTurk, and run `python manage.py
-extractlabels` to extract out the data:
-
-    amti review_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-      # review batch
-    amti save_batch \
-      --live \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    amti extract_xml \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-      .
-    python manage.py extractlabels \
-      batch-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx-xml \
-      labeled-assertions.jsonl
+Citation
+--------
+A short paper is (hopefully) coming soon. Please check back on this repository
+for a paper to cite when you are about to publish your results. If there's no
+citation available, then please link to this repository with a URL.
 
 
 Contact
@@ -337,10 +99,5 @@ This code was authored by Nick Lourie for [Mosaic][mosaic], reach out to him
 with any questions.
 
 
-[mosaic]: https://mosaic.allenai.org/
 [amti]: https://github.com/allenai/amti
-[direnv]: https://direnv.net/
-[hit-definitions]: ./mturk-definitions/
-[subjects-list]: ./backend/subjects.txt
-[pyenv]: https://github.com/pyenv/pyenv
-[pyenv-virtualenv]: https://github.com/pyenv/pyenv-virtualenv
+[mosaic]: https://mosaic.allenai.org/
