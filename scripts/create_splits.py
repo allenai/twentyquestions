@@ -19,7 +19,16 @@ logger = logging.getLogger(__name__)
 
 def _normalize(s):
     """Return a normalized version of s."""
-    return re.sub(r'[^\w\s]', '', s).lower().strip()
+    # Remove repeated whitespace characters.
+    s = re.sub(r'\s+', ' ', s)
+    # Remove non-whitespace or word characters.
+    s = re.sub(r'[^\w\s]', '', s)
+    # Lowercase the string.
+    s = s.lower()
+    # Strip leading and trailing whitespace.
+    s = s.strip()
+
+    return s
 
 
 # main function
