@@ -86,6 +86,14 @@ want to run the HITs on Mechanical Turk see
 [Running HITs](./docs/running-hits.md).
 
 
+Data
+----
+The 20 Questions data can be found [here][twentyquestions-data]. The tarball
+contains 20 Questions style questions and answers along with other
+metadata. In it, you'll find a `README.md` describing all the attributes in
+more detail.
+
+
 Citation
 --------
 A short paper is (hopefully) coming soon. Please check back on this repository
@@ -101,3 +109,4 @@ with any questions.
 
 [amti]: https://github.com/allenai/amti
 [mosaic]: https://mosaic.allenai.org/
+[twentyquestions-data]: https://storage.googleapis.com/ai2-mosaic-public/projects/twentyquestions/v1.0/data/v1.0.twentyquestions.tar.gz
