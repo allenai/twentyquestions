@@ -94,13 +94,6 @@ metadata. In it, you'll find a `README.md` describing all the attributes in
 more detail.
 
 
-Citation
---------
-A short paper is (hopefully) coming soon. Please check back on this repository
-for a paper to cite when you are about to publish your results. If there's no
-citation available, then please link to this repository with a URL.
-
-
 Contact
 -------
 This code was authored by Nick Lourie for [Mosaic][mosaic], reach out to him
